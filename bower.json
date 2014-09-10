@@ -1,0 +1,25 @@
+{
+  "name": "kapi-scroll",
+  "version": "0.0.0",
+  "homepage": "https://github.com/gilbox/kapi-scroll",
+  "authors": [
+    "Gil Birman <g@gilbox.com>"
+  ],
+  "description": "angular directive for scroll-based animation using rekapi",
+  "main": "src/kapi-scroll.js",
+  "keywords": [
+    "rekapi",
+    "scroll",
+    "angular",
+    "directive",
+    "animation"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
