@@ -23,6 +23,7 @@
     "tests"
   ],
   "devDependencies": {
-    "rekapi": "~1.3.2"
+    "rekapi": "~1.3.2",
+    "animation-frame": "~0.1.7"
   }
 }
