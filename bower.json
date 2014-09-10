@@ -22,7 +22,7 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
+  "dependencies": {
     "rekapi": "~1.3.2",
     "animation-frame": "~0.1.7"
   }
