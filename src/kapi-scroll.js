@@ -3,7 +3,7 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actor, animationFrame, classFrameIdx, classFrames, classes, classesUpdate, lastScrollY, scrollY, update, updating, y;
+      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, lastScrollY, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
@@ -12,15 +12,15 @@
       scrollY = 0;
       animationFrame = new AnimationFrame();
       updating = false;
-      classes = {};
-      classFrames = [];
-      classFrameIdx = -1;
-      classesUpdate = function(d) {
+      actions = {};
+      actionFrames = [];
+      actionFrameIdx = -1;
+      actionsUpdate = function(d) {
         var c, idx, _results;
-        if (d < 0 && classFrameIdx >= 0) {
-          idx = classFrameIdx >= classFrames.length ? classFrameIdx - 1 : classFrameIdx;
-          while (idx >= 0 && y < classFrames[idx]) {
-            c = classes[classFrames[idx]];
+        if (d < 0 && actionFrameIdx >= 0) {
+          idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
+          while (idx >= 0 && y < actionFrames[idx]) {
+            c = actions[actionFrames[idx]];
             if (c["class"]) {
               element.removeClass(c["class"]);
             }
@@ -30,14 +30,17 @@
             if (c.classUpRemove) {
               element.removeClass(c.classUpRemove);
             }
-            classFrameIdx = --idx;
+            if (c.cbUp) {
+              c.cbUp();
+            }
+            actionFrameIdx = --idx;
           }
         }
-        if (d >= 0 && classFrameIdx < classFrames.length) {
-          idx = classFrameIdx < 0 ? 0 : classFrameIdx;
+        if (d >= 0 && actionFrameIdx < actionFrames.length) {
+          idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
           _results = [];
-          while (idx < classFrames.length && y > classFrames[idx]) {
-            c = classes[classFrames[idx]];
+          while (idx < actionFrames.length && y > actionFrames[idx]) {
+            c = actions[actionFrames[idx]];
             if (c["class"]) {
               element.addClass(c["class"]);
             }
@@ -47,7 +50,10 @@
             if (c.classRemove) {
               element.removeClass(c.classRemove);
             }
-            _results.push(classFrameIdx = ++idx);
+            if (c.cbDown) {
+              c.cbDown();
+            }
+            _results.push(actionFrameIdx = ++idx);
           }
           return _results;
         }
@@ -66,7 +72,7 @@
           rekapi.update(parseInt(y));
           animationFrame.request(update);
         }
-        return classesUpdate(d);
+        return actionsUpdate(d);
       };
       scope.$watch(attr.kapiScroll, function(data) {
         var ease, elmEase, keyFrame, kfEase, o, prop, val;
@@ -75,37 +81,51 @@
         }
         elmEase = data.ease || 'linear';
         delete data.ease;
-        classes = {};
-        classFrames = [];
+        actions = {};
+        actionFrames = [];
         for (scrollY in data) {
           keyFrame = data[scrollY];
-          if ((keyFrame["class"] != null) || (keyFrame.classUp != null) || (keyFrame.classRemove != null) || (keyFrame.classUpRemove != null)) {
-            classFrames.push(parseInt(scrollY));
+          if (keyFrame["class"] || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.cbUp || keyFrame.cbDown) {
+            actionFrames.push(parseInt(scrollY));
           }
-          if (keyFrame["class"] != null) {
-            classes[scrollY] || (classes[scrollY] = {});
-            angular.extend(classes[scrollY], {
+          if (keyFrame.cbUp) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
+              cbUp: keyFrame.cbUp
+            });
+            delete keyFrame.cbUp;
+          }
+          if (keyFrame.cbDown) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
+              cbDown: keyFrame.cbDown
+            });
+            delete keyFrame.cbDown;
+          }
+          if (keyFrame["class"]) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
               "class": keyFrame["class"]
             });
             delete keyFrame["class"];
           }
-          if (keyFrame.classUp != null) {
-            classes[scrollY] || (classes[scrollY] = {});
-            angular.extend(classes[scrollY], {
+          if (keyFrame.classUp) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
               classUp: keyFrame.classUp
             });
             delete keyFrame.classUp;
           }
-          if (keyFrame.classRemove != null) {
-            classes[scrollY] || (classes[scrollY] = {});
-            angular.extend(classes[scrollY], {
+          if (keyFrame.classRemove) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
               classRemove: keyFrame.classRemove
             });
             delete keyFrame.classRemove;
           }
-          if (keyFrame.classUpRemove != null) {
-            classes[scrollY] || (classes[scrollY] = {});
-            angular.extend(classes[scrollY], {
+          if (keyFrame.classUpRemove) {
+            actions[scrollY] || (actions[scrollY] = {});
+            angular.extend(actions[scrollY], {
               classUpRemove: keyFrame.classUpRemove
             });
             delete keyFrame.classUpRemove;
@@ -132,7 +152,7 @@
           }
           actor.keyframe(scrollY, keyFrame, ease);
         }
-        classFrames.sort(function(a, b) {
+        actionFrames.sort(function(a, b) {
           return a > b;
         });
         y = scrollY = $window.scrollY;

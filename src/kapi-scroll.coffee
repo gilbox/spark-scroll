@@ -9,33 +9,35 @@
         animationFrame = new AnimationFrame()
         updating = false
 
-        classes = {}
-        classFrames = []
-        classFrameIdx = -1
+        actions = {}
+        actionFrames = []
+        actionFrameIdx = -1
 
-        classesUpdate = (d) ->
+        actionsUpdate = (d) ->
 
-          if d<0 and classFrameIdx >= 0  # only apply on page load for downward movement
-            idx = if (classFrameIdx >= classFrames.length) then classFrameIdx-1 else classFrameIdx
-            while (idx >= 0 and y < classFrames[idx])
-              c = classes[classFrames[idx]]
+          if d<0 and actionFrameIdx >= 0  # only apply on page load for downward movement
+            idx = if (actionFrameIdx >= actionFrames.length) then actionFrameIdx-1 else actionFrameIdx
+            while (idx >= 0 and y < actionFrames[idx])
+              c = actions[actionFrames[idx]]
 
               element.removeClass(c.class) if c.class
               element.addClass(c.classUp) if c.classUp
               element.removeClass(c.classUpRemove) if c.classUpRemove
+              c.cbUp() if c.cbUp
 
-              classFrameIdx = --idx
+              actionFrameIdx = --idx
 
-          if d>=0 and classFrameIdx < classFrames.length
-            idx = if (classFrameIdx < 0) then 0 else classFrameIdx
-            while (idx < classFrames.length and y > classFrames[idx])
-              c = classes[classFrames[idx]]
+          if d>=0 and actionFrameIdx < actionFrames.length
+            idx = if (actionFrameIdx < 0) then 0 else actionFrameIdx
+            while (idx < actionFrames.length and y > actionFrames[idx])
+              c = actions[actionFrames[idx]]
 
               element.addClass(c.class) if c.class
               element.removeClass(c.classUp) if c.classUp
               element.removeClass(c.classRemove) if c.classRemove
+              c.cbDown() if c.cbDown
 
-              classFrameIdx = ++idx
+              actionFrameIdx = ++idx
 
 
         update = ->
@@ -51,7 +53,7 @@
             rekapi.update(parseInt(y))
             animationFrame.request(update)
 
-          classesUpdate(d)  # todo: is there a better place for this? debounce this more ?
+          actionsUpdate(d)  # todo: is there a better place for this? debounce this more ?
 
 
         scope.$watch attr.kapiScroll, (data) ->
@@ -61,48 +63,63 @@
           elmEase = data.ease || 'linear';
           delete data.ease
 
-          classes = {}
-          classFrames = []
+          actions = {}
+          actionFrames = []
 
           # setup the rekapi keyframes
           for scrollY, keyFrame of data
 
-            classFrames.push(parseInt(scrollY)) if keyFrame.class? || keyFrame.classUp? || keyFrame.classRemove? || keyFrame.classUpRemove?
+            actionFrames.push(parseInt(scrollY)) if keyFrame.class || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.cbUp || keyFrame.cbDown
+
+            # keyframe cbUp property
+            # fn reference that is called when scrolled up past keyframe
+            # this is not handled by rekapi, so we pull it out and tcb
+            if keyFrame.cbUp
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {cbUp: keyFrame.cbUp})
+              delete keyFrame.cbUp
+
+            # keyframe cbDown property
+            # fn reference that is called when scrolled down past keyframe
+            # this is not handled by rekapi, so we pull it out and tcb
+            if keyFrame.cbDown
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {cbDown: keyFrame.cbDown})
+              delete keyFrame.cbDown
 
             # keyframe class property
             # added when scrolled down past keyframe
             # removed when scrolled up past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.class?
-              classes[scrollY] or= {}
-              angular.extend(classes[scrollY], {class: keyFrame.class})
+            if keyFrame.class
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {class: keyFrame.class})
               delete keyFrame.class
 
             # keyframe classUp property
             # added when scrolled up past keyframe
             # removed when scrolled down past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classUp?
-              classes[scrollY] or= {}
-              angular.extend(classes[scrollY], {classUp: keyFrame.classUp})
+            if keyFrame.classUp
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {classUp: keyFrame.classUp})
               delete keyFrame.classUp
 
-            # keyframe classUp property
+            # keyframe classRemove property
             # removed when scrolled down past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classRemove?
-              classes[scrollY] or= {}
-              angular.extend(classes[scrollY], {classRemove: keyFrame.classRemove})
+            if keyFrame.classRemove
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {classRemove: keyFrame.classRemove})
               delete keyFrame.classRemove
 
-            # keyframe classUp property
+            # keyframe classUpRemove property
             # removed when scrolled up past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classUpRemove?
-              classes[scrollY] or= {}
-              angular.extend(classes[scrollY], {classUpRemove: keyFrame.classUpRemove})
+            if keyFrame.classUpRemove
+              actions[scrollY] or= {}
+              angular.extend(actions[scrollY], {classUpRemove: keyFrame.classUpRemove})
               delete keyFrame.classUpRemove
-
 
             # keyframe ease property
             # (will override or fallback to element ease property)
@@ -126,7 +143,7 @@
 
             actor.keyframe(scrollY, keyFrame, ease)
 
-          classFrames.sort (a,b) -> a > b
+          actionFrames.sort (a,b) -> a > b
 
           y = scrollY = $window.scrollY
           update()

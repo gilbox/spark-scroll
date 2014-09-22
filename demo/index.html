@@ -5,7 +5,7 @@
   <title>AngularJS kapi-scroll</title>
   <link rel="stylesheet" href="stylesheet.css"/>
 </head>
-<body ng-controller="appCtrl">
+<body ng-controller="appCtrl as app">
 
 <p><br></p>
 <p><br></p>
@@ -17,9 +17,11 @@
 <header>
   <h1 kapi-scroll="{
                    ease:'easeOutQuad',
-                      0:{color:'#000', 'margin-left': '0px' },
-                      75:{color:'#00f', 'margin-left': '0px', class: 'my-thing' },
-                      120:{classUp: 'my-thing' },
+                      0: {color:'#000', 'margin-left': '0px' },
+                      50: { cbDown: app.downFn },
+                      75: {color:'#00f', 'margin-left': '0px', class: 'my-thing' },
+                      120: {classUp: 'my-thing' },
+                      140: { cbUp: app.upFn },
                    150:{color:'#f00', 'margin-left': '100px' }
                    }">
     kapi-scroll for AngularJS
