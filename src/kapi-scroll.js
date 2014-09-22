@@ -3,7 +3,7 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actor, animationFrame, classFrameIdx, classes, classesUpdate, lastScrollY, scrollY, update, updating, y;
+      var actor, animationFrame, classFrameIdx, classFrames, classes, classesUpdate, lastScrollY, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
@@ -13,22 +13,40 @@
       animationFrame = new AnimationFrame();
       updating = false;
       classes = {};
-      classes.frames = [];
+      classFrames = [];
       classFrameIdx = -1;
       classesUpdate = function(d) {
-        var idx, _results;
-        if (d <= 0 && classFrameIdx >= 0) {
-          idx = classFrameIdx >= classes.frames.length ? classFrameIdx - 1 : classFrameIdx;
-          while (idx >= 0 && y < classes.frames[idx]) {
-            element.removeClass(classes[classes.frames[idx]]);
+        var c, idx, _results;
+        if (d < 0 && classFrameIdx >= 0) {
+          idx = classFrameIdx >= classFrames.length ? classFrameIdx - 1 : classFrameIdx;
+          while (idx >= 0 && y < classFrames[idx]) {
+            c = classes[classFrames[idx]];
+            if (c["class"]) {
+              element.removeClass(c["class"]);
+            }
+            if (c.classUp) {
+              element.addClass(c.classUp);
+            }
+            if (c.classUpRemove) {
+              element.removeClass(c.classUpRemove);
+            }
             classFrameIdx = --idx;
           }
         }
-        if (d >= 0 && classFrameIdx < classes.frames.length) {
+        if (d >= 0 && classFrameIdx < classFrames.length) {
           idx = classFrameIdx < 0 ? 0 : classFrameIdx;
           _results = [];
-          while (idx < classes.frames.length && y > classes.frames[idx]) {
-            element.addClass(classes[classes.frames[idx]]);
+          while (idx < classFrames.length && y > classFrames[idx]) {
+            c = classes[classFrames[idx]];
+            if (c["class"]) {
+              element.addClass(c["class"]);
+            }
+            if (c.classUp) {
+              element.removeClass(c.classUp);
+            }
+            if (c.classRemove) {
+              element.removeClass(c.classRemove);
+            }
             _results.push(classFrameIdx = ++idx);
           }
           return _results;
@@ -58,13 +76,39 @@
         elmEase = data.ease || 'linear';
         delete data.ease;
         classes = {};
-        classes.frames = [];
+        classFrames = [];
         for (scrollY in data) {
           keyFrame = data[scrollY];
+          if ((keyFrame["class"] != null) || (keyFrame.classUp != null) || (keyFrame.classRemove != null) || (keyFrame.classUpRemove != null)) {
+            classFrames.push(parseInt(scrollY));
+          }
           if (keyFrame["class"] != null) {
-            classes[scrollY] = keyFrame["class"];
-            classes.frames.push(scrollY);
+            classes[scrollY] || (classes[scrollY] = {});
+            angular.extend(classes[scrollY], {
+              "class": keyFrame["class"]
+            });
             delete keyFrame["class"];
+          }
+          if (keyFrame.classUp != null) {
+            classes[scrollY] || (classes[scrollY] = {});
+            angular.extend(classes[scrollY], {
+              classUp: keyFrame.classUp
+            });
+            delete keyFrame.classUp;
+          }
+          if (keyFrame.classRemove != null) {
+            classes[scrollY] || (classes[scrollY] = {});
+            angular.extend(classes[scrollY], {
+              classRemove: keyFrame.classRemove
+            });
+            delete keyFrame.classRemove;
+          }
+          if (keyFrame.classUpRemove != null) {
+            classes[scrollY] || (classes[scrollY] = {});
+            angular.extend(classes[scrollY], {
+              classUpRemove: keyFrame.classUpRemove
+            });
+            delete keyFrame.classUpRemove;
           }
           ease = {};
           kfEase = elmEase;
@@ -88,7 +132,7 @@
           }
           actor.keyframe(scrollY, keyFrame, ease);
         }
-        classes.frames.sort(function(a, b) {
+        classFrames.sort(function(a, b) {
           return a > b;
         });
         y = scrollY = $window.scrollY;
