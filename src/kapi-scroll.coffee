@@ -155,4 +155,6 @@
           scrollY = $window.scrollY
           update() if !updating # debounced update
 
-        scope.$on '$destroy', -> rekapi.removeActor(actor)
+        scope.$on '$destroy', ->
+          rekapi.removeActor(actor)
+          angular.element($window).off 'scroll'
