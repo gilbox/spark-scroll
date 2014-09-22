@@ -1,0 +1,25 @@
+{
+  "name": "kapi-scroll",
+  "version": "1.0.0",
+  "description": "scroll-based animations with rekapi",
+  "main": "src/kapi-scroll.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gilbox/kapi-scroll.git"
+  },
+  "author": "gilbox.me",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gilbox/kapi-scroll/issues"
+  },
+  "homepage": "https://github.com/gilbox/kapi-scroll",
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-coffee": "^2.2.0",
+    "gulp-sourcemaps": "^1.2.2",
+    "gulp-util": "^3.0.1"
+  }
+}

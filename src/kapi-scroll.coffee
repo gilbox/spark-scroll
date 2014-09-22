@@ -1,17 +1,32 @@
-define [
-  'angular'
-  'rekapi'
-  'animation-frame'
-], (angular, Rekapi, AnimationFrame) ->
   angular.module('gilbox.kapiScroll', [])
     .factory 'rekapi', ($document) -> new Rekapi($document[0].body)
     .directive 'kapiScroll', (rekapi, $window) ->
       (scope, element, attr) ->
         actor = rekapi.addActor({ context: element[0] })
         y = 0
+        lastScrollY = 0
         scrollY = 0
         animationFrame = new AnimationFrame()
         updating = false
+
+        classes = {}
+        classes.frames = []
+        classFrameIdx = -1
+
+        classesUpdate = (d) ->
+
+          if d<=0 and classFrameIdx >= 0
+            idx = if (classFrameIdx >= classes.frames.length) then classFrameIdx-1 else classFrameIdx
+            while (idx >= 0 and y < classes.frames[idx])
+              element.removeClass(classes[classes.frames[idx]])
+              classFrameIdx = --idx
+
+          if d>=0 and classFrameIdx < classes.frames.length
+            idx = if (classFrameIdx < 0) then 0 else classFrameIdx
+            while (idx < classes.frames.length and y > classes.frames[idx])
+              element.addClass(classes[classes.frames[idx]])
+              classFrameIdx = ++idx
+
 
         update = ->
           d = scrollY - y
@@ -26,6 +41,8 @@ define [
             rekapi.update(parseInt(y))
             animationFrame.request(update)
 
+          classesUpdate(d)  # todo: debounce this more ?
+
         scope.$watch attr.kapiScroll, (data) ->
           return unless data
 
@@ -33,8 +50,18 @@ define [
           elmEase = data.ease || 'linear';
           delete data.ease
 
+          classes = {}
+          classes.frames = []
+
           # setup the rekapi keyframes
           for scrollY, keyFrame of data
+
+            # keyframe class property
+            # this is not handled by rekapi, so we pull it out and tcb
+            if keyFrame.class?
+              classes[scrollY] = keyFrame.class
+              classes.frames.push(scrollY)
+              delete keyFrame.class
 
             # keyframe ease property
             # (will override or fallback to element ease property)
@@ -58,12 +85,15 @@ define [
 
             actor.keyframe(scrollY, keyFrame, ease)
 
+          classes.frames.sort (a,b) -> a>b
+
           y = scrollY = $window.scrollY
           update()
         , true  # deep watch
 
         # respond to scroll event
         angular.element($window).on 'scroll', ->
+          lastScrollY = scrollY
           scrollY = $window.scrollY
           update() if !updating # debounced update
 
