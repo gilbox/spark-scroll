@@ -44,7 +44,7 @@
 
           d = scrollY - y
 
-          if d<0 and actionFrameIdx >= 0  # only apply on page load for downward movement
+          if d<0 and actionFrameIdx >= 0  # don't apply on page load (only apply on page load for downward movement)
             idx = if (actionFrameIdx >= actionFrames.length) then actionFrameIdx-1 else actionFrameIdx
             while (idx >= 0 and y < actionFrames[idx])
               c = actions[actionFrames[idx]]
@@ -56,7 +56,7 @@
 
               actionFrameIdx = --idx
 
-          if d>=0 and actionFrameIdx < actionFrames.length
+          if d>=0 and actionFrameIdx < actionFrames.length  # will apply on page load
             idx = if (actionFrameIdx < 0) then 0 else actionFrameIdx
             while (idx < actionFrames.length and y > actionFrames[idx])
               c = actions[actionFrames[idx]]
