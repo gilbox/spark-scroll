@@ -4,7 +4,6 @@
       (scope, element, attr) ->
         actor = rekapi.addActor({ context: element[0] })
         y = 0
-        lastScrollY = 0
         scrollY = 0
         animationFrame = new AnimationFrame()
         updating = false
@@ -151,7 +150,6 @@
 
         # respond to scroll event
         angular.element($window).on 'scroll', ->
-          lastScrollY = scrollY
           scrollY = $window.scrollY
           update() if !updating # debounced update
 
