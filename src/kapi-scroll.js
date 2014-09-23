@@ -3,7 +3,7 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionProps, actions, actionsUpdate, actor, animationFrame, dashersize, ksWatchCancel, scrollY, update, updating, y;
+      var actionFrameIdx, actionFrames, actionPropKeys, actionProps, actions, actionsUpdate, actor, animationFrame, dashersize, ksWatchCancel, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
@@ -11,28 +11,60 @@
       scrollY = 0;
       animationFrame = new AnimationFrame();
       updating = false;
-      actionProps = ['onUp', 'onDown', 'class', 'classUp', 'classRemove', 'classUpRemove'];
+      actionProps = {
+        'onUp': {
+          up: function() {
+            return this.onUp();
+          }
+        },
+        'onDown': {
+          down: function() {
+            return this.onDown();
+          }
+        },
+        'class': {
+          up: function() {
+            return element.removeClass(this['class']);
+          },
+          down: function() {
+            return element.addClass(this['class']);
+          }
+        },
+        'classUp': {
+          up: function() {
+            return element.addClass(this.classUp);
+          },
+          down: function() {
+            return element.removeClass(this.classUp);
+          }
+        },
+        'classRemove': {
+          down: function() {
+            return element.removeClass(this.classRemove);
+          }
+        },
+        'classUpRemove': {
+          up: function() {
+            return element.removeClass(this.classUpRemove);
+          }
+        }
+      };
+      actionPropKeys = _.keys(actionProps);
       actions = {};
       actionFrames = [];
       actionFrameIdx = -1;
       actionsUpdate = function() {
-        var c, d, idx, _results;
+        var actionProp, c, d, idx, prop, _results;
         d = scrollY - y;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && y < actionFrames[idx]) {
             c = actions[actionFrames[idx]];
-            if (c["class"]) {
-              element.removeClass(c["class"]);
-            }
-            if (c.classUp) {
-              element.addClass(c.classUp);
-            }
-            if (c.classUpRemove) {
-              element.removeClass(c.classUpRemove);
-            }
-            if (c.onUp) {
-              c.onUp();
+            for (prop in c) {
+              actionProp = actionProps[prop];
+              if (actionProp.up) {
+                actionProp.up.apply(c);
+              }
             }
             actionFrameIdx = --idx;
           }
@@ -42,17 +74,11 @@
           _results = [];
           while (idx < actionFrames.length && y > actionFrames[idx]) {
             c = actions[actionFrames[idx]];
-            if (c["class"]) {
-              element.addClass(c["class"]);
-            }
-            if (c.classUp) {
-              element.removeClass(c.classUp);
-            }
-            if (c.classRemove) {
-              element.removeClass(c.classRemove);
-            }
-            if (c.onDown) {
-              c.onDown();
+            for (prop in c) {
+              actionProp = actionProps[prop];
+              if (actionProp.down) {
+                actionProp.down.apply(c);
+              }
             }
             _results.push(actionFrameIdx = ++idx);
           }
@@ -82,7 +108,7 @@
         return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2');
       };
       ksWatchCancel = scope.$watch(attr.kapiScroll, function(data) {
-        var actionProp, ease, elmEase, keyFrame, kfEase, o, prop, val, _i, _len;
+        var actionCount, actionProp, ease, elmEase, keyFrame, kfEase, o, prop, val, _i, _len;
         if (!data) {
           return;
         }
@@ -95,16 +121,18 @@
         actionFrames = [];
         for (scrollY in data) {
           keyFrame = data[scrollY];
-          if (keyFrame["class"] || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown) {
-            actionFrames.push(parseInt(scrollY));
-          }
-          for (_i = 0, _len = actionProps.length; _i < _len; _i++) {
-            actionProp = actionProps[_i];
+          actionCount = 0;
+          for (_i = 0, _len = actionPropKeys.length; _i < _len; _i++) {
+            actionProp = actionPropKeys[_i];
             if (keyFrame[actionProp]) {
+              actionCount++;
               actions[scrollY] || (actions[scrollY] = {});
               actions[scrollY][actionProp] = keyFrame[actionProp];
               delete keyFrame[actionProp];
             }
+          }
+          if (actionCount) {
+            actionFrames.push(parseInt(scrollY));
           }
           ease = {};
           kfEase = elmEase;

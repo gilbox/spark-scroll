@@ -8,34 +8,46 @@
         animationFrame = new AnimationFrame()
         updating = false
 
-        actionProps = [
+        actionProps = {
+
+          # When the up, down fns are called, `this` is the current keyFrame object
 
           # keyframe onUp property
           # fn reference that is called when scrolled up past keyframe
-          'onUp'
+          'onUp':
+            up: -> @onUp()
 
           # keyframe onDown property
           # fn reference that is called when scrolled down past keyframe
-          'onDown'
+          'onDown':
+            down: -> @onDown()
 
           # keyframe class property
           # class(es) added when scrolled down past keyframe,
           # but removed when scrolled up past keyframe
-          'class'
+          'class':
+            up: -> element.removeClass(this['class'])
+            down: -> element.addClass(this['class'])
 
           # keyframe classUp property
           # class(es) added when scrolled up past keyframe,
           # but removed when scrolled down past keyframe
-          'classUp'
+          'classUp':
+            up: -> element.addClass(@classUp)
+            down: -> element.removeClass(@classUp)
 
           # keyframe classRemove property
           # class(es) removed when scrolled down past keyframe
-          'classRemove'
+          'classRemove':
+            down: -> element.removeClass(@classRemove)
 
           # keyframe classUpRemove property
           # class(es) removed when scrolled up past keyframe
-          'classUpRemove'
-        ]
+          'classUpRemove':
+            up: -> element.removeClass(@classUpRemove)
+
+        }
+        actionPropKeys = _.keys(actionProps)
         actions = {}
         actionFrames = []
         actionFrameIdx = -1
@@ -44,27 +56,25 @@
 
           d = scrollY - y
 
-          if d<0 and actionFrameIdx >= 0  # don't apply on page load (only apply on page load for downward movement)
+          if d<0 and actionFrameIdx >= 0  # scroll up: don't apply on page load (only apply on page load for downward movement)
             idx = if (actionFrameIdx >= actionFrames.length) then actionFrameIdx-1 else actionFrameIdx
             while (idx >= 0 and y < actionFrames[idx])
               c = actions[actionFrames[idx]]
 
-              element.removeClass(c.class) if c.class
-              element.addClass(c.classUp) if c.classUp
-              element.removeClass(c.classUpRemove) if c.classUpRemove
-              c.onUp() if c.onUp
+              for prop of c
+                actionProp = actionProps[prop]
+                actionProp.up.apply(c) if actionProp.up
 
               actionFrameIdx = --idx
 
-          if d>=0 and actionFrameIdx < actionFrames.length  # will apply on page load
+          if d>=0 and actionFrameIdx < actionFrames.length  # scroll down: will apply on page load
             idx = if (actionFrameIdx < 0) then 0 else actionFrameIdx
             while (idx < actionFrames.length and y > actionFrames[idx])
               c = actions[actionFrames[idx]]
 
-              element.addClass(c.class) if c.class
-              element.removeClass(c.classUp) if c.classUp
-              element.removeClass(c.classRemove) if c.classRemove
-              c.onDown() if c.onDown
+              for prop of c
+                actionProp = actionProps[prop]
+                actionProp.down.apply(c) if actionProp.down
 
               actionFrameIdx = ++idx
 
@@ -107,14 +117,17 @@
           # setup the rekapi keyframes
           for scrollY, keyFrame of data
 
-            actionFrames.push(parseInt(scrollY)) if keyFrame.class || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown
+            actionCount = 0
 
             # custom actions not supported by rekapi
-            for actionProp in actionProps
+            for actionProp in actionPropKeys
               if keyFrame[actionProp]
+                actionCount++
                 actions[scrollY] or= {}
                 actions[scrollY][actionProp] = keyFrame[actionProp]
                 delete keyFrame[actionProp]
+
+            actionFrames.push(parseInt(scrollY)) if actionCount
 
             # keyframe ease property
             # (will override or fallback to element ease property)
