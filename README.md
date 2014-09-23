@@ -6,7 +6,7 @@ rekapi-based angular directive for scroll-based animations
 Setup
 =====
 
-kapi-scroll currently depends on requirejs. This is likely to change in the future. For now, see **[this plunker](http://plnkr.co/edit/rOwTO4?p=preview)**
+See **[this plunker](http://plnkr.co/edit/K47ghm?p=preview)**
 
 Usage
 =====
