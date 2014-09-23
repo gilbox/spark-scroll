@@ -18,10 +18,10 @@
   <h1 kapi-scroll="{
                    ease:'easeOutQuad',
                       0: {color:'#000', 'margin-left': '0px' },
-                      50: { cbDown: app.downFn },
+                      50: { onDown: app.downFn },
                       75: {color:'#00f', 'margin-left': '0px', class: 'my-thing' },
                       120: {classUp: 'my-thing' },
-                      140: { cbUp: app.upFn },
+                      140: { onUp: app.upFn },
                    150:{color:'#f00', 'margin-left': '100px' }
                    }">
     kapi-scroll for AngularJS

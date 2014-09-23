@@ -23,7 +23,7 @@
               element.removeClass(c.class) if c.class
               element.addClass(c.classUp) if c.classUp
               element.removeClass(c.classUpRemove) if c.classUpRemove
-              c.cbUp() if c.cbUp
+              c.onUp() if c.onUp
 
               actionFrameIdx = --idx
 
@@ -35,7 +35,7 @@
               element.addClass(c.class) if c.class
               element.removeClass(c.classUp) if c.classUp
               element.removeClass(c.classRemove) if c.classRemove
-              c.cbDown() if c.cbDown
+              c.onDown() if c.onDown
 
               actionFrameIdx = ++idx
 
@@ -69,23 +69,23 @@
           # setup the rekapi keyframes
           for scrollY, keyFrame of data
 
-            actionFrames.push(parseInt(scrollY)) if keyFrame.class || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.cbUp || keyFrame.cbDown
+            actionFrames.push(parseInt(scrollY)) if keyFrame.class || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown
 
-            # keyframe cbUp property
+            # keyframe onUp property
             # fn reference that is called when scrolled up past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.cbUp
+            if keyFrame.onUp
               actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {cbUp: keyFrame.cbUp})
-              delete keyFrame.cbUp
+              angular.extend(actions[scrollY], {onUp: keyFrame.onUp})
+              delete keyFrame.onUp
 
-            # keyframe cbDown property
+            # keyframe onDown property
             # fn reference that is called when scrolled down past keyframe
             # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.cbDown
+            if keyFrame.onDown
               actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {cbDown: keyFrame.cbDown})
-              delete keyFrame.cbDown
+              angular.extend(actions[scrollY], {onDown: keyFrame.onDown})
+              delete keyFrame.onDown
 
             # keyframe class property
             # added when scrolled down past keyframe

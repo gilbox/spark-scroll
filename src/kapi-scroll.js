@@ -30,8 +30,8 @@
             if (c.classUpRemove) {
               element.removeClass(c.classUpRemove);
             }
-            if (c.cbUp) {
-              c.cbUp();
+            if (c.onUp) {
+              c.onUp();
             }
             actionFrameIdx = --idx;
           }
@@ -50,8 +50,8 @@
             if (c.classRemove) {
               element.removeClass(c.classRemove);
             }
-            if (c.cbDown) {
-              c.cbDown();
+            if (c.onDown) {
+              c.onDown();
             }
             _results.push(actionFrameIdx = ++idx);
           }
@@ -85,22 +85,22 @@
         actionFrames = [];
         for (scrollY in data) {
           keyFrame = data[scrollY];
-          if (keyFrame["class"] || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.cbUp || keyFrame.cbDown) {
+          if (keyFrame["class"] || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown) {
             actionFrames.push(parseInt(scrollY));
           }
-          if (keyFrame.cbUp) {
+          if (keyFrame.onUp) {
             actions[scrollY] || (actions[scrollY] = {});
             angular.extend(actions[scrollY], {
-              cbUp: keyFrame.cbUp
+              onUp: keyFrame.onUp
             });
-            delete keyFrame.cbUp;
+            delete keyFrame.onUp;
           }
-          if (keyFrame.cbDown) {
+          if (keyFrame.onDown) {
             actions[scrollY] || (actions[scrollY] = {});
             angular.extend(actions[scrollY], {
-              cbDown: keyFrame.cbDown
+              onDown: keyFrame.onDown
             });
-            delete keyFrame.cbDown;
+            delete keyFrame.onDown;
           }
           if (keyFrame["class"]) {
             actions[scrollY] || (actions[scrollY] = {});
