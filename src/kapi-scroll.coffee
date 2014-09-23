@@ -55,6 +55,11 @@
           actionsUpdate(d)  # todo: is there a better place for this? debounce this more ?
 
 
+        # automatic conversion from camelCase to dashed-case
+        dashersize = (str) ->
+          str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2')
+
+
         scope.$watch attr.kapiScroll, (data) ->
           return unless data
 
@@ -134,6 +139,7 @@
             # comprehension of array-notation for easing
             # (will override or fall back to keyframe ease propery as needed)
             for prop, val of keyFrame
+              prop = dashersize(prop)
               val = [val, kfEase] if not angular.isArray(val)
               o = {}
               o[prop] = val[1]

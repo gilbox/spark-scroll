@@ -3,12 +3,11 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, lastScrollY, scrollY, update, updating, y;
+      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, dashersize, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
       y = 0;
-      lastScrollY = 0;
       scrollY = 0;
       animationFrame = new AnimationFrame();
       updating = false;
@@ -73,6 +72,9 @@
           animationFrame.request(update);
         }
         return actionsUpdate(d);
+      };
+      dashersize = function(str) {
+        return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2');
       };
       scope.$watch(attr.kapiScroll, function(data) {
         var ease, elmEase, keyFrame, kfEase, o, prop, val;
@@ -142,6 +144,7 @@
           }
           for (prop in keyFrame) {
             val = keyFrame[prop];
+            prop = dashersize(prop);
             if (!angular.isArray(val)) {
               val = [val, kfEase];
             }
@@ -159,14 +162,14 @@
         return update();
       }, true);
       angular.element($window).on('scroll', function() {
-        lastScrollY = scrollY;
         scrollY = $window.scrollY;
         if (!updating) {
           return update();
         }
       });
       return scope.$on('$destroy', function() {
-        return rekapi.removeActor(actor);
+        rekapi.removeActor(actor);
+        return angular.element($window).off('scroll');
       });
     };
   });
