@@ -12,7 +12,9 @@
         actionFrames = []
         actionFrameIdx = -1
 
-        actionsUpdate = (d) ->
+        actionsUpdate = ->
+
+          d = scrollY - y
 
           if d<0 and actionFrameIdx >= 0  # only apply on page load for downward movement
             idx = if (actionFrameIdx >= actionFrames.length) then actionFrameIdx-1 else actionFrameIdx
@@ -39,6 +41,9 @@
               actionFrameIdx = ++idx
 
 
+        actionsUpdate = _.debounce(actionsUpdate, 33, {leading: true, maxWait: 33})
+
+
         update = ->
           d = scrollY - y
           ad = Math.abs(d)
@@ -52,16 +57,17 @@
             rekapi.update(parseInt(y))
             animationFrame.request(update)
 
-          actionsUpdate(d)  # todo: is there a better place for this? debounce this more ?
-
 
         # automatic conversion from camelCase to dashed-case
         dashersize = (str) ->
           str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2')
 
 
-        scope.$watch attr.kapiScroll, (data) ->
+        ksWatchCancel = scope.$watch attr.kapiScroll, (data) ->
           return unless data
+
+          # useful in angular < v1.3 where one-time binding isn't available
+          if attr.kapiScrollBindOnce? then ksWatchCancel()
 
           # element ease property
           elmEase = data.ease || 'linear';
@@ -152,11 +158,13 @@
 
           y = scrollY = $window.scrollY
           update()
+          actionsUpdate()
         , true  # deep watch
 
         # respond to scroll event
         angular.element($window).on 'scroll', ->
           scrollY = $window.scrollY
+          actionsUpdate()
           update() if !updating # debounced update
 
         scope.$on '$destroy', ->

@@ -3,7 +3,7 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, dashersize, scrollY, update, updating, y;
+      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, dashersize, ksWatchCancel, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
@@ -14,8 +14,9 @@
       actions = {};
       actionFrames = [];
       actionFrameIdx = -1;
-      actionsUpdate = function(d) {
-        var c, idx, _results;
+      actionsUpdate = function() {
+        var c, d, idx, _results;
+        d = scrollY - y;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && y < actionFrames[idx]) {
@@ -57,6 +58,10 @@
           return _results;
         }
       };
+      actionsUpdate = _.debounce(actionsUpdate, 33, {
+        leading: true,
+        maxWait: 33
+      });
       update = function() {
         var ad, d;
         d = scrollY - y;
@@ -64,22 +69,24 @@
         if (ad < 1.5) {
           updating = false;
           y = scrollY;
-          rekapi.update(y);
+          return rekapi.update(y);
         } else {
           updating = true;
           y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
           rekapi.update(parseInt(y));
-          animationFrame.request(update);
+          return animationFrame.request(update);
         }
-        return actionsUpdate(d);
       };
       dashersize = function(str) {
         return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2');
       };
-      scope.$watch(attr.kapiScroll, function(data) {
+      ksWatchCancel = scope.$watch(attr.kapiScroll, function(data) {
         var ease, elmEase, keyFrame, kfEase, o, prop, val;
         if (!data) {
           return;
+        }
+        if (attr.kapiScrollBindOnce != null) {
+          ksWatchCancel();
         }
         elmEase = data.ease || 'linear';
         delete data.ease;
@@ -159,10 +166,12 @@
           return a > b;
         });
         y = scrollY = $window.scrollY;
-        return update();
+        update();
+        return actionsUpdate();
       }, true);
       angular.element($window).on('scroll', function() {
         scrollY = $window.scrollY;
+        actionsUpdate();
         if (!updating) {
           return update();
         }
