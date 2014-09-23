@@ -19,21 +19,21 @@
           'onDown'
 
           # keyframe class property
-          # added when scrolled down past keyframe
-          # a class that is removed when scrolled up past keyframe
+          # class(es) added when scrolled down past keyframe,
+          # but removed when scrolled up past keyframe
           'class'
 
           # keyframe classUp property
-          # added when scrolled up past keyframe
-          # a class that is removed when scrolled down past keyframe
+          # class(es) added when scrolled up past keyframe,
+          # but removed when scrolled down past keyframe
           'classUp'
 
           # keyframe classRemove property
-          # a class that is removed when scrolled down past keyframe
+          # class(es) removed when scrolled down past keyframe
           'classRemove'
 
           # keyframe classUpRemove property
-          # a class that is removed when scrolled up past keyframe
+          # class(es) removed when scrolled up past keyframe
           'classUpRemove'
         ]
         actions = {}
