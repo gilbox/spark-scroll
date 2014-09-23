@@ -8,6 +8,34 @@
         animationFrame = new AnimationFrame()
         updating = false
 
+        actionProps = [
+
+          # keyframe onUp property
+          # fn reference that is called when scrolled up past keyframe
+          'onUp'
+
+          # keyframe onDown property
+          # fn reference that is called when scrolled down past keyframe
+          'onDown'
+
+          # keyframe class property
+          # added when scrolled down past keyframe
+          # a class that is removed when scrolled up past keyframe
+          'class'
+
+          # keyframe classUp property
+          # added when scrolled up past keyframe
+          # a class that is removed when scrolled down past keyframe
+          'classUp'
+
+          # keyframe classRemove property
+          # a class that is removed when scrolled down past keyframe
+          'classRemove'
+
+          # keyframe classUpRemove property
+          # a class that is removed when scrolled up past keyframe
+          'classUpRemove'
+        ]
         actions = {}
         actionFrames = []
         actionFrameIdx = -1
@@ -81,55 +109,12 @@
 
             actionFrames.push(parseInt(scrollY)) if keyFrame.class || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown
 
-            # keyframe onUp property
-            # fn reference that is called when scrolled up past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.onUp
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {onUp: keyFrame.onUp})
-              delete keyFrame.onUp
-
-            # keyframe onDown property
-            # fn reference that is called when scrolled down past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.onDown
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {onDown: keyFrame.onDown})
-              delete keyFrame.onDown
-
-            # keyframe class property
-            # added when scrolled down past keyframe
-            # removed when scrolled up past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.class
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {class: keyFrame.class})
-              delete keyFrame.class
-
-            # keyframe classUp property
-            # added when scrolled up past keyframe
-            # removed when scrolled down past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classUp
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {classUp: keyFrame.classUp})
-              delete keyFrame.classUp
-
-            # keyframe classRemove property
-            # removed when scrolled down past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classRemove
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {classRemove: keyFrame.classRemove})
-              delete keyFrame.classRemove
-
-            # keyframe classUpRemove property
-            # removed when scrolled up past keyframe
-            # this is not handled by rekapi, so we pull it out and tcb
-            if keyFrame.classUpRemove
-              actions[scrollY] or= {}
-              angular.extend(actions[scrollY], {classUpRemove: keyFrame.classUpRemove})
-              delete keyFrame.classUpRemove
+            # custom actions not supported by rekapi
+            for actionProp in actionProps
+              if keyFrame[actionProp]
+                actions[scrollY] or= {}
+                actions[scrollY][actionProp] = keyFrame[actionProp]
+                delete keyFrame[actionProp]
 
             # keyframe ease property
             # (will override or fallback to element ease property)

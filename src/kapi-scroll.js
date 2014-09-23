@@ -3,7 +3,7 @@
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actions, actionsUpdate, actor, animationFrame, dashersize, ksWatchCancel, scrollY, update, updating, y;
+      var actionFrameIdx, actionFrames, actionProps, actions, actionsUpdate, actor, animationFrame, dashersize, ksWatchCancel, scrollY, update, updating, y;
       actor = rekapi.addActor({
         context: element[0]
       });
@@ -11,6 +11,7 @@
       scrollY = 0;
       animationFrame = new AnimationFrame();
       updating = false;
+      actionProps = ['onUp', 'onDown', 'class', 'classUp', 'classRemove', 'classUpRemove'];
       actions = {};
       actionFrames = [];
       actionFrameIdx = -1;
@@ -81,7 +82,7 @@
         return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2');
       };
       ksWatchCancel = scope.$watch(attr.kapiScroll, function(data) {
-        var ease, elmEase, keyFrame, kfEase, o, prop, val;
+        var actionProp, ease, elmEase, keyFrame, kfEase, o, prop, val, _i, _len;
         if (!data) {
           return;
         }
@@ -97,47 +98,13 @@
           if (keyFrame["class"] || keyFrame.classUp || keyFrame.classRemove || keyFrame.classUpRemove || keyFrame.onUp || keyFrame.onDown) {
             actionFrames.push(parseInt(scrollY));
           }
-          if (keyFrame.onUp) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              onUp: keyFrame.onUp
-            });
-            delete keyFrame.onUp;
-          }
-          if (keyFrame.onDown) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              onDown: keyFrame.onDown
-            });
-            delete keyFrame.onDown;
-          }
-          if (keyFrame["class"]) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              "class": keyFrame["class"]
-            });
-            delete keyFrame["class"];
-          }
-          if (keyFrame.classUp) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              classUp: keyFrame.classUp
-            });
-            delete keyFrame.classUp;
-          }
-          if (keyFrame.classRemove) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              classRemove: keyFrame.classRemove
-            });
-            delete keyFrame.classRemove;
-          }
-          if (keyFrame.classUpRemove) {
-            actions[scrollY] || (actions[scrollY] = {});
-            angular.extend(actions[scrollY], {
-              classUpRemove: keyFrame.classUpRemove
-            });
-            delete keyFrame.classUpRemove;
+          for (_i = 0, _len = actionProps.length; _i < _len; _i++) {
+            actionProp = actionProps[_i];
+            if (keyFrame[actionProp]) {
+              actions[scrollY] || (actions[scrollY] = {});
+              actions[scrollY][actionProp] = keyFrame[actionProp];
+              delete keyFrame[actionProp];
+            }
           }
           ease = {};
           kfEase = elmEase;
