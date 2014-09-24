@@ -100,6 +100,7 @@ angular.module('gilbox.sparkScroll', [])
             keyFrame.actions[actionProp] = keyFrame[actionProp]
             delete keyFrame[actionProp]
 
+        # @todo: these are for prototypeing. If you use directives as needed, these shouldn't be necessary (?)
         keyFrame.actionCount = actionCount
         keyFrame.elm = element
         keyFrame.scope = scope
