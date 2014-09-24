@@ -82,8 +82,6 @@ angular.module('gilbox.sparkScroll', [])
     watchCancel = scope.$watch attr.sparkScroll, (data) ->
       return unless data
 
-      # @todo: parse out actions so we don't have to check non-actions in actionsUpdate
-
       # useful in angular < v1.3 where one-time binding isn't available
       if attr.sparkScrollBindOnce? then watchCancel()
 
