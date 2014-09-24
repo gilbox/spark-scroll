@@ -1,55 +1,45 @@
 app = angular.module('myApp', ['gilbox.sparkScroll']);
 
-app.controller('appCtrl', function($scope) {
-  var tweenable = new Tweenable();
+app.constant('Tweenable', Tweenable);
 
-  this.upFn = function (kf) {
-    console.log("upFn!", kf);
+app.controller('appCtrl', function($scope, Tweenable) {
 
-    tweenable.tween({
-      from:     { strokeDashoffset: 0  },
-      to:       { strokeDashoffset: ~~kf.pathLength },
-      duration: 3000,
-      start: function (state) {
-        kf.domElm.style.strokeDasharray = kf.pathLength + ' ' + kf.pathLength;
-      },
-      step: function (state) {
-        kf.domElm.style.strokeDashoffset = ~~state.strokeDashoffset;
-      },
-      finish: function (state) {
-        console.log("-->state: ", state);
-      }
-    });
-  };
-
-  this.downFn = function (kf) {
-    console.log("downFn!", kf);
-
-    tweenable.tween({
-      from:     { strokeDashoffset: ~~kf.pathLength  },
-      to:       { strokeDashoffset: 0 },
-      duration: 3000,
-      start: function (state) {
-        kf.domElm.style.strokeDasharray = kf.pathLength + ' ' + kf.pathLength;
-      },
-      step: function (state) {
-        kf.domElm.style.strokeDashoffset = ~~state.strokeDashoffset;
-      },
-      finish: function (state) {
-        console.log("-->state: ", state);
-      }
-    });
-    //strokeDashoffset: 0, strokeDasharray
-  }
 
 });
 
-app.directive('calcSvgLength', function () {
+app.directive('scopeSvgReveal', function (Tweenable) {
+
+
   return {
     scope: true,
     priority: 1,
-    link: function (scope, element, attr) {
-      scope.svgLength = element[0].getTotalLength();
+    controllerAs: 'svgReveal',
+    controller: function ($element) {
+      var svgLength = $element[0].getTotalLength();
+      $element[0].style.strokeDasharray = svgLength + ' ' + svgLength;
+
+      var tweenConfig = {
+        from:     { strokeDashoffset: 0  },
+        to:       { strokeDashoffset: ~~svgLength },
+        duration: 3000,
+        step: function (state) {
+          $element[0].style.strokeDashoffset = ~~state.strokeDashoffset;
+        }
+      };
+      var tweenable = new Tweenable(tweenConfig);
+
+      this.hide = function () {
+        tweenConfig.to.strokeDashoffset = ~~svgLength;
+        tweenable.stop();
+        tweenable.tween(tweenConfig);
+      };
+
+      this.show = function () {
+        tweenConfig.to.strokeDashoffset = 0;
+        tweenable.stop();
+        tweenable.tween(tweenConfig);
+      }
+      
     }
   }
 });
