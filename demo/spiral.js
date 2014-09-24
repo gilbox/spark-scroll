@@ -8,8 +8,6 @@ app.controller('appCtrl', function($scope, Tweenable) {
 });
 
 app.directive('scopeSvgReveal', function (Tweenable) {
-
-
   return {
     scope: true,
     priority: 1,
@@ -26,7 +24,7 @@ app.directive('scopeSvgReveal', function (Tweenable) {
           $element[0].style.strokeDashoffset = ~~state.strokeDashoffset;
         }
       };
-      var tweenable = new Tweenable(tweenConfig);
+      var tweenable = new Tweenable();
 
       this.hide = function () {
         tweenConfig.to.strokeDashoffset = ~~svgLength;
