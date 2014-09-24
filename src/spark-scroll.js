@@ -116,8 +116,7 @@
           return a > b;
         });
         prevScrollY = scrollY = $window.scrollY;
-        actionsUpdate();
-        return console.log("-->sparkData", sparkData);
+        return actionsUpdate();
       }, true);
       angular.element($window).on('scroll', function() {
         prevScrollY = scrollY;

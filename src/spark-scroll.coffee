@@ -111,8 +111,7 @@ angular.module('gilbox.sparkScroll', [])
 
       prevScrollY = scrollY = $window.scrollY
       actionsUpdate()
-      console.log "-->sparkData", sparkData
-      
+
     , true  # deep watch
 
     # respond to scroll event
