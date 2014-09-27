@@ -1,3 +1,13 @@
+  if (typeof define == 'function' && define.amd)
+    # When using rekapi with requirejs, you must handle the dependencies yourself, because
+    # here we assume that if require is being used then rekapi has already been loaded in
+    Rekapi = window.Rekapi or require('rekapi')
+
+    # If any other deps are being loaded in without being exposed in the global namespace,
+    # the same as above applies
+    _ = window._ or (if require.defined('lodash') then require('lodash') else require('underscore'))
+    AnimationFrame = window.AnimationFrame or (if require.defined('animationFrame') then require('animationFrame') else require('AnimationFrame'))
+
   angular.module('gilbox.kapiScroll', [])
     .factory 'rekapi', ($document) -> new Rekapi($document[0].body)
     .directive 'kapiScroll', (rekapi, $window) ->

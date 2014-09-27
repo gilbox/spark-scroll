@@ -43,6 +43,26 @@
           up: function() {
             return element.removeClass(this.actions.classUpRemove);
           }
+        },
+        'broadcastDown': {
+          down: function() {
+            return scope.$broadcast(this.actions.broadcastDown, this);
+          }
+        },
+        'broadcastUp': {
+          down: function() {
+            return scope.$broadcast(this.actions.broadcastUp, this);
+          }
+        },
+        'emitDown': {
+          down: function() {
+            return scope.$emit(this.actions.emitDown, this);
+          }
+        },
+        'emitUp': {
+          down: function() {
+            return scope.$emit(this.actions.emitUp, this);
+          }
         }
       };
       actionPropKeys = _.keys(actionProps);

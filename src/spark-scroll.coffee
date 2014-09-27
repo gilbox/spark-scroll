@@ -46,6 +46,25 @@ angular.module('gilbox.sparkScroll', [])
       'classUpRemove':
         up: -> element.removeClass(@actions.classUpRemove)
 
+      # keyframe broadcast event property
+      # broadcasts an event when scrolled down past keyframe
+      'broadcastDown':
+        down: -> scope.$broadcast(@actions.broadcastDown, @)
+
+      # keyframe broadcast event property
+      # broadcasts an event when scrolled up past keyframe
+      'broadcastUp':
+        down: -> scope.$broadcast(@actions.broadcastUp, @)
+
+      # keyframe emit event property
+      # emits an event when scrolled down past keyframe
+      'emitDown':
+        down: -> scope.$emit(@actions.emitDown, @)
+
+      # keyframe emit event property
+      # emits an event when scrolled up past keyframe
+      'emitUp':
+        down: -> scope.$emit(@actions.emitUp, @)
     }
     actionPropKeys = _.keys(actionProps)
 

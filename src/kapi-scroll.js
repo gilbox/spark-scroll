@@ -1,4 +1,12 @@
 (function() {
+  var AnimationFrame, Rekapi, _;
+
+  if (typeof define === 'function' && define.amd) {
+    Rekapi = window.Rekapi || require('rekapi');
+    _ = window._ || (require.defined('lodash') ? require('lodash') : require('underscore'));
+    AnimationFrame = window.AnimationFrame || (require.defined('animationFrame') ? require('animationFrame') : require('AnimationFrame'));
+  }
+
   angular.module('gilbox.kapiScroll', []).factory('rekapi', function($document) {
     return new Rekapi($document[0].body);
   }).directive('kapiScroll', function(rekapi, $window) {
