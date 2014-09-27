@@ -13,12 +13,13 @@ app.directive('scopeSvgReveal', function (Tweenable) {
     priority: 1,
     controllerAs: 'svgReveal',
     controller: function ($element) {
-      var svgLength = $element[0].getTotalLength();
+      var svgLength = ~~ $element[0].getTotalLength();
+      var offsetTarget = svgLength;
       $element[0].style.strokeDasharray = svgLength + ' ' + svgLength;
 
       var tweenConfig = {
         from:     { strokeDashoffset: 0  },
-        to:       { strokeDashoffset: ~~svgLength },
+        to:       { strokeDashoffset: offsetTarget },
         duration: 3000,
         step: function (state) {
           $element[0].style.strokeDashoffset = ~~state.strokeDashoffset;
@@ -27,7 +28,7 @@ app.directive('scopeSvgReveal', function (Tweenable) {
       var tweenable = new Tweenable();
 
       this.hide = function () {
-        tweenConfig.to.strokeDashoffset = ~~svgLength;
+        tweenConfig.to.strokeDashoffset = offsetTarget;
         tweenable.stop();
         tweenable.tween(tweenConfig);
       };
