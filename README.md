@@ -54,6 +54,19 @@ app.config(function(sparkActionProps) {
 });
 ```
 
+Here's the same thing in Coffeescript:
+
+```coffeescript
+app.config (sparkActionProps) ->
+    angular.extend sparkActionProps, 
+        downText:
+            down: (o)-> @element.text(o.val)
+            
+        upText:
+            up: (o)-> @element.text(o.val)
+```
+
+
 ## Built-in Actions
 
 ```coffeescript
