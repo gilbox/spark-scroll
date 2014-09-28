@@ -1,7 +1,7 @@
 spark-scroll
 ============
 
-angular directive for scroll-based actions
+angular directive for scroll-based actions. An element with the `spark-scroll` directive can be associated with any number of scroll positions. At each scroll position you can trigger any number of actions. An action can call any function on the scope, add or remove a class to the element, and/or broadcast an event from the element's scope . You can also easily define your own actions if the built-in actions aren't enough.
 
 Setup
 =====
