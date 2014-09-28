@@ -6,7 +6,9 @@ angular directive for scroll-based actions. An element with the `spark-scroll` d
 Setup
 =====
 
-see the included `demo/spiral.html`
+    <script src="js/angular.js"></script>
+    <script src="js/lodash.js"></script>
+    <script src="js/spark-scroll.js"></script>
 
 Dependencies
 =====
