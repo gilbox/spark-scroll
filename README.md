@@ -34,16 +34,21 @@ Usage
 app.config(function(sparkActionProps) {
 
     angular.extend(sparkActionProps, {
+    
+        // Change the element's text when scrolling down past it
         downText: {
             down: function(o) {
                 this.element.text(o.val);
             }
         },
+        
+        // Change the element's text when scrolling up past it
         upText: {
             up: function(o) {
                 this.element.text(o.val);
             }
         }
+        
     });
     
 });
