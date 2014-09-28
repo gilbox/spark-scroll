@@ -36,6 +36,18 @@ Usage
 </h1>
 ```
 
+## Formula Example
+
+```html
+<h1 spark-scroll="::{
+            top:{ onUp: myUpFn },
+    'center-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+         bottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+    }">
+  This Title is Spark
+</h1>
+```
+
 ## Built-in Actions
 
 ```coffeescript
@@ -125,3 +137,42 @@ app.config (sparkActionProps) ->
             up: (o)-> @element.text(o.val)
 ```
 
+## Built-in Formulas
+
+```coffeescript
+angular.module('gilbox.sparkScroll', [])
+.constant 'sparkFormulas', {
+
+  # formulas are always in the format: variable or variable<offset>
+  #   (note that you cannot combine formula variables)
+  # for example:
+  #
+  #      top+40
+  #      top-120
+  #      top
+  #      center
+  #      center-111
+  #
+  # are valid formulas. (top40 is valid as well but less intuitive)
+  #
+  # each property of the sparkFormulas object is a formula variable
+
+  # top of the element hits the top of the viewport
+  top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
+    
+  # top of the element hits the center of the viewport
+  center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
+  
+  # top of the element hits the bottom of the viewport
+  bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
+}
+```
+
+## Register a Custom Formula
+
+```coffeescript
+app.config (sparkFormulas) ->
+    angular.extend sparkFormulas, 
+        # similar to the built-in top formula: this is triggered when the bottom of the element hits the top of the viewport
+        topBottom: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset)
+```
