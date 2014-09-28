@@ -16,8 +16,13 @@ angular.module('gilbox.sparkScroll', [])
   #
   # each property of the sparkFormulas object is a formula variable
 
+  # top of the element hits the top of the viewport
   top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
+
+  # top of the element hits the center of the viewport
   center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
+
+  # top of the element hits the bottom of the viewport
   bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
 }
 
