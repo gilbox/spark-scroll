@@ -162,3 +162,5 @@ angular.module('gilbox.sparkScroll', [])
   bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
 }
 ```
+
+**Note:** Just as you can register custom actions, you can register custom formulas as well.
