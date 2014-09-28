@@ -81,6 +81,8 @@ angular.module('gilbox.sparkScroll', [])
               actionProp.down.call(c, o) if actionProp.down
 
           actionFrameIdx = ++idx
+          
+      prevScrollY = scrollY
 
 
     actionsUpdate = _.debounce(actionsUpdate, 33, {leading: true, maxWait: 33})
@@ -127,7 +129,6 @@ angular.module('gilbox.sparkScroll', [])
 
     # respond to scroll event
     angular.element($window).on 'scroll', ->
-      prevScrollY = scrollY
       scrollY = $window.scrollY
       actionsUpdate()
 
