@@ -6,7 +6,8 @@ rekapi-based angular directive for scroll-based animations
 Setup
 =====
 
-See **[this plunker](http://plnkr.co/edit/K47ghm?p=preview)**
+- Simple Setup: see **[this plunker](http://plnkr.co/edit/K47ghm?p=preview)**
+- RequireJS Setup: see **[this plunker](http://plnkr.co/edit/2MELfz24JRu30dld7ce7?p=preview)**
 
 Usage
 =====
