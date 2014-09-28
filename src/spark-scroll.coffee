@@ -2,7 +2,7 @@ angular.module('gilbox.sparkScroll', [])
 
 .constant 'sparkFormulas', {
 
-  # formulas are always in the format: variable<offset> or variable<offset>
+  # formulas are always in the format: variable or variable<offset>
   #   (note that you cannot combine formula variables)
   # for example:
   #
