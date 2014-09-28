@@ -16,10 +16,10 @@ Usage
 ```html
 <h1 spark-scroll="::{
     120:{ onUp: myUpFn },
-    121:{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class' },
-    140:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit,downBroadcast': 'event-to-emit' }
+    121:{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+    140:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
     }">
-  This Title is Kapimated
+  This Title is Spark
 </h1>
 ```
 
