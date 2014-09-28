@@ -81,11 +81,11 @@ angular.module('gilbox.sparkScroll', [])
               actionProp.down.call(c, o) if actionProp.down
 
           actionFrameIdx = ++idx
-          
+
       prevScrollY = scrollY
 
 
-    actionsUpdate = _.debounce(actionsUpdate, 33, {leading: true, maxWait: 33})
+    actionsUpdate = _.debounce(actionsUpdate, 66, {leading: true, maxWait: 66})
 
 
     watchCancel = scope.$watch attr.sparkScroll, (data) ->
