@@ -8,6 +8,11 @@ Setup
 
 see the included `demo/spiral.html`
 
+Dependencies
+=====
+
+lodash or underscore
+
 Usage
 =====
 
