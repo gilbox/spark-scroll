@@ -1,21 +1,21 @@
 {
-  "name": "kapi-scroll",
+  "name": "spark-scroll",
   "version": "1.0.0",
-  "description": "scroll-based animations with rekapi",
-  "main": "src/kapi-scroll.js",
+  "description": "scroll-based actions for angularjs",
+  "main": "src/spark-scroll.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gilbox/kapi-scroll.git"
+    "url": "https://github.com/gilbox/spark-scroll.git"
   },
   "author": "gilbox.me",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gilbox/kapi-scroll/issues"
+    "url": "https://github.com/gilbox/spark-scroll/issues"
   },
-  "homepage": "https://github.com/gilbox/kapi-scroll",
+  "homepage": "https://github.com/gilbox/spark-scroll",
   "devDependencies": {
     "gulp": "^3.8.8",
     "gulp-coffee": "^2.2.0",

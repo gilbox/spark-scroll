@@ -1,13 +1,12 @@
-kapi-scroll
-===========
+spark-scroll
+============
 
-rekapi-based angular directive for scroll-based animations
+angular directive for scroll-based actions
 
 Setup
 =====
 
-- Simple Setup: see **[this plunker](http://plnkr.co/edit/K47ghm?p=preview)**
-- RequireJS Setup: see **[this plunker](http://plnkr.co/edit/2MELfz24JRu30dld7ce7?p=preview)**
+see the included `demo/spiral.html`
 
 Usage
 =====

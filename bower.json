@@ -1,12 +1,12 @@
 {
-  "name": "kapi-scroll",
+  "name": "spark-scroll",
   "version": "0.0.0",
-  "homepage": "https://github.com/gilbox/kapi-scroll",
+  "homepage": "https://github.com/gilbox/spark-scroll",
   "authors": [
     "Gil Birman <g@gilbox.com>"
   ],
   "description": "angular directive for scroll-based animation using rekapi",
-  "main": "src/kapi-scroll.js",
+  "main": "src/spark-scroll.js",
   "keywords": [
     "rekapi",
     "scroll",
