@@ -1,4 +1,26 @@
 angular.module('gilbox.sparkScroll', [])
+
+.constant 'sparkFormulas', {
+
+  # formulas are always in the format: variable<offset> or variable<offset>
+  #   (note that you cannot combine formula variables)
+  # for example:
+  #
+  #      top+40
+  #      top-120
+  #      top
+  #      center
+  #      center-111
+  #
+  # are valid formulas. (top40 is valid as well but less intuitive)
+  #
+  # each property of the sparkFormulas object is a formula variable
+
+  top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
+  center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
+  bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
+}
+
 .constant 'sparkActionProps', {
 
   # When the up, down fns are called, `this` is the current keyFrame object and `o` is the action object
@@ -45,7 +67,7 @@ angular.module('gilbox.sparkScroll', [])
     up: (o)-> @scope.$emit(o.val, @)
 }
 
-.directive 'sparkScroll', ($window, sparkActionProps) ->
+.directive 'sparkScroll', ($window, sparkFormulas, sparkActionProps) ->
   (scope, element, attr) ->
     prevScrollY = 0
     scrollY = 0
@@ -53,6 +75,7 @@ angular.module('gilbox.sparkScroll', [])
     sparkData = {}
     actionFrames = []
     actionFrameIdx = -1
+    container = document.documentElement
 
     actionsUpdate = ->
 
@@ -87,20 +110,33 @@ angular.module('gilbox.sparkScroll', [])
 
     actionsUpdate = _.debounce(actionsUpdate, 66, {leading: true, maxWait: 66})
 
-
     watchCancel = scope.$watch attr.sparkScroll, (data) ->
       return unless data
 
       # useful in angular < v1.3 where one-time binding isn't available
       if attr.sparkScrollBindOnce? then watchCancel()
 
-      sparkData = data
+      sparkData = {}
       actionFrames = []
 
-      for scrollY, keyFrame of sparkData
+      # this is used for formula comprehension... a possible performance improvement might
+      # forgo these calculations by adding some option or deferring calculation automatically
+      rect = element[0].getBoundingClientRect()
+      containerRect = container.getBoundingClientRect()
 
+      for scrollY, keyFrame of data
 #        actionCount = 0
 #        grossActionCount = 0
+
+        # formula comprehension
+        # when scrollY first char is not a digit, we assume this is a formula
+        c = scrollY.charCodeAt(0)
+        if (c < 48 or c > 57)
+          keyFrame.formula = scrollY
+          parts = scrollY.match(/^(\w+)(.*)$/)
+          variable = parts[1]
+          offset = ~~parts[2]
+          scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset)
 
         # put actions in actions sub-object
         for k,v of keyFrame
@@ -119,6 +155,8 @@ angular.module('gilbox.sparkScroll', [])
 #        keyFrame.actionCount = actionCount
 #        keyFrame.grossActionCount = grossActionCount
 
+        sparkData[scrollY] = keyFrame
+
       actionFrames.push(parseInt(scrollY)) for scrollY of sparkData
       actionFrames.sort (a,b) -> a > b
 
@@ -128,9 +166,9 @@ angular.module('gilbox.sparkScroll', [])
     , true  # deep watch
 
     # respond to scroll event
-    angular.element($window).on 'scroll.spark', ->
+    angular.element($window).on 'scroll', ->
       scrollY = $window.scrollY
       actionsUpdate()
 
     scope.$on '$destroy', ->
-      angular.element($window).off 'scroll.spark'
+      angular.element($window).off 'scroll'

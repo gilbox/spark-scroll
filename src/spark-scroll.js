@@ -1,5 +1,15 @@
 (function() {
-  angular.module('gilbox.sparkScroll', []).constant('sparkActionProps', {
+  angular.module('gilbox.sparkScroll', []).constant('sparkFormulas', {
+    top: function(element, container, rect, containerRect, offset) {
+      return ~~(rect.top - containerRect.top + offset);
+    },
+    center: function(element, container, rect, containerRect, offset) {
+      return ~~(rect.top - containerRect.top - container.clientHeight / 2 + offset);
+    },
+    bottom: function(element, container, rect, containerRect, offset) {
+      return ~~(rect.top - containerRect.top - container.clientHeight + offset);
+    }
+  }).constant('sparkActionProps', {
     'onDown': {
       down: function(o) {
         return o.val(this, 'onDown', o);
@@ -50,14 +60,15 @@
         return this.scope.$emit(o.val, this);
       }
     }
-  }).directive('sparkScroll', function($window, sparkActionProps) {
+  }).directive('sparkScroll', function($window, sparkFormulas, sparkActionProps) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, prevScrollY, scrollY, sparkData, watchCancel;
+      var actionFrameIdx, actionFrames, actionsUpdate, container, prevScrollY, scrollY, sparkData, watchCancel;
       prevScrollY = 0;
       scrollY = 0;
       sparkData = {};
       actionFrames = [];
       actionFrameIdx = -1;
+      container = document.documentElement;
       actionsUpdate = function() {
         var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         d = scrollY - prevScrollY;
@@ -106,17 +117,27 @@
         maxWait: 66
       });
       watchCancel = scope.$watch(attr.sparkScroll, function(data) {
-        var k, keyFrame, ksplit, v;
+        var c, containerRect, k, keyFrame, ksplit, offset, parts, rect, v, variable;
         if (!data) {
           return;
         }
         if (attr.sparkScrollBindOnce != null) {
           watchCancel();
         }
-        sparkData = data;
+        sparkData = {};
         actionFrames = [];
-        for (scrollY in sparkData) {
-          keyFrame = sparkData[scrollY];
+        rect = element[0].getBoundingClientRect();
+        containerRect = container.getBoundingClientRect();
+        for (scrollY in data) {
+          keyFrame = data[scrollY];
+          c = scrollY.charCodeAt(0);
+          if (c < 48 || c > 57) {
+            keyFrame.formula = scrollY;
+            parts = scrollY.match(/^(\w+)(.*)$/);
+            variable = parts[1];
+            offset = ~~parts[2];
+            scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset);
+          }
           for (k in keyFrame) {
             v = keyFrame[k];
             ksplit = k.split(',');
@@ -131,6 +152,7 @@
           }
           keyFrame.element = element;
           keyFrame.scope = scope;
+          sparkData[scrollY] = keyFrame;
         }
         for (scrollY in sparkData) {
           actionFrames.push(parseInt(scrollY));
