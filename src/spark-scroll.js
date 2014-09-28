@@ -59,7 +59,7 @@
       actionFrames = [];
       actionFrameIdx = -1;
       actionsUpdate = function() {
-        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _results;
+        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         d = scrollY - prevScrollY;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
@@ -82,7 +82,6 @@
         }
         if (d >= 0 && actionFrameIdx < actionFrames.length) {
           idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
-          _results = [];
           while (idx < actionFrames.length && scrollY > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
             _ref2 = c.actions;
@@ -97,14 +96,14 @@
                 }
               }
             }
-            _results.push(actionFrameIdx = ++idx);
+            actionFrameIdx = ++idx;
           }
-          return _results;
         }
+        return prevScrollY = scrollY;
       };
-      actionsUpdate = _.debounce(actionsUpdate, 33, {
+      actionsUpdate = _.debounce(actionsUpdate, 66, {
         leading: true,
-        maxWait: 33
+        maxWait: 66
       });
       watchCancel = scope.$watch(attr.sparkScroll, function(data) {
         var k, keyFrame, ksplit, v;
@@ -143,7 +142,6 @@
         return actionsUpdate();
       }, true);
       angular.element($window).on('scroll', function() {
-        prevScrollY = scrollY;
         scrollY = $window.scrollY;
         return actionsUpdate();
       });
