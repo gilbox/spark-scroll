@@ -8,7 +8,6 @@
   "description": "angular directive for scroll-based animation using rekapi",
   "main": "src/spark-scroll.js",
   "keywords": [
-    "rekapi",
     "scroll",
     "angular",
     "directive",
@@ -23,7 +22,5 @@
     "tests"
   ],
   "dependencies": {
-    "rekapi": "~1.3.2",
-    "animation-frame": "~0.1.7"
   }
 }
