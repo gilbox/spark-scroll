@@ -128,9 +128,9 @@ angular.module('gilbox.sparkScroll', [])
     , true  # deep watch
 
     # respond to scroll event
-    angular.element($window).on 'scroll', ->
+    angular.element($window).on 'scroll.spark', ->
       scrollY = $window.scrollY
       actionsUpdate()
 
     scope.$on '$destroy', ->
-      angular.element($window).off 'scroll'
+      angular.element($window).off 'scroll.spark'
