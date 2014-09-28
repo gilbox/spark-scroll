@@ -36,6 +36,18 @@ Usage
 </h1>
 ```
 
+## Formula Example
+
+```html
+<h1 spark-scroll="::{
+            top:{ onUp: myUpFn },
+    'center-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+         bottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+    }">
+  This Title is Spark
+</h1>
+```
+
 ## Built-in Actions
 
 ```coffeescript
