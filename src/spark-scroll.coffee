@@ -1,5 +1,62 @@
 angular.module('gilbox.sparkScroll', [])
-.directive 'sparkScroll', ($window) ->
+.constant 'sparkActionProps', {
+
+  # When the up, down fns are called, `this` is the current keyFrame object and `o` is the action object
+  # therefore @element and @scope refer to the current element and it's scope
+
+  # keyframe onDown property
+  # fn reference that is called when scrolled down past keyframe
+  'onDown':
+    down: (o)-> o.val(@, 'onDown', o)
+
+  # keyframe onUp property
+  # fn reference that is called when scrolled up past keyframe
+  'onUp':
+    up: (o)-> o.val(@, 'onUp', o)
+
+  # keyframe classUp property
+  # class(es) added when scrolled down past keyframe,
+  'downAddClass':
+    down: (o)-> @element.addClass(o.val)
+
+  # keyframe class property
+  # class(es) added when scrolled down past keyframe,
+  # but removed when scrolled up past keyframe
+  'upAddClass':
+    up: (o)-> @element.addClass(o.val)
+
+  # keyframe classRemove property
+  # class(es) removed when scrolled down past keyframe
+  'downRemoveClass':
+    down: (o)-> @element.removeClass(o.val)
+
+  # keyframe classUpRemove property
+  # class(es) removed when scrolled up past keyframe
+  'upRemoveClass':
+    up: (o)-> @element.removeClass(o.val)
+
+  # keyframe broadcast event property
+  # broadcasts an event when scrolled down past keyframe
+  'downBroadcast':
+    down: (o)-> @scope.$broadcast(o.val, @)
+
+  # keyframe broadcast event property
+  # broadcasts an event when scrolled up past keyframe
+  'upBroadcast':
+    up: (o)-> @scope.$broadcast(o.val, @)
+
+  # keyframe emit event property
+  # emits an event when scrolled down past keyframe
+  'downEmit':
+    down: (o)-> @scope.$emit(o.val, @)
+
+  # keyframe emit event property
+  # emits an event when scrolled up past keyframe
+  'upEmit':
+    up: (o)-> @scope.$emit(o.val, @)
+}
+
+.directive 'sparkScroll', ($window, sparkActionProps) ->
   (scope, element, attr) ->
     prevScrollY = 0
     scrollY = 0
@@ -7,66 +64,6 @@ angular.module('gilbox.sparkScroll', [])
     sparkData = {}
     actionFrames = []
     actionFrameIdx = -1
-
-    actionProps = {
-
-      # When the up, down fns are called, `this` is the current keyFrame object
-
-      # keyframe onUp property
-      # fn reference that is called when scrolled up past keyframe
-      'onUp':
-        up: -> @actions.onUp(@)
-
-      # keyframe onDown property
-      # fn reference that is called when scrolled down past keyframe
-      'onDown':
-        down: -> @actions.onDown(@)
-
-      # keyframe class property
-      # class(es) added when scrolled down past keyframe,
-      # but removed when scrolled up past keyframe
-      'class':
-        up: -> element.removeClass(@actions['class'])
-        down: -> element.addClass(@actions['class'])
-
-      # keyframe classUp property
-      # class(es) added when scrolled up past keyframe,
-      # but removed when scrolled down past keyframe
-      'classUp':
-        up: -> element.addClass(@actions.classUp)
-        down: -> element.removeClass(@actions.classUp)
-
-      # keyframe classRemove property
-      # class(es) removed when scrolled down past keyframe
-      'classRemove':
-        down: -> element.removeClass(@actions.classRemove)
-
-      # keyframe classUpRemove property
-      # class(es) removed when scrolled up past keyframe
-      'classUpRemove':
-        up: -> element.removeClass(@actions.classUpRemove)
-
-      # keyframe broadcast event property
-      # broadcasts an event when scrolled down past keyframe
-      'broadcastDown':
-        down: -> scope.$broadcast(@actions.broadcastDown, @)
-
-      # keyframe broadcast event property
-      # broadcasts an event when scrolled up past keyframe
-      'broadcastUp':
-        down: -> scope.$broadcast(@actions.broadcastUp, @)
-
-      # keyframe emit event property
-      # emits an event when scrolled down past keyframe
-      'emitDown':
-        down: -> scope.$emit(@actions.emitDown, @)
-
-      # keyframe emit event property
-      # emits an event when scrolled up past keyframe
-      'emitUp':
-        down: -> scope.$emit(@actions.emitUp, @)
-    }
-    actionPropKeys = _.keys(actionProps)
 
     actionsUpdate = ->
 
@@ -77,9 +74,10 @@ angular.module('gilbox.sparkScroll', [])
         while (idx >= 0 and scrollY < actionFrames[idx])
           c = sparkData[actionFrames[idx]]
 
-          for prop of c.actions
-            actionProp = actionProps[prop]
-            actionProp.up.apply(c) if actionProp?.up
+          for a, o of c.actions
+            for prop in o.props
+              actionProp = sparkActionProps[prop]
+              actionProp.up.call(c, o) if actionProp.up
 
           actionFrameIdx = --idx
 
@@ -88,9 +86,10 @@ angular.module('gilbox.sparkScroll', [])
         while (idx < actionFrames.length and scrollY > actionFrames[idx])
           c = sparkData[actionFrames[idx]]
 
-          for prop of c.actions
-            actionProp = actionProps[prop]
-            actionProp.down.apply(c) if actionProp?.down
+          for a, o of c.actions
+            for prop in o.props
+              actionProp = sparkActionProps[prop]
+              actionProp.down.call(c, o) if actionProp.down
 
           actionFrameIdx = ++idx
 
@@ -109,21 +108,25 @@ angular.module('gilbox.sparkScroll', [])
 
       for scrollY, keyFrame of sparkData
 
-        actionCount = 0
+#        actionCount = 0
+#        grossActionCount = 0
 
         # put actions in actions sub-object
-        for actionProp in actionPropKeys
-          if keyFrame[actionProp]
-            actionCount++
-            keyFrame.actions or= { }
-            keyFrame.actions[actionProp] = keyFrame[actionProp]
-            delete keyFrame[actionProp]
+        for k,v of keyFrame
+          ksplit = k.split(',')
+          if sparkActionProps[ksplit[0]] # @todo: rigorous check ? (we assume that if the first action is legit then they all are)
+            keyFrame.actions or= { }  # could be more efficient to make actions an array
+            keyFrame.actions[k] = # action object
+              props: ksplit
+              val: v
+            delete keyFrame[k]
+#           actionCount++
+#           grossActionCount += ksplit.length
 
-        # @todo: these are for prototypeing. If you use directives as needed, these shouldn't be necessary (?)
-        keyFrame.actionCount = actionCount
-        keyFrame.elm = element
+        keyFrame.element = element
         keyFrame.scope = scope
-        keyFrame.domElm = element[0]
+#        keyFrame.actionCount = actionCount
+#        keyFrame.grossActionCount = grossActionCount
 
       actionFrames.push(parseInt(scrollY)) for scrollY of sparkData
       actionFrames.sort (a,b) -> a > b

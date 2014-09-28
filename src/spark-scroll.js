@@ -1,82 +1,80 @@
 (function() {
-  angular.module('gilbox.sparkScroll', []).directive('sparkScroll', function($window) {
+  angular.module('gilbox.sparkScroll', []).constant('sparkActionProps', {
+    'onDown': {
+      down: function(o) {
+        return o.val(this, 'onDown', o);
+      }
+    },
+    'onUp': {
+      up: function(o) {
+        return o.val(this, 'onUp', o);
+      }
+    },
+    'downAddClass': {
+      down: function(o) {
+        return this.element.addClass(o.val);
+      }
+    },
+    'upAddClass': {
+      up: function(o) {
+        return this.element.addClass(o.val);
+      }
+    },
+    'downRemoveClass': {
+      down: function(o) {
+        return this.element.removeClass(o.val);
+      }
+    },
+    'upRemoveClass': {
+      up: function(o) {
+        return this.element.removeClass(o.val);
+      }
+    },
+    'downBroadcast': {
+      down: function(o) {
+        return this.scope.$broadcast(o.val, this);
+      }
+    },
+    'upBroadcast': {
+      up: function(o) {
+        return this.scope.$broadcast(o.val, this);
+      }
+    },
+    'downEmit': {
+      down: function(o) {
+        return this.scope.$emit(o.val, this);
+      }
+    },
+    'upEmit': {
+      up: function(o) {
+        return this.scope.$emit(o.val, this);
+      }
+    }
+  }).directive('sparkScroll', function($window, sparkActionProps) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionPropKeys, actionProps, actionsUpdate, prevScrollY, scrollY, sparkData, watchCancel;
+      var actionFrameIdx, actionFrames, actionsUpdate, prevScrollY, scrollY, sparkData, watchCancel;
       prevScrollY = 0;
       scrollY = 0;
       sparkData = {};
       actionFrames = [];
       actionFrameIdx = -1;
-      actionProps = {
-        'onUp': {
-          up: function() {
-            return this.actions.onUp(this);
-          }
-        },
-        'onDown': {
-          down: function() {
-            return this.actions.onDown(this);
-          }
-        },
-        'class': {
-          up: function() {
-            return element.removeClass(this.actions['class']);
-          },
-          down: function() {
-            return element.addClass(this.actions['class']);
-          }
-        },
-        'classUp': {
-          up: function() {
-            return element.addClass(this.actions.classUp);
-          },
-          down: function() {
-            return element.removeClass(this.actions.classUp);
-          }
-        },
-        'classRemove': {
-          down: function() {
-            return element.removeClass(this.actions.classRemove);
-          }
-        },
-        'classUpRemove': {
-          up: function() {
-            return element.removeClass(this.actions.classUpRemove);
-          }
-        },
-        'broadcastDown': {
-          down: function() {
-            return scope.$broadcast(this.actions.broadcastDown, this);
-          }
-        },
-        'broadcastUp': {
-          down: function() {
-            return scope.$broadcast(this.actions.broadcastUp, this);
-          }
-        },
-        'emitDown': {
-          down: function() {
-            return scope.$emit(this.actions.emitDown, this);
-          }
-        },
-        'emitUp': {
-          down: function() {
-            return scope.$emit(this.actions.emitUp, this);
-          }
-        }
-      };
-      actionPropKeys = _.keys(actionProps);
       actionsUpdate = function() {
-        var actionProp, c, d, idx, prop, _results;
+        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _results;
         d = scrollY - prevScrollY;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && scrollY < actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            for (prop in c.actions) {
-              actionProp = actionProps[prop];
-              if (actionProp != null ? actionProp.up : void 0) {
-                actionProp.up.apply(c);
+            _ref = c.actions;
+            for (a in _ref) {
+              o = _ref[a];
+              _ref1 = o.props;
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                prop = _ref1[_i];
+                actionProp = sparkActionProps[prop];
+                if (actionProp.up) {
+                  actionProp.up.call(c, o);
+                }
               }
             }
             actionFrameIdx = --idx;
@@ -87,10 +85,16 @@
           _results = [];
           while (idx < actionFrames.length && scrollY > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            for (prop in c.actions) {
-              actionProp = actionProps[prop];
-              if (actionProp != null ? actionProp.down : void 0) {
-                actionProp.down.apply(c);
+            _ref2 = c.actions;
+            for (a in _ref2) {
+              o = _ref2[a];
+              _ref3 = o.props;
+              for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+                prop = _ref3[_j];
+                actionProp = sparkActionProps[prop];
+                if (actionProp.down) {
+                  actionProp.down.call(c, o);
+                }
               }
             }
             _results.push(actionFrameIdx = ++idx);
@@ -103,7 +107,7 @@
         maxWait: 33
       });
       watchCancel = scope.$watch(attr.sparkScroll, function(data) {
-        var actionCount, actionProp, keyFrame, _i, _len;
+        var k, keyFrame, ksplit, v;
         if (!data) {
           return;
         }
@@ -114,20 +118,20 @@
         actionFrames = [];
         for (scrollY in sparkData) {
           keyFrame = sparkData[scrollY];
-          actionCount = 0;
-          for (_i = 0, _len = actionPropKeys.length; _i < _len; _i++) {
-            actionProp = actionPropKeys[_i];
-            if (keyFrame[actionProp]) {
-              actionCount++;
+          for (k in keyFrame) {
+            v = keyFrame[k];
+            ksplit = k.split(',');
+            if (sparkActionProps[ksplit[0]]) {
               keyFrame.actions || (keyFrame.actions = {});
-              keyFrame.actions[actionProp] = keyFrame[actionProp];
-              delete keyFrame[actionProp];
+              keyFrame.actions[k] = {
+                props: ksplit,
+                val: v
+              };
+              delete keyFrame[k];
             }
           }
-          keyFrame.actionCount = actionCount;
-          keyFrame.elm = element;
+          keyFrame.element = element;
           keyFrame.scope = scope;
-          keyFrame.domElm = element[0];
         }
         for (scrollY in sparkData) {
           actionFrames.push(parseInt(scrollY));

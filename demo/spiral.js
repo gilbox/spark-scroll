@@ -4,6 +4,9 @@ app.constant('Tweenable', Tweenable);
 
 app.controller('appCtrl', function($scope, Tweenable) {
 
+  this.upDown = function () {
+    console.log("upDown", this);
+  };
 
 });
 
@@ -37,7 +40,8 @@ app.directive('scopeSvgReveal', function (Tweenable) {
         tweenConfig.to.strokeDashoffset = 0;
         tweenable.stop();
         tweenable.tween(tweenConfig);
-      }
+      };
+
       
     }
   }
