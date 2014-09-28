@@ -6,3 +6,21 @@
   /*position: fixed;*/
   /*top: 0;*/
 }
+
+h2 {
+  display: block;
+  text-align: center;
+}
+
+.anim {
+  -webkit-transition: all .3s ease-out;
+  transition: all .3s ease-out;
+}
+
+.fade {
+  opacity: 0;
+}
+
+.fadeIn {
+  opacity: 1;
+}
