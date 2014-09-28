@@ -137,3 +137,28 @@ app.config (sparkActionProps) ->
             up: (o)-> @element.text(o.val)
 ```
 
+## Built-in Formulas
+
+```coffeescript
+angular.module('gilbox.sparkScroll', [])
+.constant 'sparkFormulas', {
+
+  # formulas are always in the format: variable or variable<offset>
+  #   (note that you cannot combine formula variables)
+  # for example:
+  #
+  #      top+40
+  #      top-120
+  #      top
+  #      center
+  #      center-111
+  #
+  # are valid formulas. (top40 is valid as well but less intuitive)
+  #
+  # each property of the sparkFormulas object is a formula variable
+
+  top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
+  center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
+  bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
+}
+```
