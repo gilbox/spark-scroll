@@ -163,4 +163,11 @@ angular.module('gilbox.sparkScroll', [])
 }
 ```
 
-**Note:** Just as you can register custom actions, you can register custom formulas as well.
+## Register a Custom Formula
+
+```coffeescript
+app.config (sparkFormulas) ->
+    angular.extend sparkFormulas, 
+        # similar to the built-in top formula: this is triggered when the bottom of the element hits the top of the viewport
+        topBottom: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset)
+```
