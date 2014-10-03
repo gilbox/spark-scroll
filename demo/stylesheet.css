@@ -1,3 +1,20 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  font-size: 24px;
+}
+
+.halfFrame {
+  position: fixed;
+  height: 50vh;
+  border: 1px solid black;
+  opacity: 0.5;
+  width: 100%;
+}
+
 .my-thing {
   text-decoration: underline;
 }
@@ -21,6 +38,23 @@ h2 {
   opacity: 0;
 }
 
+.slide {
+  transform: translateX(-400px)
+}
+
+.slide2 {
+  transform: translateY(-400px)
+}
+
 .fadeIn {
   opacity: 1;
+  transform: translate(0, 0);
+}
+
+.slideOut {
+  transform: translateX(400px)
+}
+
+.slideOut2 {
+  transform: translateY(400px)
 }

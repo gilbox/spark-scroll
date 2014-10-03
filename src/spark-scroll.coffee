@@ -113,7 +113,27 @@ angular.module('gilbox.sparkScroll', [])
       prevScrollY = scrollY
 
 
-    actionsUpdate = _.debounce(actionsUpdate, 66, {leading: true, maxWait: 66})
+    actionsUpdate = _.throttle(actionsUpdate, 66, {leading: true, maxWait: 66})
+
+
+    recalcFormulas = ->
+      changed = false
+      rect = element[0].getBoundingClientRect()
+      containerRect = container.getBoundingClientRect()
+
+      for scrollY, keyFrame of sparkData when keyFrame.formula
+        newScrollY = sparkFormulas[keyFrame.formula.variable](element, container, rect, containerRect, keyFrame.formula.offset)
+        if newScrollY != ~~scrollY
+          changed = true
+          sparkData[newScrollY] = keyFrame
+          delete sparkData[scrollY]
+
+      if changed
+        actionFrames = []
+        actionFrames.push(~~scrollY) for scrollY of sparkData
+        actionFrames.sort (a,b) -> a > b
+        # @todo: now are we screwed if something was already passed by ?
+
 
     watchCancel = scope.$watch attr.sparkScroll, (data) ->
       return unless data
@@ -137,10 +157,10 @@ angular.module('gilbox.sparkScroll', [])
         # when scrollY first char is not a digit, we assume this is a formula
         c = scrollY.charCodeAt(0)
         if (c < 48 or c > 57)
-          keyFrame.formula = scrollY
+          keyFrame.formula = { f: scrollY }
           parts = scrollY.match(/^(\w+)(.*)$/)
-          variable = parts[1]
-          offset = ~~parts[2]
+          variable = keyFrame.formula.variable = parts[1]
+          offset = keyFrame.formula.offset = ~~parts[2]
           scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset)
 
         # put actions in actions sub-object
@@ -162,7 +182,7 @@ angular.module('gilbox.sparkScroll', [])
 
         sparkData[scrollY] = keyFrame
 
-      actionFrames.push(parseInt(scrollY)) for scrollY of sparkData
+      actionFrames.push(~~scrollY) for scrollY of sparkData
       actionFrames.sort (a,b) -> a > b
 
       prevScrollY = scrollY = $window.scrollY
@@ -171,9 +191,16 @@ angular.module('gilbox.sparkScroll', [])
     , true  # deep watch
 
     # respond to scroll event
-    angular.element($window).on 'scroll', ->
+
+    onScroll = ->
       scrollY = $window.scrollY
       actionsUpdate()
 
+    onResize = _.debounce(recalcFormulas, 200, {leading: false})
+
+    angular.element($window).on 'scroll', onScroll
+    angular.element($window).on 'resize', onResize
+
     scope.$on '$destroy', ->
-      angular.element($window).off 'scroll'
+      angular.element($window).off 'scroll', onScroll
+      angular.element($window).off 'resize', onResize

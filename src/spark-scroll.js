@@ -62,7 +62,7 @@
     }
   }).directive('sparkScroll', function($window, sparkFormulas, sparkActionProps) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, container, prevScrollY, scrollY, sparkData, watchCancel;
+      var actionFrameIdx, actionFrames, actionsUpdate, container, onResize, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, watchCancel;
       prevScrollY = 0;
       scrollY = 0;
       sparkData = {};
@@ -112,10 +112,37 @@
         }
         return prevScrollY = scrollY;
       };
-      actionsUpdate = _.debounce(actionsUpdate, 66, {
+      actionsUpdate = _.throttle(actionsUpdate, 66, {
         leading: true,
         maxWait: 66
       });
+      recalcFormulas = function() {
+        var changed, containerRect, keyFrame, newScrollY, rect;
+        changed = false;
+        rect = element[0].getBoundingClientRect();
+        containerRect = container.getBoundingClientRect();
+        for (scrollY in sparkData) {
+          keyFrame = sparkData[scrollY];
+          if (!keyFrame.formula) {
+            continue;
+          }
+          newScrollY = sparkFormulas[keyFrame.formula.variable](element, container, rect, containerRect, keyFrame.formula.offset);
+          if (newScrollY !== ~~scrollY) {
+            changed = true;
+            sparkData[newScrollY] = keyFrame;
+            delete sparkData[scrollY];
+          }
+        }
+        if (changed) {
+          actionFrames = [];
+          for (scrollY in sparkData) {
+            actionFrames.push(~~scrollY);
+          }
+          return actionFrames.sort(function(a, b) {
+            return a > b;
+          });
+        }
+      };
       watchCancel = scope.$watch(attr.sparkScroll, function(data) {
         var c, containerRect, k, keyFrame, ksplit, offset, parts, rect, v, variable;
         if (!data) {
@@ -132,10 +159,12 @@
           keyFrame = data[scrollY];
           c = scrollY.charCodeAt(0);
           if (c < 48 || c > 57) {
-            keyFrame.formula = scrollY;
+            keyFrame.formula = {
+              f: scrollY
+            };
             parts = scrollY.match(/^(\w+)(.*)$/);
-            variable = parts[1];
-            offset = ~~parts[2];
+            variable = keyFrame.formula.variable = parts[1];
+            offset = keyFrame.formula.offset = ~~parts[2];
             scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset);
           }
           for (k in keyFrame) {
@@ -155,7 +184,7 @@
           sparkData[scrollY] = keyFrame;
         }
         for (scrollY in sparkData) {
-          actionFrames.push(parseInt(scrollY));
+          actionFrames.push(~~scrollY);
         }
         actionFrames.sort(function(a, b) {
           return a > b;
@@ -163,12 +192,18 @@
         prevScrollY = scrollY = $window.scrollY;
         return actionsUpdate();
       }, true);
-      angular.element($window).on('scroll', function() {
+      onScroll = function() {
         scrollY = $window.scrollY;
         return actionsUpdate();
+      };
+      onResize = _.debounce(recalcFormulas, 200, {
+        leading: false
       });
+      angular.element($window).on('scroll', onScroll);
+      angular.element($window).on('resize', onResize);
       return scope.$on('$destroy', function() {
-        return angular.element($window).off('scroll');
+        angular.element($window).off('scroll', onScroll);
+        return angular.element($window).off('resize', onResize);
       });
     };
   });
