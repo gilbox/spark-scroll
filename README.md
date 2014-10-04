@@ -238,7 +238,7 @@ Here's the same thing in Coffeescript:
 ## Keeping Formulas up-to-date
 
 An element with a spark-scroll(-animate) directive which utilizes formulas will need to 
-recalculate formula-based scroll positions any time the element changes position relative to the viewport.
+recalculate formula-based scroll positions any time the element changes position relative to the document element.
 With the exception of a window resize event (which spark-scroll watches for automatically), spark-scroll
 doesn't know when to update formula-calculated scroll positions. In order to keep spark-scroll up-to-date 
 employ one or both of the following techniques:
