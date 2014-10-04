@@ -159,9 +159,9 @@ angular.module('gilbox.sparkScroll', [])
         if (c < 48 or c > 57)
           keyFrame.formula = { f: scrollY }
           parts = scrollY.match(/^(\w+)(.*)$/)
-          variable = keyFrame.formula.variable = parts[1]
-          offset = keyFrame.formula.offset = ~~parts[2]
-          scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset)
+          scrollY = sparkFormulas[keyFrame.formula.variable = parts[1]](
+            element, container, rect, containerRect, keyFrame.formula.offset = ~~parts[2]
+          )
           return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
         # put actions in actions sub-object

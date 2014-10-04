@@ -144,7 +144,7 @@
         }
       };
       watchCancel = scope.$watch(attr.sparkScroll, function(data) {
-        var c, containerRect, k, keyFrame, ksplit, offset, parts, rect, v, variable;
+        var c, containerRect, k, keyFrame, ksplit, parts, rect, v;
         if (!data) {
           return;
         }
@@ -163,9 +163,7 @@
               f: scrollY
             };
             parts = scrollY.match(/^(\w+)(.*)$/);
-            variable = keyFrame.formula.variable = parts[1];
-            offset = keyFrame.formula.offset = ~~parts[2];
-            scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset);
+            scrollY = sparkFormulas[keyFrame.formula.variable = parts[1]](element, container, rect, containerRect, keyFrame.formula.offset = ~~parts[2]);
             if (sparkData[scrollY]) {
               return;
             }
