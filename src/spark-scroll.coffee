@@ -72,6 +72,15 @@ angular.module('gilbox.sparkScroll', [])
     up: (o)-> @scope.$emit(o.val, @)
 }
 
+.service 'sparkSetup', ($interval, $rootScope) ->
+  int = 0
+  @enableInvalidationInterval = (delay = 1000) ->
+    $interval.cancel(int) if int
+    int = $interval (-> $rootScope.$broadcast 'sparkInvalidate'), delay, 0, false
+
+  @disableInvalidationInterval = -> $interval.cancel(int)
+  @
+
 .directive 'sparkScroll', ($window, sparkFormulas, sparkActionProps) ->
   (scope, element, attr) ->
     prevScrollY = 0

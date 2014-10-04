@@ -2,7 +2,9 @@ app = angular.module('myApp', ['gilbox.sparkScroll']);
 
 app.constant('Tweenable', Tweenable);
 
-app.controller('appCtrl', function($scope, Tweenable) {
+app.controller('appCtrl', function($scope, Tweenable, sparkSetup) {
+
+  sparkSetup.enableInvalidationInterval()
 
   this.upDown = function () {
     console.log("upDown", this);

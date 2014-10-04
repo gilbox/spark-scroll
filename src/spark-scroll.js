@@ -60,6 +60,24 @@
         return this.scope.$emit(o.val, this);
       }
     }
+  }).service('sparkSetup', function($interval, $rootScope) {
+    var int;
+    int = 0;
+    this.enableInvalidationInterval = function(delay) {
+      if (delay == null) {
+        delay = 1000;
+      }
+      if (int) {
+        $interval.cancel(int);
+      }
+      return int = $interval((function() {
+        return $rootScope.$broadcast('sparkInvalidate');
+      }), delay, 0, false);
+    };
+    this.disableInvalidationInterval = function() {
+      return $interval.cancel(int);
+    };
+    return this;
   }).directive('sparkScroll', function($window, sparkFormulas, sparkActionProps) {
     return function(scope, element, attr) {
       var actionFrameIdx, actionFrames, actionsUpdate, container, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, watchCancel;
