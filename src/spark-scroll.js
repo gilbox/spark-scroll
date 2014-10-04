@@ -166,6 +166,9 @@
             variable = keyFrame.formula.variable = parts[1];
             offset = keyFrame.formula.offset = ~~parts[2];
             scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset);
+            if (sparkData[scrollY]) {
+              return;
+            }
           }
           for (k in keyFrame) {
             v = keyFrame[k];
@@ -196,7 +199,7 @@
         scrollY = $window.scrollY;
         return actionsUpdate();
       };
-      onResize = _.debounce(recalcFormulas, 200, {
+      onResize = _.debounce(recalcFormulas, 100, {
         leading: false
       });
       angular.element($window).on('scroll', onScroll);

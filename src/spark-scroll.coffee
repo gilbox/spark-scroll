@@ -162,6 +162,7 @@ angular.module('gilbox.sparkScroll', [])
           variable = keyFrame.formula.variable = parts[1]
           offset = keyFrame.formula.offset = ~~parts[2]
           scrollY = sparkFormulas[variable](element, container, rect, containerRect, offset)
+          return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
         # put actions in actions sub-object
         for k,v of keyFrame
@@ -196,7 +197,7 @@ angular.module('gilbox.sparkScroll', [])
       scrollY = $window.scrollY
       actionsUpdate()
 
-    onResize = _.debounce(recalcFormulas, 200, {leading: false})
+    onResize = _.debounce(recalcFormulas, 100, {leading: false})
 
     angular.element($window).on 'scroll', onScroll
     angular.element($window).on 'resize', onResize
