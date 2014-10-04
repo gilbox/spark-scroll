@@ -22,6 +22,8 @@ Setup
     <script src="js/lodash.js"></script>
     <script src="js/spark-scroll.js"></script>
     
+**To use `spark-scroll-animate` requires additional JavaScript files, see the [Dependencies](#dependencies)**
+    
 ### JavaScript
 
     angular.module('app', ['gilbox.sparkScroll']);
@@ -37,8 +39,9 @@ that don't get utilized.
     - lodash or underscore
 - `spark-scroll-animate`
     - lodash or underscore
+    - [animation-frame](https://github.com/kof/animation-frame)
     - Your choice of:
-        - [animation-frame](https://github.com/kof/animation-frame), shify, and Rekapi
+        - [shifty](https://github.com/jeremyckahn/shifty), and [Rekapi](http://rekapi.com/)
         - or any [custom animation engine](#custom-animation-engine)
 
 Usage
@@ -68,7 +71,7 @@ Usage
 
 ## Animated Example (spark-scroll-animate)
 
-    <h1 spark-scroll="{
+    <h1 spark-scroll-animate="{
                 top:{ color: '#f00', marginLeft: '50px' },
              bottom:{ color: '#000', marginLeft: '0px' }
         }">
@@ -76,9 +79,9 @@ Usage
     </h1>
     
 
-## Animated Less-Basic Example with easing
+## Animated Less-Basic Example with easing (spark-scroll-animate)
 
-    <h1 kapi-scroll="{
+    <h1 kapi-scroll-animate="{
         ease:'easeOutQuad',
         120:{opacity:'0'},
         121:{opacity:'0.8', top:'151px', color:'#fff'},
@@ -88,9 +91,9 @@ Usage
     </h1>
  
  
-## Animated Example with Override element-wide easing at a specific keyframe
+## Animated Example with Override element-wide easing at a specific keyframe (spark-scroll-animate)
 
-    <h1 kapi-scroll="{
+    <h1 kapi-scroll-animate="{
         ease:'easeOutQuad',
         120:{opacity:'0'},
         121:{opacity:'0.8', top:'151px', color:'#fff'},
@@ -240,7 +243,7 @@ With the exception of a window resize event (which spark-scroll watches for auto
 doesn't know when to update formula-calculated scroll positions. In order to keep spark-scroll up-to-date 
 employ one or both of the following techniques:
 
-- Detect when an element's position changes and $broadcast the `sparkInvalidate` to on `$rootScope` or any
+- Detect when an element's position changes and $broadcast the `sparkInvalidate` event on `$rootScope` or any
  scope which encapsulates all `spark-scroll`ed elements with formulas.
 - Inject the `sparkSetup` service and call:
     - `sparkSetup.enableInvalidationInterval(delay)` to automatically broadcast `sparkInvalidate` on the 
@@ -261,4 +264,6 @@ interface:
     actor.removeAllKeyframes(...)
     sparkAnimator.update(...)       # works just like Rekapi.update(...)
 
-See the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details
+See the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
+
+Note that overriding the `sparkAnimator` service eliminates the Rekapi and shifty dependencies.
