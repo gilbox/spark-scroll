@@ -1,4 +1,32 @@
+if (typeof define == 'function' && define.amd)
+  # When using rekapi with requirejs, you must handle the dependencies yourself, because
+  # here we assume that if require is being used then rekapi has already been loaded in
+  Rekapi = window.Rekapi or (require.defined('rekapi') and require('rekapi'))
+
+  # If any other deps are being loaded in without being exposed in the global namespace,
+  # the same as above applies
+  _ = window._ or (if require.defined('lodash') then require('lodash') else require('underscore'))
+  AnimationFrame = window.AnimationFrame or (if require.defined('animationFrame') then require('animationFrame') else require('AnimationFrame'))
+else
+  [Rekapi, _, AnimationFrame] = [window.Rekapi, window._, window.AnimationFrame]
+
+
+
+
 angular.module('gilbox.sparkScroll', [])
+
+# sparkAnimator can be overridden to use any animation engine
+# so long as the sparkAnimator service supports the following Rekapi-like
+# interface:
+#
+# actor = sparkAnimator.addActor({ context: <dom element> })  # works just like Rekapi.addActor(...)
+# actor.keyframe(...)
+# actor.moveKeyframe(...)
+# actor.removeAllKeyframes(...)
+# sparkAnimator.update(...)       # works just like Rekapi.update(...)
+#
+# See the Rekapi docs for implementation details   http://rekapi.com/dist/doc/
+.factory 'sparkAnimator', ($document) -> Rekapi && new Rekapi($document[0].body)
 
 .constant 'sparkFormulas', {
 
@@ -81,10 +109,18 @@ angular.module('gilbox.sparkScroll', [])
   @disableInvalidationInterval = -> $interval.cancel(int)
   @
 
-.directive 'sparkScroll', ($window, sparkFormulas, sparkActionProps) ->
+directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator) ->
   (scope, element, attr) ->
+
+    hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
+    isAnimated = hasAnimateAttr
+
+    actor = isAnimated && sparkAnimator.addActor({ context: element[0] })
+    y = 0
     prevScrollY = 0
     scrollY = 0
+    animationFrame = AnimationFrame && new AnimationFrame()
+    updating = false
 
     sparkData = {}
     actionFrames = []
@@ -125,6 +161,26 @@ angular.module('gilbox.sparkScroll', [])
     actionsUpdate = _.throttle(actionsUpdate, 66, {leading: true, maxWait: 66})
 
 
+    # update for spark-scroll-animate (sparkAnimator-based) animation
+    update = ->
+      d = scrollY - y
+      ad = Math.abs(d)
+      if ad < 1.5
+        updating = false
+        y = scrollY
+        sparkAnimator.update(y)
+      else
+        updating = true
+        y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
+        sparkAnimator.update(parseInt(y))
+        animationFrame.request(update)
+
+
+    # automatic conversion from camelCase to dashed-case for css properties
+    dashersize = (str) ->
+      str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase()
+
+
     recalcFormulas = ->
       changed = false
       rect = element[0].getBoundingClientRect()
@@ -134,6 +190,7 @@ angular.module('gilbox.sparkScroll', [])
         newScrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset)
         if newScrollY != ~~scrollY
           changed = true
+          actor.moveKeyframe(~~scrollY, newScrollY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
           sparkData[newScrollY] = keyFrame
           delete sparkData[scrollY]
 
@@ -144,11 +201,18 @@ angular.module('gilbox.sparkScroll', [])
         # @todo: now are we screwed if something was already passed by ?
 
 
-    watchCancel = scope.$watch attr.sparkScroll, (data) ->
+    watchCancel = scope.$watch attr[if hasAnimateAttr then 'sparkScrollAnimate' else 'sparkScroll'], (data) ->
       return unless data
 
       # useful in angular < v1.3 where one-time binding isn't available
       if attr.sparkScrollBindOnce? then watchCancel()
+
+      actor.removeAllKeyframes() if hasAnimateAttr
+
+      # element ease property
+      elmEase = data.ease || 'linear';
+      delete data.ease
+      animCount = 0
 
       sparkData = {}
       actionFrames = []
@@ -159,44 +223,77 @@ angular.module('gilbox.sparkScroll', [])
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of data
-#        actionCount = 0
-#        grossActionCount = 0
+        actionCount = 0
 
         # formula comprehension
         # when scrollY first char is not a digit, we assume this is a formula
         c = scrollY.charCodeAt(0)
         if (c < 48 or c > 57)
           parts = scrollY.match(/^(\w+)(.*)$/)
-          keyFrame.formula =
+          formula =
             fn: sparkFormulas[parts[1]],
             offset: ~~parts[2]
 
-          scrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset)
+          scrollY = formula.fn(element, container, rect, containerRect, formula.offset)
           return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
-        # put actions in actions sub-object
-        for k,v of keyFrame
-          ksplit = k.split(',')
-          if sparkActionProps[ksplit[0]] # @todo: rigorous check ? (we assume that if the first action is legit then they all are)
-            keyFrame.actions or= { }  # could be more efficient to make actions an array
-            keyFrame.actions[k] = # action object
-              props: ksplit
-              val: v
-            delete keyFrame[k]
-#           actionCount++
-#           grossActionCount += ksplit.length
+        # keyframe ease property
+        # (will override or fallback to element ease property)
+        ease = {}
+        kfEase = elmEase
+        if keyFrame.ease?
+          if angular.isObject(keyFrame.ease)
+            ease = keyFrame.ease
+          else
+            kfEase = keyFrame.ease
+          delete keyFrame.ease
 
+        for k,v of keyFrame
+            ksplit = k.split(',')
+
+            # put actions in actions sub-object
+            if sparkActionProps[ksplit[0]] # @todo: rigorous check ? (we assume that if the first action is legit then they all are)
+
+              keyFrame.actions or= { }  # could be more efficient to make actions an array
+              keyFrame.actions[k] = # action object
+                props: ksplit
+                val: v
+              delete keyFrame[k]
+              actionCount++
+
+            # put animations in anims sub-object
+            else # since it's not an action, assume it's an animation property
+
+              # comprehension of array-notation for easing
+              # (will override or fall back to keyframe ease propery as needed)
+              keyFrame.anims or= {}
+              dprop = dashersize(k)
+              v = [v, kfEase] unless angular.isArray(v)
+              o = {}
+              o[dprop] = v[1]
+              angular.extend(ease, o)
+
+              keyFrame.anims[dprop] = v[0]
+              delete keyFrame[k]
+
+        if keyFrame.anims && hasAnimateAttr
+          actor.keyframe(scrollY, keyFrame.anims, ease)
+          animCount++
+
+        keyFrame.formula = formula
         keyFrame.element = element
         keyFrame.scope = scope
-#        keyFrame.actionCount = actionCount
-#        keyFrame.grossActionCount = grossActionCount
+  #        keyFrame.actionCount = actionCount
 
         sparkData[scrollY] = keyFrame
+        actionFrames.push(~~scrollY) if actionCount
 
-      actionFrames.push(~~scrollY) for scrollY of sparkData
+      isAnimated = hasAnimateAttr && !! animCount
+
       actionFrames.sort (a,b) -> a > b
 
       prevScrollY = scrollY = $window.scrollY
+      update() if isAnimated
       actionsUpdate()
 
     , true  # deep watch
@@ -206,6 +303,7 @@ angular.module('gilbox.sparkScroll', [])
     onScroll = ->
       scrollY = $window.scrollY
       actionsUpdate()
+      update() if isAnimated && !updating # debounced update
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 
@@ -214,5 +312,11 @@ angular.module('gilbox.sparkScroll', [])
     scope.$on 'sparkInvalidate', onInvalidate
 
     scope.$on '$destroy', ->
+      sparkAnimator.removeActor(actor) if isAnimated
       angular.element($window).off 'scroll', onScroll
       angular.element($window).off 'resize', onInvalidate
+
+
+angular.module('gilbox.sparkScroll')
+  .directive 'sparkScroll',        ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]
+  .directive 'sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]
