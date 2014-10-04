@@ -198,11 +198,12 @@ angular.module('gilbox.sparkScroll', [])
       scrollY = $window.scrollY
       actionsUpdate()
 
-    onResize = _.debounce(recalcFormulas, 100, {leading: false})
+    onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 
     angular.element($window).on 'scroll', onScroll
-    angular.element($window).on 'resize', onResize
+    angular.element($window).on 'resize', onInvalidate
+    scope.$on 'sparkInvalidate', onInvalidate
 
     scope.$on '$destroy', ->
       angular.element($window).off 'scroll', onScroll
-      angular.element($window).off 'resize', onResize
+      angular.element($window).off 'resize', onInvalidate

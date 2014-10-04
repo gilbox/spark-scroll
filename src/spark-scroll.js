@@ -62,7 +62,7 @@
     }
   }).directive('sparkScroll', function($window, sparkFormulas, sparkActionProps) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, container, onResize, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, watchCancel;
+      var actionFrameIdx, actionFrames, actionsUpdate, container, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, watchCancel;
       prevScrollY = 0;
       scrollY = 0;
       sparkData = {};
@@ -198,14 +198,15 @@
         scrollY = $window.scrollY;
         return actionsUpdate();
       };
-      onResize = _.debounce(recalcFormulas, 100, {
+      onInvalidate = _.debounce(recalcFormulas, 100, {
         leading: false
       });
       angular.element($window).on('scroll', onScroll);
-      angular.element($window).on('resize', onResize);
+      angular.element($window).on('resize', onInvalidate);
+      scope.$on('sparkInvalidate', onInvalidate);
       return scope.$on('$destroy', function() {
         angular.element($window).off('scroll', onScroll);
-        return angular.element($window).off('resize', onResize);
+        return angular.element($window).off('resize', onInvalidate);
       });
     };
   });
