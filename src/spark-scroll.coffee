@@ -122,7 +122,7 @@ angular.module('gilbox.sparkScroll', [])
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of sparkData when keyFrame.formula
-        newScrollY = sparkFormulas[keyFrame.formula.variable](element, container, rect, containerRect, keyFrame.formula.offset)
+        newScrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset)
         if newScrollY != ~~scrollY
           changed = true
           sparkData[newScrollY] = keyFrame
@@ -157,11 +157,12 @@ angular.module('gilbox.sparkScroll', [])
         # when scrollY first char is not a digit, we assume this is a formula
         c = scrollY.charCodeAt(0)
         if (c < 48 or c > 57)
-          keyFrame.formula = { f: scrollY }
           parts = scrollY.match(/^(\w+)(.*)$/)
-          scrollY = sparkFormulas[keyFrame.formula.variable = parts[1]](
-            element, container, rect, containerRect, keyFrame.formula.offset = ~~parts[2]
-          )
+          keyFrame.formula =
+            fn: sparkFormulas[parts[1]],
+            offset: ~~parts[2]
+
+          scrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset)
           return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
         # put actions in actions sub-object

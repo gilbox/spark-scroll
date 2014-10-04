@@ -126,7 +126,7 @@
           if (!keyFrame.formula) {
             continue;
           }
-          newScrollY = sparkFormulas[keyFrame.formula.variable](element, container, rect, containerRect, keyFrame.formula.offset);
+          newScrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset);
           if (newScrollY !== ~~scrollY) {
             changed = true;
             sparkData[newScrollY] = keyFrame;
@@ -159,11 +159,12 @@
           keyFrame = data[scrollY];
           c = scrollY.charCodeAt(0);
           if (c < 48 || c > 57) {
-            keyFrame.formula = {
-              f: scrollY
-            };
             parts = scrollY.match(/^(\w+)(.*)$/);
-            scrollY = sparkFormulas[keyFrame.formula.variable = parts[1]](element, container, rect, containerRect, keyFrame.formula.offset = ~~parts[2]);
+            keyFrame.formula = {
+              fn: sparkFormulas[parts[1]],
+              offset: ~~parts[2]
+            };
+            scrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset);
             if (sparkData[scrollY]) {
               return;
             }
