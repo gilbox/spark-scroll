@@ -4,7 +4,7 @@ app.constant('Tweenable', Tweenable);
 
 app.controller('appCtrl', function($scope, Tweenable, sparkSetup) {
 
-  sparkSetup.enableInvalidationInterval()
+//  sparkSetup.enableInvalidationInterval()
 
   this.upDown = function () {
     console.log("upDown", this);

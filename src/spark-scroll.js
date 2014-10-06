@@ -90,11 +90,25 @@
       return $interval.cancel(int);
     };
     return this;
+  }).service('sparkId', function() {
+    this.elements = {};
+    this.registerElement = function(id, element) {
+      return this.elements[id] = element;
+    };
+    return this;
+  }).directive('sparkId', function(sparkId) {
+    return function(scope, element, attr) {
+      sparkId.registerElement(attr.sparkId, element);
+      return scope.$on('$destroy', function() {
+        return delete sparkId.elements[attr.sparkId];
+      });
+    };
   });
 
-  directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator) {
+  directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, dashersize, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, dashersize, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, targetElement, update, updating, watchCancel, y;
+      targetElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       actor = isAnimated && sparkAnimator.addActor({
@@ -184,7 +198,7 @@
           if (!keyFrame.formula) {
             continue;
           }
-          newScrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset);
+          newScrollY = keyFrame.formula.fn(targetElement, container, rect, containerRect, keyFrame.formula.offset);
           if (newScrollY !== ~~scrollY) {
             changed = true;
             if (keyFrame.anims && hasAnimateAttr) {
@@ -232,7 +246,7 @@
               fn: sparkFormulas[parts[1]],
               offset: ~~parts[2]
             };
-            scrollY = formula.fn(element, container, rect, containerRect, formula.offset);
+            scrollY = formula.fn(targetElement, container, rect, containerRect, formula.offset);
             if (sparkData[scrollY]) {
               return;
             }
@@ -316,7 +330,7 @@
     };
   };
 
-  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]).directive('sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]);
+  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]).directive('sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]);
 
 }).call(this);
 

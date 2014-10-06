@@ -1,13 +1,22 @@
 html, body {
   margin: 0;
   padding: 0;
+  background: #5c832f;
+  font-family: 'Expletus Sans', cursive;
+  color: #D8CAA8;
+  font-weight: 700;
 }
 
 p {
   font-size: 24px;
 }
 
+.intro {
+  margin: 0;
+}
+
 .halfFrame {
+  top: 0;
   position: fixed;
   height: 50vh;
   border: 1px solid black;
@@ -25,8 +34,10 @@ p {
 }
 
 h2 {
+  font-size: 46px;
   display: block;
   text-align: center;
+  margin-bottom: 150px;
 }
 
 .anim {
@@ -35,6 +46,10 @@ h2 {
 }
 
 .fade {
+  opacity: 0;
+}
+
+.hide {
   opacity: 0;
 }
 

@@ -109,8 +109,21 @@ angular.module('gilbox.sparkScroll', [])
   @disableInvalidationInterval = -> $interval.cancel(int)
   @
 
-directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator) ->
+.service 'sparkId', ->
+  @elements = {}
+  @registerElement = (id, element) ->
+    @elements[id] = element
+  @
+
+.directive 'sparkId', (sparkId)->
   (scope, element, attr) ->
+    sparkId.registerElement(attr.sparkId, element)
+    scope.$on '$destroy', -> delete sparkId.elements[attr.sparkId]
+
+directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) ->
+  (scope, element, attr) ->
+
+    targetElement = if attr.sparkTrigger then sparkId.elements[attr.sparkTrigger] else element
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
@@ -187,7 +200,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator) ->
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of sparkData when keyFrame.formula
-        newScrollY = keyFrame.formula.fn(element, container, rect, containerRect, keyFrame.formula.offset)
+        newScrollY = keyFrame.formula.fn(targetElement, container, rect, containerRect, keyFrame.formula.offset)
         if newScrollY != ~~scrollY
           changed = true
           actor.moveKeyframe(~~scrollY, newScrollY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
@@ -234,7 +247,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator) ->
             fn: sparkFormulas[parts[1]],
             offset: ~~parts[2]
 
-          scrollY = formula.fn(element, container, rect, containerRect, formula.offset)
+          scrollY = formula.fn(targetElement, container, rect, containerRect, formula.offset)
           return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
         # keyframe ease property
@@ -318,5 +331,5 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator) ->
 
 
 angular.module('gilbox.sparkScroll')
-  .directive 'sparkScroll',        ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]
-  .directive 'sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', directiveFn]
+  .directive 'sparkScroll',        ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
+  .directive 'sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
