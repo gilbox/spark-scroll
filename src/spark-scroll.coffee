@@ -123,7 +123,7 @@ angular.module('gilbox.sparkScroll', [])
 directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) ->
   (scope, element, attr) ->
 
-    targetElement = if attr.sparkTrigger then sparkId.elements[attr.sparkTrigger] else element
+    triggerElement = if attr.sparkTrigger then sparkId.elements[attr.sparkTrigger] else element
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
@@ -196,11 +196,11 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
     recalcFormulas = ->
       changed = false
-      rect = targetElement[0].getBoundingClientRect()
+      rect = triggerElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of sparkData when keyFrame.formula
-        newScrollY = keyFrame.formula.fn(targetElement, container, rect, containerRect, keyFrame.formula.offset)
+        newScrollY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset)
         if newScrollY != ~~scrollY
           changed = true
           actor.moveKeyframe(~~scrollY, newScrollY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
@@ -233,7 +233,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
       # this is used for formula comprehension... a possible performance improvement might
       # forgo these calculations by adding some option or deferring calculation automatically
-      rect = targetElement[0].getBoundingClientRect()
+      rect = triggerElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of data
@@ -248,7 +248,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
             fn: sparkFormulas[parts[1]],
             offset: ~~parts[2]
 
-          scrollY = formula.fn(targetElement, container, rect, containerRect, formula.offset)
+          scrollY = formula.fn(triggerElement, container, rect, containerRect, formula.offset)
           return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
 
         # keyframe ease property

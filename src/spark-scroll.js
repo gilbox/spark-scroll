@@ -107,8 +107,8 @@
 
   directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, dashersize, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, targetElement, update, updating, watchCancel, y;
-      targetElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, dashersize, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
+      triggerElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       actor = isAnimated && sparkAnimator.addActor({
@@ -191,14 +191,14 @@
       recalcFormulas = function() {
         var changed, containerRect, keyFrame, newScrollY, rect;
         changed = false;
-        rect = targetElement[0].getBoundingClientRect();
+        rect = triggerElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
         for (scrollY in sparkData) {
           keyFrame = sparkData[scrollY];
           if (!keyFrame.formula) {
             continue;
           }
-          newScrollY = keyFrame.formula.fn(targetElement, container, rect, containerRect, keyFrame.formula.offset);
+          newScrollY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset);
           if (newScrollY !== ~~scrollY) {
             changed = true;
             if (keyFrame.anims && hasAnimateAttr) {
@@ -235,7 +235,7 @@
         animCount = 0;
         sparkData = {};
         actionFrames = [];
-        rect = targetElement[0].getBoundingClientRect();
+        rect = triggerElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
         for (scrollY in data) {
           keyFrame = data[scrollY];
@@ -247,7 +247,7 @@
               fn: sparkFormulas[parts[1]],
               offset: ~~parts[2]
             };
-            scrollY = formula.fn(targetElement, container, rect, containerRect, formula.offset);
+            scrollY = formula.fn(triggerElement, container, rect, containerRect, formula.offset);
             if (sparkData[scrollY]) {
               return;
             }
