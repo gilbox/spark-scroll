@@ -213,9 +213,10 @@
           for (scrollY in sparkData) {
             actionFrames.push(~~scrollY);
           }
-          return actionFrames.sort(function(a, b) {
+          actionFrames.sort(function(a, b) {
             return a > b;
           });
+          return onScroll();
         }
       };
       watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(data) {

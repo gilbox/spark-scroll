@@ -211,6 +211,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
         actionFrames = []
         actionFrames.push(~~scrollY) for scrollY of sparkData
         actionFrames.sort (a,b) -> a > b
+        onScroll()
         # @todo: now are we screwed if something was already passed by ?
 
 
