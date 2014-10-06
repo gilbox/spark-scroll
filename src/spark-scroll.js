@@ -191,7 +191,7 @@
       recalcFormulas = function() {
         var changed, containerRect, keyFrame, newScrollY, rect;
         changed = false;
-        rect = element[0].getBoundingClientRect();
+        rect = targetElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
         for (scrollY in sparkData) {
           keyFrame = sparkData[scrollY];
@@ -234,7 +234,7 @@
         animCount = 0;
         sparkData = {};
         actionFrames = [];
-        rect = element[0].getBoundingClientRect();
+        rect = targetElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
         for (scrollY in data) {
           keyFrame = data[scrollY];

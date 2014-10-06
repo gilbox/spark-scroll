@@ -196,7 +196,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
     recalcFormulas = ->
       changed = false
-      rect = element[0].getBoundingClientRect()
+      rect = targetElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of sparkData when keyFrame.formula
@@ -232,7 +232,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
       # this is used for formula comprehension... a possible performance improvement might
       # forgo these calculations by adding some option or deferring calculation automatically
-      rect = element[0].getBoundingClientRect()
+      rect = targetElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
       for scrollY, keyFrame of data
