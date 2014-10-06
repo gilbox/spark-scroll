@@ -9,7 +9,7 @@ from the element's scope . You can also easily define your own actions if the
 built-in actions aren't enough.
 
 Additionally, the `spark-scroll-animate` directive includes all of the features
-of `spark-scroll` plus the abilility to animate CSS properties in sync 
+of `spark-scroll` plus the ability to animate CSS properties in sync 
 with the browser scroll position.
 
 
