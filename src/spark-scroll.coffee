@@ -199,17 +199,17 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
       rect = triggerElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
-      for scrollY, keyFrame of sparkData when keyFrame.formula
-        newScrollY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset)
-        if newScrollY != ~~scrollY
+      for scrY, keyFrame of sparkData when keyFrame.formula
+        newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset)
+        if newScrY != ~~scrY
           changed = true
-          actor.moveKeyframe(~~scrollY, newScrollY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
-          sparkData[newScrollY] = keyFrame
-          delete sparkData[scrollY]
+          actor.moveKeyframe(~~scrY, newScrY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
+          sparkData[newScrY] = keyFrame
+          delete sparkData[scrY]
 
       if changed
         actionFrames = []
-        actionFrames.push(~~scrollY) for scrollY of sparkData
+        actionFrames.push(~~scrY) for scrY of sparkData
         actionFrames.sort (a,b) -> a > b
         onScroll()  # todo: this is checking scrollY unnecessarily
         # @todo: now are we screwed if something was already passed by ?
@@ -236,20 +236,20 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
       rect = triggerElement[0].getBoundingClientRect()
       containerRect = container.getBoundingClientRect()
 
-      for scrollY, keyFrame of data
+      for scrY, keyFrame of data
         actionCount = 0
 
         # formula comprehension
         # when scrollY first char is not a digit, we assume this is a formula
-        c = scrollY.charCodeAt(0)
+        c = scrY.charCodeAt(0)
         if (c < 48 or c > 57)
-          parts = scrollY.match(/^(\w+)(.*)$/)
+          parts = scrY.match(/^(\w+)(.*)$/)
           formula =
             fn: sparkFormulas[parts[1]],
             offset: ~~parts[2]
 
-          scrollY = formula.fn(triggerElement, container, rect, containerRect, formula.offset)
-          return if sparkData[scrollY]  # silent death for overlapping scrollY's (assume that the element isn't ready)
+          scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset)
+          return if sparkData[scrY]  # silent death for overlapping scrY's (assume that the element isn't ready)
 
         # keyframe ease property
         # (will override or fallback to element ease property)
@@ -291,7 +291,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
               delete keyFrame[k]
 
         if keyFrame.anims && hasAnimateAttr
-          actor.keyframe(scrollY, keyFrame.anims, ease)
+          actor.keyframe(scrY, keyFrame.anims, ease)
           animCount++
 
         keyFrame.formula = formula
@@ -299,8 +299,8 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
         keyFrame.scope = scope
   #        keyFrame.actionCount = actionCount
 
-        sparkData[scrollY] = keyFrame
-        actionFrames.push(~~scrollY) if actionCount
+        sparkData[scrY] = keyFrame
+        actionFrames.push(~~scrY) if actionCount
 
       isAnimated = hasAnimateAttr && !! animCount
 

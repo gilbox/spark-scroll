@@ -189,29 +189,29 @@
         return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
       };
       recalcFormulas = function() {
-        var changed, containerRect, keyFrame, newScrollY, rect;
+        var changed, containerRect, keyFrame, newScrY, rect, scrY;
         changed = false;
         rect = triggerElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
-        for (scrollY in sparkData) {
-          keyFrame = sparkData[scrollY];
+        for (scrY in sparkData) {
+          keyFrame = sparkData[scrY];
           if (!keyFrame.formula) {
             continue;
           }
-          newScrollY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset);
-          if (newScrollY !== ~~scrollY) {
+          newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset);
+          if (newScrY !== ~~scrY) {
             changed = true;
             if (keyFrame.anims && hasAnimateAttr) {
-              actor.moveKeyframe(~~scrollY, newScrollY);
+              actor.moveKeyframe(~~scrY, newScrY);
             }
-            sparkData[newScrollY] = keyFrame;
-            delete sparkData[scrollY];
+            sparkData[newScrY] = keyFrame;
+            delete sparkData[scrY];
           }
         }
         if (changed) {
           actionFrames = [];
-          for (scrollY in sparkData) {
-            actionFrames.push(~~scrollY);
+          for (scrY in sparkData) {
+            actionFrames.push(~~scrY);
           }
           actionFrames.sort(function(a, b) {
             return a > b;
@@ -220,7 +220,7 @@
         }
       };
       watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(data) {
-        var actionCount, animCount, c, containerRect, dprop, ease, elmEase, formula, k, keyFrame, kfEase, ksplit, o, parts, rect, v;
+        var actionCount, animCount, c, containerRect, dprop, ease, elmEase, formula, k, keyFrame, kfEase, ksplit, o, parts, rect, scrY, v;
         if (!data) {
           return;
         }
@@ -237,18 +237,18 @@
         actionFrames = [];
         rect = triggerElement[0].getBoundingClientRect();
         containerRect = container.getBoundingClientRect();
-        for (scrollY in data) {
-          keyFrame = data[scrollY];
+        for (scrY in data) {
+          keyFrame = data[scrY];
           actionCount = 0;
-          c = scrollY.charCodeAt(0);
+          c = scrY.charCodeAt(0);
           if (c < 48 || c > 57) {
-            parts = scrollY.match(/^(\w+)(.*)$/);
+            parts = scrY.match(/^(\w+)(.*)$/);
             formula = {
               fn: sparkFormulas[parts[1]],
               offset: ~~parts[2]
             };
-            scrollY = formula.fn(triggerElement, container, rect, containerRect, formula.offset);
-            if (sparkData[scrollY]) {
+            scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset);
+            if (sparkData[scrY]) {
               return;
             }
           }
@@ -287,15 +287,15 @@
             }
           }
           if (keyFrame.anims && hasAnimateAttr) {
-            actor.keyframe(scrollY, keyFrame.anims, ease);
+            actor.keyframe(scrY, keyFrame.anims, ease);
             animCount++;
           }
           keyFrame.formula = formula;
           keyFrame.element = element;
           keyFrame.scope = scope;
-          sparkData[scrollY] = keyFrame;
+          sparkData[scrY] = keyFrame;
           if (actionCount) {
-            actionFrames.push(~~scrollY);
+            actionFrames.push(~~scrY);
           }
         }
         isAnimated = hasAnimateAttr && !!animCount;
