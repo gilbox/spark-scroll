@@ -272,3 +272,10 @@ interface:
 See the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
 
 Note that overriding the `sparkAnimator` service eliminates the Rekapi and shifty dependencies.
+
+
+Limitations
+=======
+
+- **actions** and **animations** can not be trusted to be triggered in perfect sync. This may be fixed
+in future versions.
