@@ -175,18 +175,24 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
 
     # update for spark-scroll-animate (sparkAnimator-based) animation
-    update = ->
-      d = scrollY - y
-      ad = Math.abs(d)
-      if ad < 1.5
+    if attr.sparkScrollEase
+      update = ->
+        d = scrollY - y
+        ad = Math.abs(d)
+        if 1 || ad < 1.5
+          updating = false
+          y = scrollY
+          sparkAnimator.update(y)
+        else
+          updating = true
+          y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
+          sparkAnimator.update(parseInt(y))
+          animationFrame.request(update)
+    else
+      update = ->
         updating = false
         y = scrollY
         sparkAnimator.update(y)
-      else
-        updating = true
-        y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
-        sparkAnimator.update(parseInt(y))
-        animationFrame.request(update)
 
 
     # automatic conversion from camelCase to dashed-case for css properties

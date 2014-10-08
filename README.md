@@ -103,13 +103,18 @@ Usage
     </h1>
  
  
-## One-Time Binding
+## spark-scroll-bind-once: One-Time Binding
  
 If you are using a version of angular (<=1.3) which doesn't support one-time lazy binding
 you can use the `spark-scroll-bind-once` attribute to achieve the same thing. Because `kapi-scroll`
 will create a rather expensive deep watch for the `spark-scroll(-animate)` attribute, it's a good idea to use 
 one-time binding whenever possible.
 
+
+## spark-scroll-ease: Scroll Easing
+
+Add this attribute to ease the position of the scrollbar so jumps in scroll position will have smooth animation.
+This may cause scrolling to feel laggy but animations will looks smoother.
  
 ## Built-in Actions
 

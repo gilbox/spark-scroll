@@ -170,21 +170,29 @@
         leading: true,
         maxWait: 66
       });
-      update = function() {
-        var ad, d;
-        d = scrollY - y;
-        ad = Math.abs(d);
-        if (ad < 1.5) {
+      if (attr.sparkScrollEase) {
+        update = function() {
+          var ad, d;
+          d = scrollY - y;
+          ad = Math.abs(d);
+          if (1 || ad < 1.5) {
+            updating = false;
+            y = scrollY;
+            return sparkAnimator.update(y);
+          } else {
+            updating = true;
+            y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
+            sparkAnimator.update(parseInt(y));
+            return animationFrame.request(update);
+          }
+        };
+      } else {
+        update = function() {
           updating = false;
           y = scrollY;
           return sparkAnimator.update(y);
-        } else {
-          updating = true;
-          y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
-          sparkAnimator.update(parseInt(y));
-          return animationFrame.request(update);
-        }
-      };
+        };
+      }
       dashersize = function(str) {
         return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
       };
