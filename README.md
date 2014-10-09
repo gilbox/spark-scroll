@@ -81,7 +81,7 @@ Usage
 
 ## Animated Less-Basic Example with easing (spark-scroll-animate)
 
-    <h1 kapi-scroll-animate="{
+    <h1 spark-scroll-animate="{
         ease:'easeOutQuad',
         120:{opacity:'0'},
         121:{opacity:'0.8', top:'151px', color:'#fff'},
@@ -93,7 +93,7 @@ Usage
  
 ## Animated Example with Override element-wide easing at a specific keyframe (spark-scroll-animate)
 
-    <h1 kapi-scroll-animate="{
+    <h1 spark-scroll-animate="{
         ease:'easeOutQuad',
         120:{opacity:'0'},
         121:{opacity:'0.8', top:'151px', color:'#fff'},
