@@ -195,11 +195,6 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
         sparkAnimator.update(y)
 
 
-    # automatic conversion from camelCase to dashed-case for css properties
-    dashersize = (str) ->
-      str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase()
-
-
     recalcFormulas = ->
       changed = false
       rect = triggerElement[0].getBoundingClientRect()
@@ -287,13 +282,12 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
               # comprehension of array-notation for easing
               # (will override or fall back to keyframe ease propery as needed)
               keyFrame.anims or= {}
-              dprop = dashersize(k)
               v = [v, kfEase] unless angular.isArray(v)
               o = {}
-              o[dprop] = v[1]
+              o[k] = v[1]
               angular.extend(ease, o)
 
-              keyFrame.anims[dprop] = v[0]
+              keyFrame.anims[k] = v[0]
               delete keyFrame[k]
 
         if keyFrame.anims && hasAnimateAttr

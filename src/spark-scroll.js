@@ -107,7 +107,7 @@
 
   directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, dashersize, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
       triggerElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
@@ -193,9 +193,6 @@
           return sparkAnimator.update(y);
         };
       }
-      dashersize = function(str) {
-        return str.replace(/\W+/g, '-').replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
-      };
       recalcFormulas = function() {
         var changed, containerRect, keyFrame, newScrY, rect, scrY;
         changed = false;
@@ -228,7 +225,7 @@
         }
       };
       watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(data) {
-        var actionCount, animCount, c, containerRect, dprop, ease, elmEase, formula, k, keyFrame, kfEase, ksplit, o, parts, rect, scrY, v;
+        var actionCount, animCount, c, containerRect, ease, elmEase, formula, k, keyFrame, kfEase, ksplit, o, parts, rect, scrY, v;
         if (!data) {
           return;
         }
@@ -283,14 +280,13 @@
               actionCount++;
             } else {
               keyFrame.anims || (keyFrame.anims = {});
-              dprop = dashersize(k);
               if (!angular.isArray(v)) {
                 v = [v, kfEase];
               }
               o = {};
-              o[dprop] = v[1];
+              o[k] = v[1];
               angular.extend(ease, o);
-              keyFrame.anims[dprop] = v[0];
+              keyFrame.anims[k] = v[0];
               delete keyFrame[k];
             }
           }
