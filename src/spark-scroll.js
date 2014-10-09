@@ -10,7 +10,11 @@
   }
 
   angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', function($document) {
-    return Rekapi && new Rekapi($document[0].body);
+    return {
+      instance: function() {
+        return Rekapi && new Rekapi($document[0].body);
+      }
+    };
   }).constant('sparkFormulas', {
     top: function(element, container, rect, containerRect, offset) {
       return ~~(rect.top - containerRect.top + offset);
@@ -107,11 +111,12 @@
 
   directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
       triggerElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
-      actor = isAnimated && sparkAnimator.addActor({
+      animator = hasAnimateAttr && sparkAnimator.instance();
+      actor = isAnimated && animator.addActor({
         context: element[0]
       });
       y = 0;
@@ -178,11 +183,11 @@
           if (1 || ad < 1.5) {
             updating = false;
             y = scrollY;
-            return sparkAnimator.update(y);
+            return animator.update(y);
           } else {
             updating = true;
             y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
-            sparkAnimator.update(parseInt(y));
+            animator.update(parseInt(y));
             return animationFrame.request(update);
           }
         };
@@ -190,7 +195,7 @@
         update = function() {
           updating = false;
           y = scrollY;
-          return sparkAnimator.update(y);
+          return animator.update(y);
         };
       }
       recalcFormulas = function() {
@@ -327,7 +332,7 @@
       scope.$on('sparkInvalidate', onInvalidate);
       return scope.$on('$destroy', function() {
         if (isAnimated) {
-          sparkAnimator.removeActor(actor);
+          animator.removeActor(actor);
         }
         angular.element($window).off('scroll', onScroll);
         return angular.element($window).off('resize', onInvalidate);

@@ -26,7 +26,9 @@ angular.module('gilbox.sparkScroll', [])
 # sparkAnimator.update(...)       # works just like Rekapi.update(...)
 #
 # See the Rekapi docs for implementation details   http://rekapi.com/dist/doc/
-.factory 'sparkAnimator', ($document) -> Rekapi && new Rekapi($document[0].body)
+.factory 'sparkAnimator', ($document) ->
+  instance: ->
+    Rekapi && new Rekapi($document[0].body)
 
 .constant 'sparkFormulas', {
 
@@ -128,7 +130,8 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
 
-    actor = isAnimated && sparkAnimator.addActor({ context: element[0] })
+    animator = hasAnimateAttr && sparkAnimator.instance()
+    actor = isAnimated && animator.addActor({ context: element[0] })
     y = 0
     prevScrollY = 0
     scrollY = 0
@@ -182,17 +185,17 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
         if 1 || ad < 1.5
           updating = false
           y = scrollY
-          sparkAnimator.update(y)
+          animator.update(y)
         else
           updating = true
           y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
-          sparkAnimator.update(parseInt(y))
+          animator.update(parseInt(y))
           animationFrame.request(update)
     else
       update = ->
         updating = false
         y = scrollY
-        sparkAnimator.update(y)
+        animator.update(y)
 
 
     recalcFormulas = ->
@@ -326,7 +329,7 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
     scope.$on 'sparkInvalidate', onInvalidate
 
     scope.$on '$destroy', ->
-      sparkAnimator.removeActor(actor) if isAnimated
+      animator.removeActor(actor) if isAnimated
       angular.element($window).off 'scroll', onScroll
       angular.element($window).off 'resize', onInvalidate
 

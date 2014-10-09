@@ -263,11 +263,12 @@ employ one or both of the following techniques:
 so long as the `sparkAnimator` service supports the following [Rekapi](http://rekapi.com)-like
 interface:
 
-    actor = sparkAnimator.addActor({ context: <dom element> })  # works just like Rekapi.addActor(...)
+    animator = sparkAnimator.instance()   # returns a new instance
+    actor = animator.addActor({ context: <dom element> })  # works just like rekapi.addActor(...)
     actor.keyframe(...)
     actor.moveKeyframe(...)
     actor.removeAllKeyframes(...)
-    sparkAnimator.update(...)       # works just like Rekapi.update(...)
+    animator.update(...)       # works just like rekapi.update(...)
 
 See the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
 
