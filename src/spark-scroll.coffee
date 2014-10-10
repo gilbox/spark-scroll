@@ -189,7 +189,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       update = ->
         d = scrollY - y
         ad = Math.abs(d)
-        if 1 || ad < 1.5
+        if ad < 1.5
           updating = false
           y = scrollY
           animator.update(y)
