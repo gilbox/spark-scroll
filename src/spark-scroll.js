@@ -109,10 +109,9 @@
     };
   });
 
-  directiveFn = function($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
+  directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, sparkData, triggerElement, update, updating, watchCancel, y;
-      triggerElement = attr.sparkTrigger ? sparkId.elements[attr.sparkTrigger] : element;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       animator = hasAnimateAttr && sparkAnimator.instance();
@@ -128,6 +127,18 @@
       actionFrames = [];
       actionFrameIdx = -1;
       container = document.documentElement;
+      triggerElement = element;
+      if (attr.sparkTrigger) {
+        setTriggerElement = function() {
+          if (sparkId.elements[attr.sparkTrigger]) {
+            triggerElement = sparkId.elements[attr.sparkTrigger];
+            return recalcFormulas();
+          } else {
+            return $timeout(setTriggerElement, 0, false);
+          }
+        };
+        setTriggerElement();
+      }
       actionsUpdate = function() {
         var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4;
         d = scrollY - prevScrollY;
@@ -340,7 +351,7 @@
     };
   };
 
-  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]).directive('sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]);
+  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]).directive('sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]);
 
 }).call(this);
 

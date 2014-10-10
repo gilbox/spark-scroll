@@ -122,10 +122,8 @@ angular.module('gilbox.sparkScroll', [])
     sparkId.registerElement(attr.sparkId, element)
     scope.$on '$destroy', -> delete sparkId.elements[attr.sparkId]
 
-directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) ->
+directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) ->
   (scope, element, attr) ->
-
-    triggerElement = if attr.sparkTrigger then sparkId.elements[attr.sparkTrigger] else element
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
@@ -142,6 +140,18 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
     actionFrames = []
     actionFrameIdx = -1
     container = document.documentElement
+
+    triggerElement = element
+
+    if attr.sparkTrigger
+      setTriggerElement = ->
+        if sparkId.elements[attr.sparkTrigger]
+          triggerElement = sparkId.elements[attr.sparkTrigger]
+          recalcFormulas()
+        else
+          # aggressively poll for the trigger element if we don't find it (because it's not ready yet)
+          $timeout setTriggerElement, 0, false
+      setTriggerElement()
 
     actionsUpdate = ->
 
@@ -335,5 +345,5 @@ directiveFn = ($window, sparkFormulas, sparkActionProps, sparkAnimator, sparkId)
 
 
 angular.module('gilbox.sparkScroll')
-  .directive 'sparkScroll',        ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
-  .directive 'sparkScrollAnimate', ['$window', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
+  .directive 'sparkScroll',        ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
+  .directive 'sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
