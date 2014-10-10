@@ -267,12 +267,51 @@ interface:
     actor = animator.addActor({ context: <dom element> })  # works just like rekapi.addActor(...)
     actor.keyframe(...)
     actor.moveKeyframe(...)
-    actor.removeAllKeyframes(...)
+    actor.removeAllKeyframes()
     animator.update(...)       # works just like rekapi.update(...)
 
-See the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
+See below and the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
 
-Note that overriding the `sparkAnimator` service eliminates the Rekapi and shifty dependencies.
+Note that overriding the `sparkAnimator` service eliminates the Rekapi and shifty dependencies for `spark-scroll-animate` directive.
+
+### actor.keyframe(scrollY, animations, ease)
+
+#### scrollY
+
+The vertical scroll position (the library will treat this as time)
+
+#### animations
+
+Simple object with css properties and values
+
+- `{marginLeft: "0px", opacity: 1}`
+- `{borderRight: "5px", opacity: 0}`
+
+#### ease
+
+Simple object with property for each property in `animations` object (see above)
+
+- `{marginLeft: "easeOutSine", opacity: "bouncePast"}`
+- `{borderRight: "linear", opacity: "easeinSine"}`
+
+
+### actor.moveKeyframe(from, to)
+
+#### from
+
+Source keyframe
+
+#### to
+
+Destination keyframe
+
+
+### animator.update(scrollY) 
+
+#### scrollY
+
+The vertical scroll position (the library will treat this as time)
+
 
 
 Limitations
