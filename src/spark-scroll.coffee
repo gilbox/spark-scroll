@@ -335,7 +335,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           animationFrame.request(update)
       else
         y = scrollY
-        animationFrame.request(actionsUpdate)
+        animationFrame.request(actionsUpdate) # @todo: do these calls get queued between frames ?
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 
