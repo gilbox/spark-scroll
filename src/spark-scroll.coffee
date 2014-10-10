@@ -131,7 +131,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     animator = hasAnimateAttr && sparkAnimator.instance()
     actor = isAnimated && animator.addActor({ context: element[0] })
     y = 0
-    prevScrollY = 0
+    prevy = 0
     scrollY = 0
     animationFrame = AnimationFrame && new AnimationFrame()
     updating = false
@@ -147,7 +147,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       setTriggerElement = ->
         if sparkId.elements[attr.sparkTrigger]
           triggerElement = sparkId.elements[attr.sparkTrigger]
-          recalcFormulas()
+          recalcFormulas() if recalcFormulas
         else
           # aggressively poll for the trigger element if we don't find it (because it's not ready yet)
           $timeout setTriggerElement, 0, false
@@ -155,11 +155,11 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     actionsUpdate = ->
 
-      d = scrollY - prevScrollY
+      d = y - prevy
 
       if d<0 and actionFrameIdx >= 0  # scroll up: don't apply on page load (only apply on page load for downward movement)
         idx = if (actionFrameIdx >= actionFrames.length) then actionFrameIdx-1 else actionFrameIdx
-        while (idx >= 0 and scrollY < actionFrames[idx])
+        while (idx >= 0 and y < actionFrames[idx])
           c = sparkData[actionFrames[idx]]
 
           for a, o of c.actions
@@ -171,7 +171,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
       if d>=0 and actionFrameIdx < actionFrames.length  # scroll down: will apply on page load
         idx = if (actionFrameIdx < 0) then 0 else actionFrameIdx
-        while (idx < actionFrames.length and scrollY > actionFrames[idx])
+        while (idx < actionFrames.length and y > actionFrames[idx])
           c = sparkData[actionFrames[idx]]
 
           for a, o of c.actions
@@ -181,10 +181,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
           actionFrameIdx = ++idx
 
-      prevScrollY = scrollY
-
-
-    actionsUpdate = _.throttle(actionsUpdate, 66, {leading: true, maxWait: 66})
+      prevy = y
 
 
     # update for spark-scroll-animate (sparkAnimator-based) animation
@@ -201,11 +198,13 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
           animator.update(parseInt(y))
           animationFrame.request(update)
+        actionsUpdate()
     else
       update = ->
         updating = false
         y = scrollY
         animator.update(y)
+        actionsUpdate()
 
 
     recalcFormulas = ->
@@ -319,7 +318,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
       actionFrames.sort (a,b) -> a > b
 
-      prevScrollY = scrollY = $window.scrollY
+      y = prevy = scrollY = $window.scrollY
       update() if isAnimated
       actionsUpdate()
 
@@ -329,8 +328,14 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     onScroll = ->
       scrollY = $window.scrollY
-      actionsUpdate()
-      update() if isAnimated && !updating # debounced update
+
+      if isAnimated
+        unless updating # debounced update
+          updating = true # in-case multiple scroll events can occur in one frame (possible?)
+          animationFrame.request(update)
+      else
+        y = scrollY
+        animationFrame.request(actionsUpdate)
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 

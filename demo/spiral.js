@@ -33,12 +33,14 @@ app.directive('scopeSvgReveal', function (Tweenable) {
       var tweenable = new Tweenable();
 
       this.hide = function () {
+        console.log("hide!!");
         tweenConfig.to.strokeDashoffset = offsetTarget;
         tweenable.stop();
         tweenable.tween(tweenConfig);
       };
 
       this.show = function () {
+        console.log("show!!!");
         tweenConfig.to.strokeDashoffset = 0;
         tweenable.stop();
         tweenable.tween(tweenConfig);

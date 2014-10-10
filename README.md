@@ -278,5 +278,4 @@ Note that overriding the `sparkAnimator` service eliminates the Rekapi and shift
 Limitations
 =======
 
-- **actions** and **animations** can not be trusted to be triggered in perfect sync. This may be fixed
-in future versions.
+- Rekapi currently has a bug where css attributes with multiple values (like `10px 30px`) don't work

@@ -111,7 +111,7 @@
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevScrollY, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       animator = hasAnimateAttr && sparkAnimator.instance();
@@ -119,7 +119,7 @@
         context: element[0]
       });
       y = 0;
-      prevScrollY = 0;
+      prevy = 0;
       scrollY = 0;
       animationFrame = AnimationFrame && new AnimationFrame();
       updating = false;
@@ -132,7 +132,9 @@
         setTriggerElement = function() {
           if (sparkId.elements[attr.sparkTrigger]) {
             triggerElement = sparkId.elements[attr.sparkTrigger];
-            return recalcFormulas();
+            if (recalcFormulas) {
+              return recalcFormulas();
+            }
           } else {
             return $timeout(setTriggerElement, 0, false);
           }
@@ -141,10 +143,10 @@
       }
       actionsUpdate = function() {
         var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4;
-        d = scrollY - prevScrollY;
+        d = y - prevy;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
-          while (idx >= 0 && scrollY < actionFrames[idx]) {
+          while (idx >= 0 && y < actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
             _ref1 = c.actions;
             for (a in _ref1) {
@@ -163,7 +165,7 @@
         }
         if (d >= 0 && actionFrameIdx < actionFrames.length) {
           idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
-          while (idx < actionFrames.length && scrollY > actionFrames[idx]) {
+          while (idx < actionFrames.length && y > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
             _ref3 = c.actions;
             for (a in _ref3) {
@@ -180,12 +182,8 @@
             actionFrameIdx = ++idx;
           }
         }
-        return prevScrollY = scrollY;
+        return prevy = y;
       };
-      actionsUpdate = _.throttle(actionsUpdate, 66, {
-        leading: true,
-        maxWait: 66
-      });
       if (attr.sparkScrollEase) {
         update = function() {
           var ad, d;
@@ -194,19 +192,21 @@
           if (1 || ad < 1.5) {
             updating = false;
             y = scrollY;
-            return animator.update(y);
+            animator.update(y);
           } else {
             updating = true;
             y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
             animator.update(parseInt(y));
-            return animationFrame.request(update);
+            animationFrame.request(update);
           }
+          return actionsUpdate();
         };
       } else {
         update = function() {
           updating = false;
           y = scrollY;
-          return animator.update(y);
+          animator.update(y);
+          return actionsUpdate();
         };
       }
       recalcFormulas = function() {
@@ -322,7 +322,7 @@
         actionFrames.sort(function(a, b) {
           return a > b;
         });
-        prevScrollY = scrollY = $window.scrollY;
+        y = prevy = scrollY = $window.scrollY;
         if (isAnimated) {
           update();
         }
@@ -330,9 +330,14 @@
       }, true);
       onScroll = function() {
         scrollY = $window.scrollY;
-        actionsUpdate();
-        if (isAnimated && !updating) {
-          return update();
+        if (isAnimated) {
+          if (!updating) {
+            updating = true;
+            return animationFrame.request(update);
+          }
+        } else {
+          y = scrollY;
+          return animationFrame.request(actionsUpdate);
         }
       };
       onInvalidate = _.debounce(recalcFormulas, 100, {
