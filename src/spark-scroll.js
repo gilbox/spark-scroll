@@ -184,7 +184,7 @@
         }
         return prevy = y;
       };
-      if (attr.sparkScrollEase) {
+      if (attr.hasOwnProperty('sparkScrollEase')) {
         update = function() {
           var ad, d;
           d = scrollY - y;

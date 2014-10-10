@@ -185,7 +185,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
 
     # update for spark-scroll-animate (sparkAnimator-based) animation
-    if attr.sparkScrollEase
+    if attr.hasOwnProperty('sparkScrollEase')
       update = ->
         d = scrollY - y
         ad = Math.abs(d)
