@@ -276,6 +276,8 @@ Note that overriding the `sparkAnimator` service eliminates the Rekapi and shift
 
 ### actor.keyframe(scrollY, animations, ease)
 
+Creates a new keyframe.
+
 #### scrollY
 
 The vertical scroll position (the library will treat this as time)
@@ -297,6 +299,8 @@ Simple object with property for each property in `animations` object (see above)
 
 ### actor.moveKeyframe(from, to)
 
+Moves a keyframe to a different time (scroll) value.
+
 #### from
 
 Source keyframe
@@ -307,6 +311,8 @@ Destination keyframe
 
 
 ### animator.update(scrollY) 
+
+Updates the animation to a specific keyframe.
 
 #### scrollY
 
