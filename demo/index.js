@@ -54,7 +54,7 @@ app.directive('scopeSvgReveal', function (Tweenable) {
         tweenable.tween(tweenConfig);
       };
 
-      
+
     }
   }
 });

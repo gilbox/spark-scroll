@@ -73,3 +73,46 @@ h2 {
 .slideOut2 {
   transform: translateY(400px)
 }
+
+.parallax-cont {
+  position: relative;
+  overflow: hidden;
+  height: 300px;
+}
+
+.parallax-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 300px;
+  z-index:3;
+  -webkit-box-shadow: inset 0px 0px 35px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: inset 0px 0px 35px 0px rgba(0,0,0,0.75);
+  box-shadow: inset 0px 0px 35px 0px rgba(0,0,0,0.75);
+
+}
+
+.parallax-img {
+  background: url('bg.jpg');
+  height: 800px;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
+.parallax-txt {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  margin-left: -180px;
+  font-size: 88px;
+}
+
+.fade1 {
+  opacity: .5;
+}
+.fade2 {
+  opacity: .3;
+}
