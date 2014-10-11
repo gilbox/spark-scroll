@@ -11,29 +11,6 @@ p {
   font-size: 24px;
 }
 
-.intro {
-  margin: 0;
-}
-
-.halfFrame {
-  top: 0;
-  position: fixed;
-  height: 50vh;
-  border: 1px solid black;
-  opacity: 0.5;
-  width: 100%;
-}
-
-.my-thing {
-  text-decoration: underline;
-}
-
-.spiral {
-  /*position: fixed;*/
-  /*top: 0;*/
-}
-
-
 h2 {
   font-size: 46px;
   display: block;
@@ -45,38 +22,17 @@ h3 {
   font-size: 88px;
 }
 
-.anim {
-  -webkit-transition: all .3s ease-out;
-  transition: all .3s ease-out;
+.intro {
+  margin: 0;
 }
 
-.fade {
-  opacity: 0;
-}
-
-.hide {
-  opacity: 0;
-}
-
-.slide {
-  transform: translateX(-400px)
-}
-
-.slide2 {
-  transform: translateY(-400px)
-}
-
-.fadeIn {
-  opacity: 1;
-  transform: translate(0, 0);
-}
-
-.slideOut {
-  transform: translateX(400px)
-}
-
-.slideOut2 {
-  transform: translateY(400px)
+.halfFrame {
+  top: 0;
+  position: fixed;
+  height: 50vh;
+  border: 1px solid black;
+  opacity: 0.5;
+  width: 100%;
 }
 
 .parallax-cont {
