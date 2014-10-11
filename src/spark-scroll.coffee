@@ -182,6 +182,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           actionFrameIdx = ++idx
 
       prevy = y
+      updating = false
 
 
     # update for spark-scroll-animate (sparkAnimator-based) animation
@@ -189,8 +190,8 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       update = ->
         d = scrollY - y
         ad = Math.abs(d)
+        actionsUpdate() # sets updating = false
         if ad < 1.5
-          updating = false
           y = scrollY
           animator.update(y)
         else
@@ -198,13 +199,11 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
           animator.update(parseInt(y))
           animationFrame.request(update)
-        actionsUpdate()
     else
       update = ->
-        updating = false
         y = scrollY
         animator.update(y)
-        actionsUpdate()
+        actionsUpdate() # sets updating = false
 
 
     recalcFormulas = ->
@@ -329,13 +328,13 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     onScroll = ->
       scrollY = $window.scrollY
 
-      if isAnimated
-        unless updating # debounced update
-          updating = true # in-case multiple scroll events can occur in one frame (possible?)
-          animationFrame.request(update)
-      else
-        y = scrollY
-        animationFrame.request(actionsUpdate) # @todo: do these calls get queued between frames ?
+      unless updating # debounced update
+        updating = true # in-case multiple scroll events can occur in one frame (possible?)
+        if isAnimated
+            animationFrame.request(update)
+        else
+          y = scrollY
+          animationFrame.request(actionsUpdate) # @todo: do these calls get queued between frames ?
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 

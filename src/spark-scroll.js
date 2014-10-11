@@ -182,28 +182,27 @@
             actionFrameIdx = ++idx;
           }
         }
-        return prevy = y;
+        prevy = y;
+        return updating = false;
       };
       if (attr.hasOwnProperty('sparkScrollEase')) {
         update = function() {
           var ad, d;
           d = scrollY - y;
           ad = Math.abs(d);
+          actionsUpdate();
           if (ad < 1.5) {
-            updating = false;
             y = scrollY;
-            animator.update(y);
+            return animator.update(y);
           } else {
             updating = true;
             y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
             animator.update(parseInt(y));
-            animationFrame.request(update);
+            return animationFrame.request(update);
           }
-          return actionsUpdate();
         };
       } else {
         update = function() {
-          updating = false;
           y = scrollY;
           animator.update(y);
           return actionsUpdate();
@@ -330,14 +329,14 @@
       }, true);
       onScroll = function() {
         scrollY = $window.scrollY;
-        if (isAnimated) {
-          if (!updating) {
-            updating = true;
+        if (!updating) {
+          updating = true;
+          if (isAnimated) {
             return animationFrame.request(update);
+          } else {
+            y = scrollY;
+            return animationFrame.request(actionsUpdate);
           }
-        } else {
-          y = scrollY;
-          return animationFrame.request(actionsUpdate);
         }
       };
       onInvalidate = _.debounce(recalcFormulas, 100, {
