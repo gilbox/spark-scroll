@@ -319,8 +319,3 @@ Updates the animation to a specific keyframe.
 The vertical scroll position (the library will treat this as time)
 
 
-
-Limitations
-=======
-
-- Rekapi currently has a bug where css attributes with multiple values (like `10px 30px`) don't work
