@@ -65,10 +65,11 @@
 <!-- slide, color, unpin -->
 <div class="slide-cont">
   <div class="slide-proxy" spark-id="slide-proxy"></div>
+
+  <!-- with array notation we can apply bounce easing to just one property in a keyframe -->
   <div spark-scroll-animate="{
-         'bottomTop-400': { bottom: '100%' },
-         'bottomTop-251': { bottom: '0%', ease: 'bounce' },
-         'bottomTop-250': { backgroundColor: '#0a0' },
+         'bottomTop-400': { bottom: '100%', backgroundColor: '#5c832f' },
+         'bottomTop-250': { bottom: ['0%','bounce'], backgroundColor: '#284907' },
          'bottomTop-200': { backgroundColor: '#00a' },
          'bottomTop-150': { backgroundColor: '#a00' },
          'bottomTop-100': { backgroundColor: '#5c832f' },
