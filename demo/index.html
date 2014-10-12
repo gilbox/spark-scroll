@@ -37,38 +37,42 @@
 
 <!-- fade -->
 <h2 spark-scroll-animate="{
-                            center: { opacity: 1 },
-                            bottom: { opacity: 0 } }">fade</h2>
+                            bottom: { opacity: 0 },
+                            center: { opacity: 1 } }
+                            ">fade</h2>
 
 <!-- move -->
 <h2 spark-scroll-animate="{
-                            center: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' },
-                            bottom: { marginLeft: '-500px', opacity: 0 } }">move</h2>
+                            bottom: { marginLeft: '-500px', opacity: 0 },
+                            center: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
+                            }">move</h2>
 
 <!-- spin -->
 <div spark-id="rotate-proxy"></div>
 <h2 spark-trigger="rotate-proxy" spark-scroll-animate="{
-                            center: { rotate: '360deg' },
-                            bottom: { rotate: '0deg' } }">spin</h2>
+                            bottom: { rotate: '0deg' } ,
+                            center: { rotate: '360deg' }
+                            }">spin</h2>
 
 <!-- scale -->
 <div spark-id="scale-proxy"></div>
 <h2 spark-trigger="scale-proxy" spark-scroll-animate="{
-                            center: { scale: 1, ease: 'bouncePast' },
+                            'center-201': { scale: 0.01, opacity: 0},
                             'center-200': { scale: 0.01, opacity: 1 },
-                            'center-201': { scale: 0.01, opacity: 0} }">scale</h2>
+                            center: { scale: 1, ease: 'bouncePast' }
+                             }">scale</h2>
 
 <!-- slide, color -->
 <div class="slide-cont">
   <div class="slide-proxy" spark-id="slide-proxy"></div>
   <div spark-scroll-animate="{
          ease: 'bounce',
-         'bottom+350': { backgroundColor: '#0ff' },
-         'bottom+300': { backgroundColor: '#00f' },
-         'bottom+250': { backgroundColor: '#0f0' },
-         'bottom+201': { backgroundColor: '#f00' },
+         bottom: { bottom: '100%' },
          'bottom+200': { bottom: '0%' },
-         bottom: { bottom: '100%' }
+         'bottom+201': { backgroundColor: '#00f' },
+         'bottom+250': { backgroundColor: '#0f0' },
+         'bottom+300': { backgroundColor: '#00f' },
+         'bottom+350': { backgroundColor: '#0ff' }
          }" spark-trigger="slide-proxy" class="slide">
             <!-- when we hit the bottom+201 scroll position, call app.textSlideOrColor to change the
                   text to 'slide' or 'color' depending on the scroll direction -->
@@ -90,24 +94,24 @@
     <div class="parallax-shadow"></div>
 
     <div spark-scroll-animate="{
-         elementBottomViewportTop: { transform: 'translate3d(0px,-80px,0px)' },
-         bottom: { transform: 'translate3d(0px,0px,0px)' }
+         bottom: { transform: 'translate3d(0px,0px,0px)' },
+         elementBottomViewportTop: { transform: 'translate3d(0px,-80px,0px)' }
          }" spark-trigger="parallax"
          class="parallax-img"></div>
 
     <h3 class="parallax-txt fade2" spark-scroll-animate="{
-         elementBottomViewportTop: { transform: 'scale(0.8) translate3d(0px,-120px,0px)' },
-         bottom: { transform: 'scale(0.8) translate3d(0px,120px,0px)' }
+         bottom: { transform: 'scale(0.8) translate3d(0px,120px,0px)' },
+         elementBottomViewportTop: { transform: 'scale(0.8) translate3d(0px,-120px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt fade1" spark-scroll-animate="{
-         elementBottomViewportTop: { transform: 'scale(0.9) translate3d(0px,-160px,0px)' },
-         bottom: { transform: 'scale(0.9) translate3d(0px,160px,0px)' }
+         bottom: { transform: 'scale(0.9) translate3d(0px,160px,0px)' },
+         elementBottomViewportTop: { transform: 'scale(0.9) translate3d(0px,-160px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt" spark-scroll-animate="{
-         elementBottomViewportTop: { transform: 'translate3d(0px,-200px,0px)' },
-         bottom: { transform: 'translate3d(0px,200px,0px)' }
+         bottom: { transform: 'translate3d(0px,200px,0px)' },
+         elementBottomViewportTop: { transform: 'translate3d(0px,-200px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
   </div>
 </a>

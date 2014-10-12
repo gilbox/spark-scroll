@@ -10,7 +10,7 @@ app.controller('appCtrl', function($scope, Tweenable, sparkSetup) {
     console.log("upDown", this);
   };
 
-  this. = function (kf, action, o) {
+  this.textSlideOrColor = function (kf, action, o) {
     kf.element.text(action=='onDown' ? 'color':'slide');
   };
 
