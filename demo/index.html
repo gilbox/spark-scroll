@@ -58,11 +58,31 @@
                             'center-200': { scale: 0.01, opacity: 1 },
                             'center-201': { scale: 0.01, opacity: 0} }">scale</h2>
 
-<!-- slide -->
+<!-- slide, color -->
 <div class="slide-cont">
-
+  <div class="slide-proxy" spark-id="slide-proxy"></div>
+  <div spark-scroll-animate="{
+         ease: 'bounce',
+         'bottom+350': { backgroundColor: '#0ff' },
+         'bottom+300': { backgroundColor: '#00f' },
+         'bottom+250': { backgroundColor: '#0f0' },
+         'bottom+201': { backgroundColor: '#f00' },
+         'bottom+200': { bottom: '0%' },
+         bottom: { bottom: '100%' }
+         }" spark-trigger="slide-proxy" class="slide">
+            <!-- when we hit the bottom+201 scroll position, call app.textSlideOrColor to change the
+                  text to 'slide' or 'color' depending on the scroll direction -->
+            <h3 class="slide-txt" spark-scroll="{'bottom+201': { 'onDown,onUp': app.textSlideOrColor }}" spark-trigger="slide-proxy">slide</h3>
+  </div>
 </div>
 
+<p><br/></p>
+<p><br/></p>
+<p><br/></p>
+<p><br/></p>
+<p><br/></p>
+<p><br/></p>
+<p><br/></p>
 
 <!-- parallax -->
 <a href="https://www.flickr.com/photos/rafagarcia_/15262287738/in/pool-83823859@N00/">
