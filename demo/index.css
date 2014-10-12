@@ -37,12 +37,12 @@ h3 {
 
 /* slide */
 .slide-cont {
-  margin-top: 400px;
+  /*margin-top: 400px;*/
   height: 200vh;
 }
 
 .slide-proxy {
-  height:100px;
+  height:200px;
 }
 
 .slide {
@@ -63,6 +63,19 @@ h3 {
   text-align: center;
 }
 
+.slide-spacer {
+  height: 600px;
+}
+
+/* unpin */
+.unpin-txt {
+  position: absolute;
+  top: 100%;
+  margin: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+}
 
 /* parallax */
 
@@ -106,4 +119,8 @@ h3 {
 }
 .fade2 {
   opacity: .3;
+}
+
+.hide {
+  display: none;
 }

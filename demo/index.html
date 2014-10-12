@@ -62,22 +62,31 @@
                             center: { scale: 1, ease: 'bouncePast' }
                              }">scale</h2>
 
-<!-- slide, color -->
+<!-- slide, color, unpin -->
 <div class="slide-cont">
   <div class="slide-proxy" spark-id="slide-proxy"></div>
   <div spark-scroll-animate="{
-         ease: 'bounce',
-         bottom: { bottom: '100%' },
-         'bottom+200': { bottom: '0%' },
-         'bottom+201': { backgroundColor: '#0a0' },
-         'bottom+250': { backgroundColor: '#00a' },
-         'bottom+300': { backgroundColor: '#a00' },
-         'bottom+350': { backgroundColor: '#5c832f' }
-         }" spark-trigger="slide-proxy" class="slide">
-            <!-- when we hit the bottom+201 scroll position, call app.textSlideOrColor to change the
+         'bottomTop-400': { bottom: '100%' },
+         'bottomTop-251': { bottom: '0%', ease: 'bounce' },
+         'bottomTop-250': { backgroundColor: '#0a0' },
+         'bottomTop-200': { backgroundColor: '#00a' },
+         'bottomTop-150': { backgroundColor: '#a00' },
+         'bottomTop-100': { backgroundColor: '#5c832f' },
+         bottomTop: { onDown: elm.css('position', 'relative'), onUp: elm.css('position', 'fixed') }
+         }" spark-trigger="slide-proxy" class="slide" scope-elm>
+
+            <!-- when we hit the appropriate scroll position, use elm.text(..) to change the
                   text to 'slide' or 'color' depending on the scroll direction -->
-            <h3 class="slide-txt" spark-scroll="{'bottom+201': { 'onDown,onUp': app.textSlideOrColor }}" spark-trigger="slide-proxy">slide</h3>
+            <h3 spark-scroll="{
+              'bottomTop-200': { onDown: elm.text('color'), onUp: elm.text('slide') }
+              }" spark-trigger="slide-proxy" class="slide-txt" scope-elm>slide</h3>
+
+            <h3 spark-scroll-animate="{
+                 'bottomTop-50': { top: '100%', 'upAddClass,downRemoveClass': 'hide' },
+                 bottomTop: { top: '50%' }
+                 }" spark-trigger="slide-proxy" class="unpin-txt hide">unpin</h3>
   </div>
+
 </div>
 
 <p><br/></p>
@@ -95,23 +104,23 @@
 
     <div spark-scroll-animate="{
          bottom: { transform: 'translate3d(0px,0px,0px)' },
-         elementBottomViewportTop: { transform: 'translate3d(0px,-80px,0px)' }
+         bottomTop: { transform: 'translate3d(0px,-80px,0px)' }
          }" spark-trigger="parallax"
          class="parallax-img"></div>
 
     <h3 class="parallax-txt fade2" spark-scroll-animate="{
          bottom: { transform: 'scale(0.8) translate3d(0px,120px,0px)' },
-         elementBottomViewportTop: { transform: 'scale(0.8) translate3d(0px,-120px,0px)' }
+         bottomTop: { transform: 'scale(0.8) translate3d(0px,-120px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt fade1" spark-scroll-animate="{
          bottom: { transform: 'scale(0.9) translate3d(0px,160px,0px)' },
-         elementBottomViewportTop: { transform: 'scale(0.9) translate3d(0px,-160px,0px)' }
+         bottomTop: { transform: 'scale(0.9) translate3d(0px,-160px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt" spark-scroll-animate="{
          bottom: { transform: 'translate3d(0px,200px,0px)' },
-         elementBottomViewportTop: { transform: 'translate3d(0px,-200px,0px)' }
+         bottomTop: { transform: 'translate3d(0px,-200px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
   </div>
 </a>
