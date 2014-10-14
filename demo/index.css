@@ -24,11 +24,17 @@ p {
   font-size: 24px;
 }
 
-h2 {
+h1,h2 {
   font-size: 76px;
   display: block;
   text-align: center;
   margin-bottom: 150px;
+}
+
+h1 {
+  margin:0;
+  padding: 50px 0 0 0;
+  pointer-events: none;
 }
 
 h3 {
@@ -188,6 +194,16 @@ h3 {
   height: 50vh;
 }
 
+.spacer10 {
+  height: 10vh;
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
+}
+
+.center {
+  display: block;
+  margin: auto;
+  text-align: center;
 }
