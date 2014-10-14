@@ -8,14 +8,17 @@
 </head>
 <body ng-controller="appCtrl as app" ng-cloak>
 
-<div class="hero">
+<div class="hero" spark-id="hero">
 
-  <h2>spark-scroll</h2>
+  <h2 spark-scroll-animate="{
+                             topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
+                             'topTop+200': { opacity: 0, transform: 'translate3d(0px,250px,0px)' }
+                            }" spark-trigger="hero">spark-scroll</h2>
 
   <div class="down-arrow" spark-scroll-animate="{
-                             bottomBottom: { opacity: 1 },
-                             'bottomBottom+200': { opacity: 0 }
-                            }">v</div>
+                             topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
+                             'topTop+200': { opacity: 0, transform: 'translate3d(0px,-150px,0px)' }
+                            }" spark-trigger="hero">v</div>
 </div>
 
 <!-- Note: all spark-scroll configuration objects are embedded in the markup of this page,
@@ -54,7 +57,7 @@
   <section class="pin" spark-scroll="{
          topTop: { 'downAddClass,upRemoveClass': 'pin-pin' },
          bottomBottom: {  'downAddClass,upRemoveClass': 'pin-unpin' }
-         }" spark-trigger="pin-cont" scope-elm>
+         }" spark-trigger="pin-cont">
 
     <h3 class="pin-txt" spark-scroll-animate="{
          'topTop': { top: '0%', marginTop: '0px' },
@@ -64,7 +67,7 @@
     <div spark-scroll-animate="{
          'topTop+100': { width: '0%', backgroundColor: '#5c832f' },
          'topTop+250': { width: ['100%','easeOutQuart'], backgroundColor: '#382513' }
-         }" spark-trigger="pin-cont" class="reveal" scope-elm>
+         }" spark-trigger="pin-cont" class="reveal">
       <h3 class="reveal-txt">reveal</h3>
     </div>
 
@@ -75,7 +78,7 @@
          'topTop+450': { backgroundColor: '#00a' },
          'topTop+500': { backgroundColor: '#a00' },
          'topTop+550': { backgroundColor: '#5c832f' }
-         }" spark-trigger="pin-cont" class="slide hide" scope-elm>
+         }" spark-trigger="pin-cont" class="slide hide">
 
       <!-- when we hit the appropriate scroll position, use elm.text(..) to change the
             text to 'slide' or 'color' depending on the scroll direction -->
