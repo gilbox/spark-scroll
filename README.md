@@ -71,9 +71,9 @@ Usage
 ## Formula Example (spark-scroll)
 
     <h1 spark-scroll="{
-                top:{ onUp: myUpFn },
-        'center-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
-             bottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+                topTop:{ onUp: myUpFn },
+        'topCenter-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+             topBottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
         }">
       This Title is Spark
     </h1>
@@ -82,8 +82,8 @@ Usage
 ## Animated Example (spark-scroll-animate)
 
     <h1 spark-scroll-animate="{
-                top:{ color: '#f00', marginLeft: '50px' },
-             bottom:{ color: '#000', marginLeft: '0px' }
+                topTop:{ color: '#f00', marginLeft: '50px' },
+             topBottom:{ color: '#000', marginLeft: '0px' }
         }">
       This Title is Spark Animated
     </h1>
