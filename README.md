@@ -222,13 +222,31 @@ Here's the same thing in Coffeescript:
       # each property of the sparkFormulas object is a formula variable
     
       # top of the element hits the top of the viewport
-      top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
-        
+      topTop: `function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) }`
+    
       # top of the element hits the center of the viewport
-      center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
-      
+      topCenter: `function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) }`
+    
       # top of the element hits the bottom of the viewport
-      bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
+      topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
+    
+      # center of the element hits the top of the viewport
+      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top + offset) }`
+    
+      # center of the element hits the center of the viewport
+      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
+    
+      # center of the element hits the bottom of the viewport
+      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
+    
+      # bottom of the element hits the top of the viewport
+      bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
+    
+      # bottom of the element hits the bottom of the viewport
+      bottomBottom: `function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) }`
+    
+      # bottom of the element hits the center of the viewport
+      bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
     }
 
 
@@ -236,8 +254,8 @@ Here's the same thing in Coffeescript:
 
     app.config (sparkFormulas) ->
         angular.extend sparkFormulas, 
-            # similar to the built-in top formula: this is triggered when the bottom of the element hits the top of the viewport
-            topBottom: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset)
+            # similar to the built-in topBottom formula, except that offset is calculated as a percentage of the viewport height
+            topBottomPct: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset*containerRect.clientHeight/100)
 
 
 ## Keeping Formulas up-to-date
