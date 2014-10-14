@@ -27,13 +27,13 @@
 <!-- fade -->
 <h2 spark-scroll-animate="{
                             topBottom: { opacity: 0 },
-                            topCenter: { opacity: 1 } }
+                            centerCenter: { opacity: 1 } }
                             ">fade</h2>
 
 <!-- move -->
 <h2 spark-scroll-animate="{
                             topBottom: { marginLeft: '-500px', opacity: 0 },
-                            topCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
+                            centerCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
                             }">move</h2>
 
 <!-- spin -->
@@ -48,7 +48,7 @@
 <h2 spark-trigger="scale-proxy" spark-scroll-animate="{
                             'topCenter-201': { scale: 0.01, opacity: 0},
                             'topCenter-200': { scale: 0.01, opacity: 1 },
-                            topCenter: { scale: 1, ease: 'bouncePast' }
+                            'topCenter+70': { scale: 1, ease: 'bouncePast' }
                              }">scale</h2>
 
 <!-- pin, reveal, slide, color, unpin -->

@@ -187,3 +187,7 @@ h3 {
 .spacer50 {
   height: 50vh;
 }
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
