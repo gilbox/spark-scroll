@@ -112,7 +112,7 @@
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, data, hasAnimateAttr, isAnimated, onInvalidate, onScroll, parseData, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, hasAnimateAttr, isAnimated, onInvalidate, onScroll, parseData, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       animator = hasAnimateAttr && sparkAnimator.instance();
@@ -124,6 +124,7 @@
       scrollY = 0;
       animationFrame = AnimationFrame && new AnimationFrame();
       updating = false;
+      callback = null;
       data = null;
       sparkData = null;
       actionFrames = [];
@@ -195,17 +196,26 @@
           actionsUpdate();
           if (ad < 1.5) {
             y = scrollY;
+            if (callback) {
+              callback(y);
+            }
             return animator.update(y);
           } else {
             updating = true;
-            y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
-            animator.update(parseInt(y));
+            y += ~~(ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1));
+            if (callback) {
+              callback(y);
+            }
+            animator.update(y);
             return animationFrame.request(update);
           }
         };
       } else {
         update = function() {
           y = scrollY;
+          if (callback) {
+            callback(y);
+          }
           animator.update(y);
           return actionsUpdate();
         };
@@ -339,10 +349,15 @@
         return actionsUpdate();
       };
       watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(d) {
+        var cb;
         if (!d) {
           return;
         }
         data = _.clone(d);
+        cb = scope.$eval(attr.sparkScrollCallback);
+        if (_.isFunction(cb)) {
+          callback = cb;
+        }
         if (attr.sparkScrollBindOnce != null) {
           watchCancel();
         }
@@ -356,6 +371,9 @@
             return animationFrame.request(update);
           } else {
             y = scrollY;
+            if (callback) {
+              callback(y);
+            }
             return animationFrame.request(actionsUpdate);
           }
         }

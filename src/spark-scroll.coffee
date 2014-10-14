@@ -157,6 +157,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     animationFrame = AnimationFrame && new AnimationFrame()
     updating = false
 
+    callback = null
     data = null
     sparkData = null
     actionFrames = []
@@ -215,15 +216,18 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
         actionsUpdate() # sets updating = false
         if ad < 1.5
           y = scrollY
+          callback(y) if callback
           animator.update(y)
         else
           updating = true
-          y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
-          animator.update(parseInt(y))
+          y += ~~(if ad>8 then d*0.25 else (if d > 0 then 1 else -1)) # ease the scroll
+          callback(y) if callback
+          animator.update(y)
           animationFrame.request(update)
     else
       update = ->
         y = scrollY
+        callback(y) if callback
         animator.update(y)
         actionsUpdate() # sets updating = false
 
@@ -352,6 +356,9 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       return unless d
       data = _.clone(d)   # clone for cases when parseData fails and needs to be called again
 
+      cb = scope.$eval(attr.sparkScrollCallback)
+      callback = cb if _.isFunction(cb)
+
       # useful in angular < v1.3 where one-time binding isn't available
       if attr.sparkScrollBindOnce? then watchCancel()
 
@@ -369,6 +376,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
             animationFrame.request(update)
         else
           y = scrollY
+          callback(y) if callback
           animationFrame.request(actionsUpdate) # @todo: do these calls get queued between frames ?
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
