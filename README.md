@@ -12,13 +12,15 @@ Additionally, the `spark-scroll-animate` directive includes all of the features
 of `spark-scroll` plus the ability to animate CSS properties in sync 
 with the browser scroll position.
 
+**[spark-scroll demo](http://gilbox.github.io/spark-scroll/demo/)** 
+
 
 Inspiration
 ===========
 
 `spark-scroll` is heavily inspired by and borrows many ideas from
-[ScrollMagic](http://janpaepke.github.io/ScrollMagic/), including the demo 
-which attempts to re-create ScrollMagic's [demo page](http://janpaepke.github.io/ScrollMagic).
+[ScrollMagic](http://janpaepke.github.io/ScrollMagic/), including [the `spark-scroll` demo](http://gilbox.github.io/spark-scroll/demo/) 
+which attempts to re-create [ScrollMagic's demo page](http://janpaepke.github.io/ScrollMagic).
 
 
 Setup

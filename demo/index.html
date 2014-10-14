@@ -6,29 +6,34 @@
   <link href='http://fonts.googleapis.com/css?family=Expletus+Sans:700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="index.css"/>
 </head>
-<body ng-controller="appCtrl as app">
-<h2>spark-scroll</h2>
+<body ng-controller="appCtrl as app" ng-cloak>
 
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
+<div class="hero" spark-id="hero">
+
+  <h2 spark-scroll-animate="{
+                             topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
+                             'topTop+200': { opacity: 0, transform: 'translate3d(0px,250px,0px)' }
+                            }" spark-trigger="hero">spark-scroll</h2>
+
+  <div class="down-arrow" spark-scroll-animate="{
+                             topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
+                             'topTop+200': { opacity: 0, transform: 'translate3d(0px,-150px,0px)' }
+                            }" spark-trigger="hero">v</div>
+</div>
+
+<!-- Note: all spark-scroll configuration objects are embedded in the markup of this page,
+   however they could just as easily be instantiated in the controller to keep the markup nice and clean -->
 
 <!-- fade -->
 <h2 spark-scroll-animate="{
                             topBottom: { opacity: 0 },
-                            topCenter: { opacity: 1 } }
+                            centerCenter: { opacity: 1 } }
                             ">fade</h2>
 
 <!-- move -->
 <h2 spark-scroll-animate="{
                             topBottom: { marginLeft: '-500px', opacity: 0 },
-                            topCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
+                            centerCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
                             }">move</h2>
 
 <!-- spin -->
@@ -43,27 +48,26 @@
 <h2 spark-trigger="scale-proxy" spark-scroll-animate="{
                             'topCenter-201': { scale: 0.01, opacity: 0},
                             'topCenter-200': { scale: 0.01, opacity: 1 },
-                            topCenter: { scale: 1, ease: 'bouncePast' }
+                            'topCenter+70': { scale: 1, ease: 'bouncePast' }
                              }">scale</h2>
 
-<!-- slide, color, unpin -->
-<div class="slide-cont" spark-id="slide-proxy">
-  <!--<div class="slide-proxy"></div>-->
+<!-- pin, reveal, slide, color, unpin -->
+<div class="pin-cont" spark-id="pin-cont">
 
-  <section class="pin" spark-scroll-animate="{
+  <section class="pin" spark-scroll="{
          topTop: { 'downAddClass,upRemoveClass': 'pin-pin' },
          bottomBottom: {  'downAddClass,upRemoveClass': 'pin-unpin' }
-         }" spark-trigger="slide-proxy" scope-elm>
+         }" spark-trigger="pin-cont">
 
     <h3 class="pin-txt" spark-scroll-animate="{
          'topTop': { top: '0%', marginTop: '0px' },
          'topTop+50  ': { top: '50%', marginTop: '-60px' }
-         }" spark-trigger="slide-proxy">pin</h3>
+         }" spark-trigger="pin-cont">pin</h3>
 
     <div spark-scroll-animate="{
          'topTop+100': { width: '0%', backgroundColor: '#5c832f' },
          'topTop+250': { width: ['100%','easeOutQuart'], backgroundColor: '#382513' }
-         }" spark-trigger="slide-proxy" class="reveal" scope-elm>
+         }" spark-trigger="pin-cont" class="reveal">
       <h3 class="reveal-txt">reveal</h3>
     </div>
 
@@ -74,32 +78,25 @@
          'topTop+450': { backgroundColor: '#00a' },
          'topTop+500': { backgroundColor: '#a00' },
          'topTop+550': { backgroundColor: '#5c832f' }
-         }" spark-trigger="slide-proxy" class="slide hide" scope-elm>
+         }" spark-trigger="pin-cont" class="slide hide">
 
       <!-- when we hit the appropriate scroll position, use elm.text(..) to change the
             text to 'slide' or 'color' depending on the scroll direction -->
       <h3 spark-scroll="{
               'topTop+450': { onDown: elm.text('color'), onUp: elm.text('slide') }
-              }" spark-trigger="slide-proxy" class="slide-txt" scope-elm>slide</h3>
+              }" spark-trigger="pin-cont" class="slide-txt" scope-elm>slide</h3>
 
       <h3 spark-scroll-animate="{
                  'topTop+600': { top: '100%', 'upAddClass,downRemoveClass': 'hide' },
                  'bottomBottom': { top: '50%' }
-                 }" spark-trigger="slide-proxy" class="unpin-txt hide">unpin</h3>
+                 }" spark-trigger="pin-cont" class="unpin-txt hide">unpin</h3>
     </div>
 
   </section>
 
-
 </div>
 
-<p><br/></p>
-<p><br/></p>
-<p><br/></p>
-<p><br/></p>
-<p><br/></p>
-<p><br/></p>
-<p><br/></p>
+<div class="spacer50"></div>
 
 <!-- parallax -->
 <a href="https://www.flickr.com/photos/rafagarcia_/15262287738/in/pool-83823859@N00/">
@@ -130,33 +127,9 @@
 </a>
 
 
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
+<div class="spacer50"></div>
 
 <p>This demo was inspired by <a href="http://janpaepke.github.io/ScrollMagic/">ScrollMagic</a></p>
-
-
 
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
 <script src="vendor/lodash.js"></script>
