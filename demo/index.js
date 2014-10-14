@@ -2,17 +2,7 @@ app = angular.module('myApp', ['gilbox.sparkScroll']);
 
 app.controller('appCtrl', function($scope, sparkSetup) {
   sparkSetup.enableInvalidationInterval();
-});
-
-app.config(function (sparkFormulas) {
-  angular.extend(sparkFormulas, {
-
-    // When the bottom of the element hits the top of the viewport
-    bottomTop: function (element, container, rect, containerRect, offset) {
-      return ~~(rect.bottom - containerRect.top + offset);
-    }
-
-  });
+  sparkSetup.debug = true;
 });
 
 app.directive('scopeElm', function () {

@@ -16,15 +16,15 @@
       }
     };
   }).constant('sparkFormulas', {
-    top: function(element, container, rect, containerRect, offset) {
-      return ~~(rect.top - containerRect.top + offset);
-    },
-    center: function(element, container, rect, containerRect, offset) {
-      return ~~(rect.top - containerRect.top - container.clientHeight / 2 + offset);
-    },
-    bottom: function(element, container, rect, containerRect, offset) {
-      return ~~(rect.top - containerRect.top - container.clientHeight + offset);
-    }
+    topTop: function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) },
+    topCenter: function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) },
+    topBottom: function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) },
+    centerTop: function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top + offset) },
+    centerCenter: function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) },
+    centerBottom: function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight + offset) },
+    bottomTop: function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) },
+    bottomBottom: function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) },
+    bottomCenter: function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }
   }).constant('sparkActionProps', {
     'onDown': {
       down: function(o) {
@@ -93,6 +93,7 @@
     this.disableInvalidationInterval = function() {
       return $interval.cancel(int);
     };
+    this.debug = false;
     return this;
   }).service('sparkId', function() {
     this.elements = {};
@@ -109,9 +110,9 @@
     };
   });
 
-  directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) {
+  directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, hasAnimateAttr, isAnimated, onInvalidate, onScroll, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, data, hasAnimateAttr, isAnimated, onInvalidate, onScroll, parseData, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       animator = hasAnimateAttr && sparkAnimator.instance();
@@ -123,7 +124,8 @@
       scrollY = 0;
       animationFrame = AnimationFrame && new AnimationFrame();
       updating = false;
-      sparkData = {};
+      data = null;
+      sparkData = null;
       actionFrames = [];
       actionFrameIdx = -1;
       container = document.documentElement;
@@ -210,42 +212,46 @@
       }
       recalcFormulas = function() {
         var changed, containerRect, keyFrame, newScrY, rect, scrY;
-        changed = false;
-        rect = triggerElement[0].getBoundingClientRect();
-        containerRect = container.getBoundingClientRect();
-        for (scrY in sparkData) {
-          keyFrame = sparkData[scrY];
-          if (!keyFrame.formula) {
-            continue;
-          }
-          newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset);
-          if (newScrY !== ~~scrY) {
-            changed = true;
-            if (keyFrame.anims && hasAnimateAttr) {
-              actor.moveKeyframe(~~scrY, newScrY);
-            }
-            sparkData[newScrY] = keyFrame;
-            delete sparkData[scrY];
-          }
-        }
-        if (changed) {
-          actionFrames = [];
+        if (sparkData) {
+          changed = false;
+          rect = triggerElement[0].getBoundingClientRect();
+          containerRect = container.getBoundingClientRect();
           for (scrY in sparkData) {
-            actionFrames.push(~~scrY);
+            keyFrame = sparkData[scrY];
+            if (!keyFrame.formula) {
+              continue;
+            }
+            newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset);
+            if (newScrY !== ~~scrY) {
+              changed = true;
+              if (keyFrame.anims && hasAnimateAttr) {
+                actor.moveKeyframe(~~scrY, newScrY);
+              }
+              sparkData[newScrY] = keyFrame;
+              delete sparkData[scrY];
+            }
           }
-          actionFrames.sort(function(a, b) {
-            return a > b;
-          });
-          return onScroll();
+          if (changed) {
+            actionFrames = [];
+            for (scrY in sparkData) {
+              actionFrames.push(~~scrY);
+            }
+            actionFrames.sort(function(a, b) {
+              return a > b;
+            });
+            return onScroll();
+          }
+        } else {
+          parseData();
+          if (sparkData) {
+            return recalcFormulas();
+          }
         }
       };
-      watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(data) {
+      parseData = function() {
         var actionCount, animCount, c, containerRect, ease, elmEase, formula, k, keyFrame, kfEase, ksplit, o, parts, rect, scrY, v;
         if (!data) {
           return;
-        }
-        if (attr.sparkScrollBindOnce != null) {
-          watchCancel();
         }
         if (hasAnimateAttr) {
           actor.removeAllKeyframes();
@@ -259,6 +265,7 @@
         containerRect = container.getBoundingClientRect();
         for (scrY in data) {
           keyFrame = data[scrY];
+          keyFrame = _.clone(keyFrame);
           actionCount = 0;
           c = scrY.charCodeAt(0);
           if (c < 48 || c > 57) {
@@ -269,6 +276,10 @@
             };
             scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset);
             if (sparkData[scrY]) {
+              if (sparkSetup.debug) {
+                console.log("warning: spark-scroll failed to parse data", attr.sparkScroll || attr.sparkScrollAnimate);
+              }
+              sparkData = null;
               return;
             }
           }
@@ -326,6 +337,16 @@
           update();
         }
         return actionsUpdate();
+      };
+      watchCancel = scope.$watch(attr[hasAnimateAttr ? 'sparkScrollAnimate' : 'sparkScroll'], function(d) {
+        if (!d) {
+          return;
+        }
+        data = _.clone(d);
+        if (attr.sparkScrollBindOnce != null) {
+          watchCancel();
+        }
+        return parseData();
       }, true);
       onScroll = function() {
         scrollY = $window.scrollY;
@@ -355,7 +376,7 @@
     };
   };
 
-  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]).directive('sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]);
+  angular.module('gilbox.sparkScroll').directive('sparkScroll', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', 'sparkSetup', directiveFn]).directive('sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', 'sparkSetup', directiveFn]);
 
 }).call(this);
 

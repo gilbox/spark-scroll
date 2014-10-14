@@ -7,24 +7,8 @@
   <link rel="stylesheet" href="index.css"/>
 </head>
 <body ng-controller="appCtrl as app">
-<div class="halfFrame"></div>
-<p class="intro">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"</p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
-<p><br></p>
+<h2>spark-scroll</h2>
+
 <p><br></p>
 <p><br></p>
 <p><br></p>
@@ -37,56 +21,75 @@
 
 <!-- fade -->
 <h2 spark-scroll-animate="{
-                            bottom: { opacity: 0 },
-                            center: { opacity: 1 } }
+                            topBottom: { opacity: 0 },
+                            topCenter: { opacity: 1 } }
                             ">fade</h2>
 
 <!-- move -->
 <h2 spark-scroll-animate="{
-                            bottom: { marginLeft: '-500px', opacity: 0 },
-                            center: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
+                            topBottom: { marginLeft: '-500px', opacity: 0 },
+                            topCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
                             }">move</h2>
 
 <!-- spin -->
 <div spark-id="rotate-proxy"></div>
 <h2 spark-trigger="rotate-proxy" spark-scroll-animate="{
-                            bottom: { rotate: '0deg' } ,
-                            center: { rotate: '360deg' }
+                            topBottom: { rotate: '0deg' } ,
+                            topCenter: { rotate: '360deg' }
                             }">spin</h2>
 
 <!-- scale -->
 <div spark-id="scale-proxy"></div>
 <h2 spark-trigger="scale-proxy" spark-scroll-animate="{
-                            'center-201': { scale: 0.01, opacity: 0},
-                            'center-200': { scale: 0.01, opacity: 1 },
-                            center: { scale: 1, ease: 'bouncePast' }
+                            'topCenter-201': { scale: 0.01, opacity: 0},
+                            'topCenter-200': { scale: 0.01, opacity: 1 },
+                            topCenter: { scale: 1, ease: 'bouncePast' }
                              }">scale</h2>
 
 <!-- slide, color, unpin -->
-<div class="slide-cont">
-  <div class="slide-proxy" spark-id="slide-proxy"></div>
+<div class="slide-cont" spark-id="slide-proxy">
+  <!--<div class="slide-proxy"></div>-->
 
-  <!-- with array notation we can apply bounce easing to just one property in a keyframe -->
-  <div spark-scroll-animate="{
-         'bottomTop-400': { bottom: '100%', backgroundColor: '#5c832f' },
-         'bottomTop-250': { bottom: ['0%','bounce'], backgroundColor: '#284907' },
-         'bottomTop-200': { backgroundColor: '#00a' },
-         'bottomTop-150': { backgroundColor: '#a00' },
-         'bottomTop-100': { backgroundColor: '#5c832f' },
-         bottomTop: { onDown: elm.css('position', 'relative'), onUp: elm.css('position', 'fixed') }
-         }" spark-trigger="slide-proxy" class="slide" scope-elm>
+  <section class="pin" spark-scroll-animate="{
+         topTop: { 'downAddClass,upRemoveClass': 'pin-pin' },
+         bottomBottom: {  'downAddClass,upRemoveClass': 'pin-unpin' }
+         }" spark-trigger="slide-proxy" scope-elm>
 
-            <!-- when we hit the appropriate scroll position, use elm.text(..) to change the
-                  text to 'slide' or 'color' depending on the scroll direction -->
-            <h3 spark-scroll="{
-              'bottomTop-200': { onDown: elm.text('color'), onUp: elm.text('slide') }
+    <h3 class="pin-txt" spark-scroll-animate="{
+         'topTop': { top: '0%', marginTop: '0px' },
+         'topTop+50  ': { top: '50%', marginTop: '-60px' }
+         }" spark-trigger="slide-proxy">pin</h3>
+
+    <div spark-scroll-animate="{
+         'topTop+100': { width: '0%', backgroundColor: '#5c832f' },
+         'topTop+250': { width: ['100%','easeOutQuart'], backgroundColor: '#382513' }
+         }" spark-trigger="slide-proxy" class="reveal" scope-elm>
+      <h3 class="reveal-txt">reveal</h3>
+    </div>
+
+    <!-- with array notation we can apply bounce easing to just one property in a keyframe -->
+    <div spark-scroll-animate="{
+         'topTop+250': { bottom: '100%', backgroundColor: '#5c832f', 'upAddClass,downRemoveClass': 'hide' },
+         'topTop+400': { bottom: ['0%','bounce'], backgroundColor: '#284907' },
+         'topTop+450': { backgroundColor: '#00a' },
+         'topTop+500': { backgroundColor: '#a00' },
+         'topTop+550': { backgroundColor: '#5c832f' }
+         }" spark-trigger="slide-proxy" class="slide hide" scope-elm>
+
+      <!-- when we hit the appropriate scroll position, use elm.text(..) to change the
+            text to 'slide' or 'color' depending on the scroll direction -->
+      <h3 spark-scroll="{
+              'topTop+450': { onDown: elm.text('color'), onUp: elm.text('slide') }
               }" spark-trigger="slide-proxy" class="slide-txt" scope-elm>slide</h3>
 
-            <h3 spark-scroll-animate="{
-                 'bottomTop-50': { top: '100%', 'upAddClass,downRemoveClass': 'hide' },
-                 bottomTop: { top: '50%' }
+      <h3 spark-scroll-animate="{
+                 'topTop+600': { top: '100%', 'upAddClass,downRemoveClass': 'hide' },
+                 'bottomBottom': { top: '50%' }
                  }" spark-trigger="slide-proxy" class="unpin-txt hide">unpin</h3>
-  </div>
+    </div>
+
+  </section>
+
 
 </div>
 
@@ -104,23 +107,23 @@
     <div class="parallax-shadow"></div>
 
     <div spark-scroll-animate="{
-         bottom: { transform: 'translate3d(0px,0px,0px)' },
+         topBottom: { transform: 'translate3d(0px,0px,0px)' },
          bottomTop: { transform: 'translate3d(0px,-80px,0px)' }
          }" spark-trigger="parallax"
          class="parallax-img"></div>
 
     <h3 class="parallax-txt fade2" spark-scroll-animate="{
-         bottom: { transform: 'scale(0.8) translate3d(0px,120px,0px)' },
+         topBottom: { transform: 'scale(0.8) translate3d(0px,120px,0px)' },
          bottomTop: { transform: 'scale(0.8) translate3d(0px,-120px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt fade1" spark-scroll-animate="{
-         bottom: { transform: 'scale(0.9) translate3d(0px,160px,0px)' },
+         topBottom: { transform: 'scale(0.9) translate3d(0px,160px,0px)' },
          bottomTop: { transform: 'scale(0.9) translate3d(0px,-160px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
 
     <h3 class="parallax-txt" spark-scroll-animate="{
-         bottom: { transform: 'translate3d(0px,200px,0px)' },
+         topBottom: { transform: 'translate3d(0px,200px,0px)' },
          bottomTop: { transform: 'translate3d(0px,-200px,0px)' }
          }" spark-trigger="parallax">parallax</h3>
   </div>
@@ -150,6 +153,8 @@
 <p><br></p>
 <p><br></p>
 <p><br></p>
+
+<p>This demo was inspired by <a href="http://janpaepke.github.io/ScrollMagic/">ScrollMagic</a></p>
 
 
 

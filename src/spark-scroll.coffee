@@ -47,13 +47,31 @@ angular.module('gilbox.sparkScroll', [])
   # each property of the sparkFormulas object is a formula variable
 
   # top of the element hits the top of the viewport
-  top: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top + offset)
+  topTop: `function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) }`
 
   # top of the element hits the center of the viewport
-  center: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight/2 + offset)
+  topCenter: `function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) }`
 
   # top of the element hits the bottom of the viewport
-  bottom: (element, container, rect, containerRect, offset) ->  ~~(rect.top - containerRect.top - container.clientHeight + offset)
+  topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
+
+  # center of the element hits the top of the viewport
+  centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top + offset) }`
+
+  # center of the element hits the center of the viewport
+  centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
+
+  # center of the element hits the bottom of the viewport
+  centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
+
+  # bottom of the element hits the top of the viewport
+  bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
+
+  # bottom of the element hits the bottom of the viewport
+  bottomBottom: `function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) }`
+
+  # bottom of the element hits the center of the viewport
+  bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
 }
 
 .constant 'sparkActionProps', {
@@ -109,6 +127,9 @@ angular.module('gilbox.sparkScroll', [])
     int = $interval (-> $rootScope.$broadcast 'sparkInvalidate'), delay, 0, false
 
   @disableInvalidationInterval = -> $interval.cancel(int)
+
+  # enable/disable logging
+  @debug = false
   @
 
 .service 'sparkId', ->
@@ -122,7 +143,7 @@ angular.module('gilbox.sparkScroll', [])
     sparkId.registerElement(attr.sparkId, element)
     scope.$on '$destroy', -> delete sparkId.elements[attr.sparkId]
 
-directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId) ->
+directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) ->
   (scope, element, attr) ->
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
@@ -136,7 +157,8 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     animationFrame = AnimationFrame && new AnimationFrame()
     updating = false
 
-    sparkData = {}
+    data = null
+    sparkData = null
     actionFrames = []
     actionFrameIdx = -1
     container = document.documentElement
@@ -207,31 +229,32 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
 
     recalcFormulas = ->
-      changed = false
-      rect = triggerElement[0].getBoundingClientRect()
-      containerRect = container.getBoundingClientRect()
+      if sparkData
+        changed = false
+        rect = triggerElement[0].getBoundingClientRect()
+        containerRect = container.getBoundingClientRect()
 
-      for scrY, keyFrame of sparkData when keyFrame.formula
-        newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset)
-        if newScrY != ~~scrY
-          changed = true
-          actor.moveKeyframe(~~scrY, newScrY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
-          sparkData[newScrY] = keyFrame
-          delete sparkData[scrY]
+        for scrY, keyFrame of sparkData when keyFrame.formula
+          newScrY = keyFrame.formula.fn(triggerElement, container, rect, containerRect, keyFrame.formula.offset)
+          if newScrY != ~~scrY
+            changed = true
+            actor.moveKeyframe(~~scrY, newScrY) if keyFrame.anims and hasAnimateAttr # the ~~ is necessary :(
+            sparkData[newScrY] = keyFrame
+            delete sparkData[scrY]
 
-      if changed
-        actionFrames = []
-        actionFrames.push(~~scrY) for scrY of sparkData
-        actionFrames.sort (a,b) -> a > b
-        onScroll()  # todo: this is checking scrollY unnecessarily
-        # @todo: now are we screwed if something was already passed by ?
+        if changed
+          actionFrames = []
+          actionFrames.push(~~scrY) for scrY of sparkData
+          actionFrames.sort (a,b) -> a > b
+          onScroll()  # todo: this is checking scrollY unnecessarily
+          # @todo: now are we screwed if something was already passed by ?
+      else
+        parseData()
+        recalcFormulas() if sparkData
 
 
-    watchCancel = scope.$watch attr[if hasAnimateAttr then 'sparkScrollAnimate' else 'sparkScroll'], (data) ->
+    parseData = ->
       return unless data
-
-      # useful in angular < v1.3 where one-time binding isn't available
-      if attr.sparkScrollBindOnce? then watchCancel()
 
       actor.removeAllKeyframes() if hasAnimateAttr
 
@@ -249,6 +272,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       containerRect = container.getBoundingClientRect()
 
       for scrY, keyFrame of data
+        keyFrame = _.clone(keyFrame)  # clone for cases when parseData fails and needs to be called again
         actionCount = 0
 
         # formula comprehension
@@ -261,7 +285,10 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
             offset: ~~parts[2]
 
           scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset)
-          return if sparkData[scrY]  # silent death for overlapping scrY's (assume that the element isn't ready)
+          if sparkData[scrY]  # silent death for overlapping scrY's (assume that the element isn't ready)
+            console.log "warning: spark-scroll failed to parse data", (attr.sparkScroll || attr.sparkScrollAnimate) if sparkSetup.debug
+            sparkData = null
+            return
 
         # keyframe ease property
         # (will override or fallback to element ease property)
@@ -275,31 +302,31 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           delete keyFrame.ease
 
         for k,v of keyFrame
-            ksplit = k.split(',')
+          ksplit = k.split(',')
 
-            # put actions in actions sub-object
-            if sparkActionProps[ksplit[0]] # @todo: rigorous check ? (we assume that if the first action is legit then they all are)
+          # put actions in actions sub-object
+          if sparkActionProps[ksplit[0]] # @todo: rigorous check ? (we assume that if the first action is legit then they all are)
 
-              keyFrame.actions or= { }  # could be more efficient to make actions an array
-              keyFrame.actions[k] = # action object
-                props: ksplit
-                val: v
-              delete keyFrame[k]
-              actionCount++
+            keyFrame.actions or= { }  # could be more efficient to make actions an array
+            keyFrame.actions[k] = # action object
+              props: ksplit
+              val: v
+            delete keyFrame[k]
+            actionCount++
 
             # put animations in anims sub-object
-            else # since it's not an action, assume it's an animation property
+          else # since it's not an action, assume it's an animation property
 
-              # comprehension of array-notation for easing
-              # (will override or fall back to keyframe ease propery as needed)
-              keyFrame.anims or= {}
-              v = [v, kfEase] unless angular.isArray(v)
-              o = {}
-              o[k] = v[1]
-              angular.extend(ease, o)
+            # comprehension of array-notation for easing
+            # (will override or fall back to keyframe ease propery as needed)
+            keyFrame.anims or= {}
+            v = [v, kfEase] unless angular.isArray(v)
+            o = {}
+            o[k] = v[1]
+            angular.extend(ease, o)
 
-              keyFrame.anims[k] = v[0]
-              delete keyFrame[k]
+            keyFrame.anims[k] = v[0]
+            delete keyFrame[k]
 
         if keyFrame.anims && hasAnimateAttr
           actor.keyframe(scrY, keyFrame.anims, ease)
@@ -308,7 +335,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
         keyFrame.formula = formula
         keyFrame.element = element
         keyFrame.scope = scope
-  #        keyFrame.actionCount = actionCount
+        #        keyFrame.actionCount = actionCount
 
         sparkData[scrY] = keyFrame
         actionFrames.push(~~scrY) if actionCount
@@ -321,6 +348,14 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       update() if isAnimated
       actionsUpdate()
 
+    watchCancel = scope.$watch attr[if hasAnimateAttr then 'sparkScrollAnimate' else 'sparkScroll'], (d) ->
+      return unless d
+      data = _.clone(d)   # clone for cases when parseData fails and needs to be called again
+
+      # useful in angular < v1.3 where one-time binding isn't available
+      if attr.sparkScrollBindOnce? then watchCancel()
+
+      parseData()
     , true  # deep watch
 
     # respond to scroll event
@@ -349,5 +384,5 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
 
 angular.module('gilbox.sparkScroll')
-  .directive 'sparkScroll',        ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
-  .directive 'sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', directiveFn]
+  .directive 'sparkScroll',        ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', 'sparkSetup', directiveFn]
+  .directive 'sparkScrollAnimate', ['$window', '$timeout', 'sparkFormulas', 'sparkActionProps', 'sparkAnimator', 'sparkId', 'sparkSetup', directiveFn]
