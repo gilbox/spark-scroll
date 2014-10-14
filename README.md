@@ -274,6 +274,13 @@ employ one or both of the following techniques:
     - `sparkSetup.disableInvalidationInterval()` to disable the automatic broadcast interval
 
 
+## Debugging
+
+Inject `sparkSetup` and enable console logging messages with:
+
+    sparkSetup.debug = true;
+    
+
 ## Custom Animation Engine
 
 
