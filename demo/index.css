@@ -1,4 +1,5 @@
 /*
+color scheme...
 D8CAA8
 5C832F
 284907
@@ -15,6 +16,10 @@ html, body {
   font-weight: 700;
 }
 
+a, a:visited, a:active {
+  color: #D8CAA8;
+}
+
 p {
   font-size: 24px;
 }
@@ -28,6 +33,20 @@ h2 {
 
 h3 {
   font-size: 88px;
+}
+
+.hero {
+  position: relative;
+  height: 100vh;
+}
+
+.down-arrow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -22px;
+  font-size: 100px;
+  color: #7ea54e;
 }
 
 .intro {
@@ -69,12 +88,12 @@ h3 {
   width: 100%;
 }
 
-/* slide */
-.slide-cont {
+.pin-cont {
   position: relative;
   height: 1400px;
 }
 
+/* slide, reveal */
 .slide-proxy {
   height:200px;
 }
@@ -153,6 +172,7 @@ h3 {
   margin-left: -180px;
 }
 
+/* misc */
 .fade1 {
   opacity: .5;
 }
@@ -162,4 +182,8 @@ h3 {
 
 .hide {
   display: none;
+}
+
+.spacer50 {
+  height: 50vh;
 }
