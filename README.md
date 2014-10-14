@@ -241,13 +241,13 @@ Here's the same thing in Coffeescript:
       topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
     
       # center of the element hits the top of the viewport
-      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top + offset) }`
+      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top + offset) }`
     
       # center of the element hits the center of the viewport
-      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
+      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
     
       # center of the element hits the bottom of the viewport
-      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
+      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
     
       # bottom of the element hits the top of the viewport
       bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
@@ -258,7 +258,6 @@ Here's the same thing in Coffeescript:
       # bottom of the element hits the center of the viewport
       bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
     }
-
 
 ## Register a Custom Formula
 
