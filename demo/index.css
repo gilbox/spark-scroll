@@ -25,7 +25,7 @@ p {
 }
 
 h2 {
-  font-size: 46px;
+  font-size: 76px;
   display: block;
   text-align: center;
   margin-bottom: 150px;
@@ -42,7 +42,7 @@ h3 {
 
 .down-arrow {
   position: absolute;
-  bottom: 0;
+  bottom: 100px;
   left: 50%;
   margin-left: -22px;
   font-size: 100px;
