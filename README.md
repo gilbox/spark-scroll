@@ -13,6 +13,14 @@ of `spark-scroll` plus the ability to animate CSS properties in sync
 with the browser scroll position.
 
 
+Inspiration
+===========
+
+`spark-scroll` is heavily inspired by and borrows many ideas from
+[ScrollMagic](http://janpaepke.github.io/ScrollMagic/), including the demo 
+which attempts to re-create ScrollMagic's [demo page](http://janpaepke.github.io/ScrollMagic).
+
+
 Setup
 =====
 
