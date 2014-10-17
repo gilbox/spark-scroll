@@ -23,6 +23,12 @@ Inspiration
 which attempts to re-create [ScrollMagic's demo page](http://janpaepke.github.io/ScrollMagic).
 
 
+Download
+========
+
+- via bower: `bower install spark-scroll`
+- [via github](https://github.com/gilbox/spark-scroll/archive/master.zip)
+
 Setup
 =====
 
@@ -71,9 +77,9 @@ Usage
 ## Formula Example (spark-scroll)
 
     <h1 spark-scroll="{
-                top:{ onUp: myUpFn },
-        'center-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
-             bottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+                topTop:{ onUp: myUpFn },
+        'topCenter-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+             topBottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
         }">
       This Title is Spark
     </h1>
@@ -82,8 +88,8 @@ Usage
 ## Animated Example (spark-scroll-animate)
 
     <h1 spark-scroll-animate="{
-                top:{ color: '#f00', marginLeft: '50px' },
-             bottom:{ color: '#000', marginLeft: '0px' }
+                topTop:{ color: '#f00', marginLeft: '50px' },
+             topBottom:{ color: '#000', marginLeft: '0px' }
         }">
       This Title is Spark Animated
     </h1>
@@ -241,13 +247,13 @@ Here's the same thing in Coffeescript:
       topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
     
       # center of the element hits the top of the viewport
-      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top + offset) }`
+      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top + offset) }`
     
       # center of the element hits the center of the viewport
-      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
+      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight/2 + offset) }`
     
       # center of the element hits the bottom of the viewport
-      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element.clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
+      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight + offset) }`
     
       # bottom of the element hits the top of the viewport
       bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
@@ -258,7 +264,6 @@ Here's the same thing in Coffeescript:
       # bottom of the element hits the center of the viewport
       bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
     }
-
 
 ## Register a Custom Formula
 
@@ -332,6 +337,11 @@ Simple object with property for each property in `animations` object (see above)
 - `{borderRight: "linear", opacity: "easeinSine"}`
 
 
+### actor.finishedAddingKeyframes
+
+actors can optionally expose this function which will be called when parsing has completed
+
+
 ### actor.moveKeyframe(from, to)
 
 Moves a keyframe to a different time (scroll) value.
@@ -353,4 +363,13 @@ Updates the animation to a specific keyframe.
 
 The vertical scroll position (the library will treat this as time)
 
+## Custom Animation Engine: TweenMax (GSAP)
 
+This repo includes a plugin for TweenMax, `spark-scroll-gsap.js` which allows you to use TweenMax in place of 
+Shifty and Rekapi for animation. The syntax when using TweenMax will differ slightly 
+because TweenMax has some differences in the animation properties it supports. For example, 
+while Rekapi supports the `rotate` property which takes a string value like `360deg`, TweenMax 
+instead supports `rotation` which takes a numeric value like `360`. TweenMax also supports 
+a rather different set of [easing](http://greensock.com/roughease) equations than [Rekapi](http://rekapi.com/ease.html).
+
+**[spark-scroll TweenMax demo](http://gilbox.github.io/spark-scroll/demo/gsap/)** 

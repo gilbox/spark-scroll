@@ -56,13 +56,13 @@ angular.module('gilbox.sparkScroll', [])
   topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
 
   # center of the element hits the top of the viewport
-  centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top + offset) }`
+  centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top + offset) }`
 
   # center of the element hits the center of the viewport
-  centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) }`
+  centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight/2 + offset) }`
 
   # center of the element hits the bottom of the viewport
-  centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight + offset) }`
+  centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight + offset) }`
 
   # bottom of the element hits the top of the viewport
   bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
@@ -341,6 +341,9 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
         actionFrames.push(~~scrY) if actionCount
 
       isAnimated = hasAnimateAttr && !! animCount
+
+      # actors can optionally expose this function to receive a notification that parsing completed
+      actor.finishedAddingKeyframes && actor.finishedAddingKeyframes() if isAnimated
 
       actionFrames.sort (a,b) -> a > b
 

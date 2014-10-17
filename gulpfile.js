@@ -5,7 +5,7 @@ var coffee = require('gulp-coffee');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('coffee', function() {
-  gulp.src('./src/*.coffee')
+  gulp.src('./src/**/*.coffee')
     .pipe(plumber())
     .pipe(sourcemaps.init())
     .pipe(coffee())
@@ -15,7 +15,7 @@ gulp.task('coffee', function() {
 
 
 gulp.task('watch', ['default'], function() {
-  gulp.watch(['./src/*.coffee'], ['coffee']);
+  gulp.watch(['./src/**/*.coffee'], ['coffee']);
 });
 
 gulp.task('all', ['coffee']);

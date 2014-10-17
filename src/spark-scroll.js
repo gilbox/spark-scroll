@@ -19,9 +19,9 @@
     topTop: function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) },
     topCenter: function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) },
     topBottom: function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) },
-    centerTop: function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top + offset) },
-    centerCenter: function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight/2 + offset) },
-    centerBottom: function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + element[0].clientHeight/2 - containerRect.top - container.clientHeight + offset) },
+    centerTop: function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top + offset) },
+    centerCenter: function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight/2 + offset) },
+    centerBottom: function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight + offset) },
     bottomTop: function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) },
     bottomBottom: function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) },
     bottomCenter: function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }
@@ -329,6 +329,9 @@
           }
         }
         isAnimated = hasAnimateAttr && !!animCount;
+        if (isAnimated) {
+          actor.finishedAddingKeyframes && actor.finishedAddingKeyframes();
+        }
         actionFrames.sort(function(a, b) {
           return a > b;
         });
