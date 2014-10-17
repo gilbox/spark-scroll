@@ -23,6 +23,12 @@ Inspiration
 which attempts to re-create [ScrollMagic's demo page](http://janpaepke.github.io/ScrollMagic).
 
 
+Download
+========
+
+- via bower: `bower install spark-scroll`
+- [via github](https://github.com/gilbox/spark-scroll/archive/master.zip)
+
 Setup
 =====
 
