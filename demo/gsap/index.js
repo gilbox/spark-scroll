@@ -3,6 +3,10 @@ app = angular.module('myApp', ['gilbox.sparkScroll']);
 app.controller('appCtrl', function($scope, sparkSetup) {
   sparkSetup.enableInvalidationInterval();
   sparkSetup.debug = true;
+
+  this.upd = function () {
+    console.log("upd-->arguments: ", this.ratio);
+  }
 });
 
 app.directive('scopeElm', function () {
@@ -24,3 +28,22 @@ app.directive('scopeElm', function () {
     }
   }
 });
+
+app.directive('scopeSvgReveal', function () {
+  return {
+    scope: true,
+    priority: 1,
+    controllerAs: 'svgReveal',
+    controller: function ($element) {
+      var svgLength = ~~ $element[0].getTotalLength();
+      var offsetTarget = svgLength;
+      $element[0].style.strokeDasharray = svgLength + ' ' + svgLength;
+
+      this.update = function () {
+        $element[0].style.strokeDashoffset = ~~(offsetTarget*this.ratio);
+      }
+
+    }
+  }
+});
+
