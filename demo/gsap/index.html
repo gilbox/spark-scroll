@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AngularJS spark-scroll</title>
   <link href='http://fonts.googleapis.com/css?family=Expletus+Sans:700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="index.css"/>
+  <link rel="stylesheet" href="../index.css"/>
 </head>
 <body ng-controller="appCtrl as app" ng-cloak>
 
@@ -15,7 +15,7 @@
   <a href="https://github.com/gilbox/spark-scroll"><h1 spark-scroll-animate="{
                              topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
                              'topTop+200': { opacity: 0, transform: 'translate3d(0px,250px,0px)' }
-                            }" spark-trigger="hero"><img src="spark.svg" alt=""/></h1></a>
+                            }" spark-trigger="hero"><img src="../spark.svg" alt=""/></h1></a>
 
   <div class="down-arrow" spark-scroll-animate="{
                              topTop: { opacity: 1, transform: 'translate3d(0px,0px,0px)' },
@@ -28,21 +28,21 @@
 
 <!-- fade -->
 <h2 spark-scroll-animate="{
-                            topBottom: { opacity: 0 },
+                            bottomBottom: { opacity: 0 },
                             centerCenter: { opacity: 1 } }
                             ">fade</h2>
 
 <!-- move -->
 <h2 spark-scroll-animate="{
-                            topBottom: { marginLeft: '-500px', opacity: 0 },
-                            centerCenter: { marginLeft: '0px', opacity: 1, ease: 'bouncePast' }
+                            bottomBottom: { marginLeft: '-500px', opacity: 0 },
+                            centerCenter: { marginLeft: '0px', opacity: 1, ease: 'easeOutElastic' }
                             }">move</h2>
 
 <!-- spin -->
 <div spark-id="rotate-proxy"></div>
 <h2 spark-trigger="rotate-proxy" spark-scroll-animate="{
-                            topBottom: { rotate: '0deg' } ,
-                            topCenter: { rotate: '360deg' }
+                            topBottom: { rotation: '0' } ,
+                            topCenter: { rotation: '360' }
                             }">spin</h2>
 
 <!-- scale -->
@@ -50,7 +50,7 @@
 <h2 spark-trigger="scale-proxy" spark-scroll-animate="{
                             'topCenter-201': { scale: 0.01, opacity: 0},
                             'topCenter-200': { scale: 0.01, opacity: 1 },
-                            'topCenter+70': { scale: 1, ease: 'bouncePast' }
+                            'topCenter+70': { scale: 1, ease: 'easeOutBounce' }
                              }">scale</h2>
 
 <!-- pin, reveal, slide, color, unpin -->
@@ -76,7 +76,7 @@
     <!-- with array notation we can apply bounce easing to just one property in a keyframe -->
     <div spark-scroll-animate="{
          'topTop+250': { bottom: '100%', backgroundColor: '#5c832f', 'upAddClass,downRemoveClass': 'hide' },
-         'topTop+400': { bottom: ['0%','bounce'], backgroundColor: '#284907' },
+         'topTop+400': { bottom: ['0%','easeOutBounce'], backgroundColor: '#284907' },
          'topTop+450': { backgroundColor: '#00a' },
          'topTop+500': { backgroundColor: '#a00' },
          'topTop+550': { backgroundColor: '#5c832f' }
@@ -132,7 +132,7 @@
 <div class="spacer50"></div>
 
 <a href="https://github.com/gilbox/spark-scroll">
-  <img class="center" src="GitHub-Mark-64px.png" alt=""/>
+  <img class="center" src="../GitHub-Mark-64px.png" alt=""/>
 </a>
 
 <div class="spacer10"></div>
@@ -142,11 +142,17 @@
 <div class="spacer10"></div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
-<script src="vendor/lodash.js"></script>
-<script src="vendor/shifty.js"></script>
-<script src="vendor/rekapi.js"></script>
-<script src="vendor/AnimationFrame.js"></script>
-<script src="../src/spark-scroll.js"></script>
+
+<!-- @todo: for some reason TimelineLite doesn't work and we have to use TweenMax instead -->
+<!--<script src="../vendor/gsap/src/uncompressed/TweenLite.js"></script>-->
+<!--<script src="../vendor/gsap/src/uncompressed/TimelineLite.js"></script>-->
+
+<script src="../vendor/gsap/src/uncompressed/TweenMax.js"></script>
+
+<script src="../vendor/lodash.js"></script>
+<script src="../vendor/AnimationFrame.js"></script>
+<script src="../../src/spark-scroll.js"></script>
+<script src="../../src/plugins/spark-scroll-gsap.js"></script>
 <script src="index.js"></script>
 
 </body>

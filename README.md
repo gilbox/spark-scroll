@@ -331,6 +331,11 @@ Simple object with property for each property in `animations` object (see above)
 - `{borderRight: "linear", opacity: "easeinSine"}`
 
 
+### actor.finishedAddingKeyframes
+
+actors can optionally expose this function which will be called when parsing has completed
+
+
 ### actor.moveKeyframe(from, to)
 
 Moves a keyframe to a different time (scroll) value.
@@ -352,4 +357,13 @@ Updates the animation to a specific keyframe.
 
 The vertical scroll position (the library will treat this as time)
 
+## Custom Animation Engine: TweenMax (GSAP)
 
+This repo includes a plugin for TweenMax, `spark-scroll-gsap.js` which allows you to use TweenMax in place of 
+Shifty and Rekapi for animation. The syntax when using TweenMax will differ slightly 
+because TweenMax has some differences in the animation properties it supports. For example, 
+while Rekapi supports the `rotate` property which takes a string value like `360deg`, TweenMax 
+instead supports `rotation` which takes a numeric value like `360`. TweenMax also supports 
+a rather different set of [easing](http://greensock.com/roughease) equations than [Rekapi](http://rekapi.com/ease.html).
+
+**[spark-scroll TweenMax demo](http://gilbox.github.io/spark-scroll/demo/gsap/)** 

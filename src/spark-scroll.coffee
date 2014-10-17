@@ -342,6 +342,9 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
       isAnimated = hasAnimateAttr && !! animCount
 
+      # actors can optionally expose this function to receive a notification that parsing completed
+      actor.finishedAddingKeyframes && actor.finishedAddingKeyframes() if isAnimated
+
       actionFrames.sort (a,b) -> a > b
 
       y = prevy = scrollY = $window.scrollY

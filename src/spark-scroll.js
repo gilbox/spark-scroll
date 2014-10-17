@@ -329,6 +329,9 @@
           }
         }
         isAnimated = hasAnimateAttr && !!animCount;
+        if (isAnimated) {
+          actor.finishedAddingKeyframes && actor.finishedAddingKeyframes();
+        }
         actionFrames.sort(function(a, b) {
           return a > b;
         });
