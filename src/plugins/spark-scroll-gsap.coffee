@@ -33,13 +33,14 @@ class Actor
         # ...do this:
         # creating a new fromTo for each property to support per-property easing
         # this seems pretty inefficient
+        duration = frame.scrollY - prevFrame.scrollY
         for k,v of frame.anims
           a = {}
           pa = {}
           a[k] = v
           a.ease = frame.ease[k]
           pa[k] = prevFrame.anims[k]
-          @tl.fromTo(@context, frame.scrollY - prevFrame.scrollY, pa, a, prevFrame.scrollY)
+          @tl.fromTo(@context, duration, pa, a, prevFrame.scrollY)
     @
     
   finishedAddingKeyframes: ->

@@ -36,9 +36,10 @@
       this.tl.clear();
       _.forEach(this.normalizedFrames, (function(_this) {
         return function(frame, index, arr) {
-          var a, k, pa, prevFrame, v, _ref, _results;
+          var a, duration, k, pa, prevFrame, v, _ref, _results;
           if (index) {
             prevFrame = arr[index - 1];
+            duration = frame.scrollY - prevFrame.scrollY;
             _ref = frame.anims;
             _results = [];
             for (k in _ref) {
@@ -48,7 +49,7 @@
               a[k] = v;
               a.ease = frame.ease[k];
               pa[k] = prevFrame.anims[k];
-              _results.push(_this.tl.fromTo(_this.context, frame.scrollY - prevFrame.scrollY, pa, a, prevFrame.scrollY));
+              _results.push(_this.tl.fromTo(_this.context, duration, pa, a, prevFrame.scrollY));
             }
             return _results;
           }
