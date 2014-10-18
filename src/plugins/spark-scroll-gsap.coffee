@@ -41,6 +41,8 @@ class Actor
           a.ease = frame.ease[k]
           pa[k] = prevFrame.anims[k]
           @tl.fromTo(@context, duration, pa, a, prevFrame.scrollY)
+          @tl.pause()
+      return true
     @
     
   finishedAddingKeyframes: ->
