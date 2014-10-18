@@ -24,3 +24,21 @@ app.directive('scopeElm', function () {
     }
   }
 });
+
+app.directive('scopeSvgReveal', function () {
+  return {
+    scope: true,
+    priority: 1,
+    controllerAs: 'svgReveal',
+    controller: function ($element) {
+      var svgLength = ~~ $element[0].getTotalLength();
+      var offsetTarget = svgLength;
+      $element[0].style.strokeDasharray = svgLength + ' ' + svgLength;
+
+      this.update = function (ratio) {
+        $element[0].style.strokeDashoffset = ~~(offsetTarget*ratio);
+      }
+
+    }
+  }
+});

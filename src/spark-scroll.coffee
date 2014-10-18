@@ -149,6 +149,12 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
 
+    # all callback-related vars
+    callback = false
+    prevRatio = 0
+    minScrollY = 0
+    maxScrollY = 0
+
     animator = hasAnimateAttr && sparkAnimator.instance()
     actor = isAnimated && animator.addActor({ context: element[0] })
     y = 0
@@ -212,6 +218,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       update = ->
         d = scrollY - y
         ad = Math.abs(d)
+        doCallback() if callback
         actionsUpdate() # sets updating = false
         if ad < 1.5
           y = scrollY
@@ -225,7 +232,35 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       update = ->
         y = scrollY
         animator.update(y)
+        doCallback() if callback
         actionsUpdate() # sets updating = false
+
+
+    # @todo: we could use $parse instead for a more flexible solution but is the addt'l overhead worth it?
+    if attr.hasOwnProperty('sparkScrollCallback')
+      attr.$observe 'sparkScrollCallback', (v) ->
+        callback = scope.$eval(v)
+        callback = false unless _.isFunction(callback)
+        recalcMinMax() unless maxScrollY
+
+
+    recalcMinMax = ->
+      idx = 0
+      for scrY of sparkData
+        scrY = ~~ scrY
+        if idx++
+          if scrY > maxScrollY
+            maxScrollY = scrY
+          else if scrY < minScrollY
+            minScrollY = scrY
+        else
+          maxScrollY = minScrollY = scrY
+
+
+    doCallback = ->
+      ratio = Math.max(0, Math.min(y/(maxScrollY-minScrollY), 1))
+      callback ratio if ratio != prevRatio
+      prevRatio = ratio
 
 
     recalcFormulas = ->
@@ -243,6 +278,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
             delete sparkData[scrY]
 
         if changed
+          recalcMinMax() if callback
           actionFrames = []
           actionFrames.push(~~scrY) for scrY, kf of sparkData when kf.actionCount
           actionFrames.sort (a,b) -> a > b
@@ -346,6 +382,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       actor.finishedAddingKeyframes && actor.finishedAddingKeyframes() if isAnimated
 
       actionFrames.sort (a,b) -> a > b
+      recalcMinMax() if callback
 
       y = prevy = scrollY = $window.scrollY
       update() if isAnimated
@@ -361,8 +398,13 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       parseData()
     , true  # deep watch
 
-    # respond to scroll event
 
+    nonAnimatedUpdate = ->
+      doCallback() if callback
+      actionsUpdate()
+
+
+    # respond to scroll event
     onScroll = ->
       scrollY = $window.scrollY
 
@@ -372,7 +414,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
             animationFrame.request(update)
         else
           y = scrollY
-          animationFrame.request(actionsUpdate) # @todo: do these calls get queued between frames ?
+          animationFrame.request(nonAnimatedUpdate) # @todo: do these calls get queued between frames ?
 
     onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
 
