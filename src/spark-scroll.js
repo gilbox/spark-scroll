@@ -211,7 +211,7 @@
         };
       }
       recalcFormulas = function() {
-        var changed, containerRect, keyFrame, newScrY, rect, scrY;
+        var changed, containerRect, keyFrame, kf, newScrY, rect, scrY;
         if (sparkData) {
           changed = false;
           rect = triggerElement[0].getBoundingClientRect();
@@ -234,7 +234,10 @@
           if (changed) {
             actionFrames = [];
             for (scrY in sparkData) {
-              actionFrames.push(~~scrY);
+              kf = sparkData[scrY];
+              if (kf.actionCount) {
+                actionFrames.push(~~scrY);
+              }
             }
             actionFrames.sort(function(a, b) {
               return a > b;
@@ -323,6 +326,7 @@
           keyFrame.formula = formula;
           keyFrame.element = element;
           keyFrame.scope = scope;
+          keyFrame.actionCount = actionCount;
           sparkData[scrY] = keyFrame;
           if (actionCount) {
             actionFrames.push(~~scrY);

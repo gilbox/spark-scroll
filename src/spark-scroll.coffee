@@ -244,7 +244,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
         if changed
           actionFrames = []
-          actionFrames.push(~~scrY) for scrY of sparkData
+          actionFrames.push(~~scrY) for scrY, kf of sparkData when kf.actionCount
           actionFrames.sort (a,b) -> a > b
           onScroll()  # todo: this is checking scrollY unnecessarily
           # @todo: now are we screwed if something was already passed by ?
@@ -335,7 +335,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
         keyFrame.formula = formula
         keyFrame.element = element
         keyFrame.scope = scope
-        #        keyFrame.actionCount = actionCount
+        keyFrame.actionCount = actionCount
 
         sparkData[scrY] = keyFrame
         actionFrames.push(~~scrY) if actionCount
