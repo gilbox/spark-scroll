@@ -36,12 +36,11 @@
       this.tl.clear();
       _.forEach(this.normalizedFrames, (function(_this) {
         return function(frame, index, arr) {
-          var a, duration, k, pa, prevFrame, v, _ref, _results;
+          var a, duration, k, pa, prevFrame, v, _ref;
           if (index) {
             prevFrame = arr[index - 1];
             duration = frame.scrollY - prevFrame.scrollY;
             _ref = frame.anims;
-            _results = [];
             for (k in _ref) {
               v = _ref[k];
               a = {};
@@ -49,10 +48,11 @@
               a[k] = v;
               a.ease = frame.ease[k];
               pa[k] = prevFrame.anims[k];
-              _results.push(_this.tl.fromTo(_this.context, duration, pa, a, prevFrame.scrollY));
+              _this.tl.fromTo(_this.context, duration, pa, a, prevFrame.scrollY);
+              _this.tl.pause();
             }
-            return _results;
           }
+          return true;
         };
       })(this));
       return this;
@@ -99,7 +99,7 @@
 
     GSAPAnimator.prototype.update = function(pos) {
       if (pos >= 0) {
-        this.tl.seek(pos);
+        this.tl.seek(pos, false);
       }
       return this;
     };

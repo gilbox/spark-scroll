@@ -3,10 +3,6 @@ app = angular.module('myApp', ['gilbox.sparkScroll']);
 app.controller('appCtrl', function($scope, sparkSetup) {
   sparkSetup.enableInvalidationInterval();
   sparkSetup.debug = true;
-
-  this.upd = function () {
-    console.log("upd-->arguments: ", this.ratio);
-  }
 });
 
 app.directive('scopeElm', function () {

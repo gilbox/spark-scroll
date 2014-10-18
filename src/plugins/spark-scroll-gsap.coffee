@@ -41,6 +41,8 @@ class Actor
           a.ease = frame.ease[k]
           pa[k] = prevFrame.anims[k]
           @tl.fromTo(@context, duration, pa, a, prevFrame.scrollY)
+          @tl.pause()
+      return true
     @
     
   finishedAddingKeyframes: ->
@@ -72,7 +74,7 @@ class GSAPAnimator
     @actor = new Actor(@tl, @context)
 
   update: (pos) ->
-    @tl.seek(pos) if pos>=0 # It balks at negative pos values
+    @tl.seek(pos, false) if pos>=0 # It balks at negative pos values
     @
 
 
