@@ -219,7 +219,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
         else
           updating = true
           y += if ad>8 then d*0.25 else (if d > 0 then 1 else -1) # ease the scroll
-          animator.update(parseInt(y))
+          animator.update(~~y)
           animationFrame.request(update)
     else
       update = ->

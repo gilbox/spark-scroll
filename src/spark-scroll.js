@@ -199,7 +199,7 @@
           } else {
             updating = true;
             y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
-            animator.update(parseInt(y));
+            animator.update(~~y);
             return animationFrame.request(update);
           }
         };
