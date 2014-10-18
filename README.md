@@ -119,6 +119,42 @@ Usage
     </h1>
  
  
+## spark-scroll-callback: Callback on Scroll Event
+
+This attribute expects a string value, that when evaluated in the element's scope should return a function reference.
+The function reference will be called for every *frame* of scrolling. `spark-scroll` internally debounces scroll events 
+so the callback will not necessarily be called on all native scroll events. Note that the concept of a *frame*
+can be further affected by the [`spark-scroll-ease`](#spark-scroll-ease-scroll-easing) property.
+
+Every time the function is called, it is provided one argument, `ratio` which is a decimal value
+between 0 and 1 representing the progress of scroll within the limits of the maximum and minimum 
+scroll positions of the `spark-scroll` or `spark-scroll-animate` attributes. The simplest use of 
+`spark-scroll-callback` would look something like this:
+
+    <h1 spark-scroll-callback="myFunctionOnScope"
+        spark-scroll="{ topBottom:0, topTop:0 }">
+
+When `spark-scroll` calls `myFunctionOnScope(ratio)`, the `ratio` is calculated based on the current scroll position,
+and the `topBottom` and `topTop` formulas.
+
+Note that in the preceding example instead of assigning an object to the keyframes, we simply
+assign `0`. However, if we wanted to use a callback while at the same time taking advantage of *action* and
+*animation* properties we could do something like this:
+
+    <h1 spark-scroll-callback="myOtherFunctionOnScope"
+        spark-scroll-animate="{
+                topTop:{ opacity: 0 },
+             topCenter:{ opacity: 1, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+             topBottom:{ 'upBroadcast': 'event-to-broadcast' }
+        }">
+      This Title is Spark
+    </h1>
+ 
+Note that in the preceding example, when `spark-scroll-animate` calls `myOtherFunctionOnScope(ratio)`, the `ratio` argument
+is calculated using the `topTop` and `topBottom` formulas because they are at the extremes of the 
+keyframe range for this element.
+
+
 ## spark-scroll-bind-once: One-Time Binding
  
 If you are using a version of angular (<=1.3) which doesn't support one-time lazy binding

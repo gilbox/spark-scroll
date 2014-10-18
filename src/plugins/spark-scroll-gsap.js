@@ -88,7 +88,7 @@
   GSAPAnimator = (function() {
     function GSAPAnimator() {
       this.tl = new TimelineLite({
-        useFrames: false
+        useFrames: true
       });
     }
 

@@ -112,9 +112,13 @@
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, container, data, hasAnimateAttr, isAnimated, onInvalidate, onScroll, parseData, prevy, recalcFormulas, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, doCallback, hasAnimateAttr, isAnimated, maxScrollY, minScrollY, nonAnimatedUpdate, onInvalidate, onScroll, parseData, prevRatio, prevy, recalcFormulas, recalcMinMax, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
+      callback = false;
+      prevRatio = 0;
+      minScrollY = 0;
+      maxScrollY = 0;
       animator = hasAnimateAttr && sparkAnimator.instance();
       actor = isAnimated && animator.addActor({
         context: element[0]
@@ -192,6 +196,9 @@
           var ad, d;
           d = scrollY - y;
           ad = Math.abs(d);
+          if (callback) {
+            doCallback();
+          }
           actionsUpdate();
           if (ad < 1.5) {
             y = scrollY;
@@ -199,7 +206,7 @@
           } else {
             updating = true;
             y += ad > 8 ? d * 0.25 : (d > 0 ? 1 : -1);
-            animator.update(parseInt(y));
+            animator.update(~~y);
             return animationFrame.request(update);
           }
         };
@@ -207,11 +214,53 @@
         update = function() {
           y = scrollY;
           animator.update(y);
+          if (callback) {
+            doCallback();
+          }
           return actionsUpdate();
         };
       }
+      if (attr.hasOwnProperty('sparkScrollCallback')) {
+        attr.$observe('sparkScrollCallback', function(v) {
+          callback = scope.$eval(v);
+          if (!_.isFunction(callback)) {
+            callback = false;
+          }
+          if (!maxScrollY) {
+            return recalcMinMax();
+          }
+        });
+      }
+      recalcMinMax = function() {
+        var idx, scrY, _results;
+        idx = 0;
+        _results = [];
+        for (scrY in sparkData) {
+          scrY = ~~scrY;
+          if (idx++) {
+            if (scrY > maxScrollY) {
+              _results.push(maxScrollY = scrY);
+            } else if (scrY < minScrollY) {
+              _results.push(minScrollY = scrY);
+            } else {
+              _results.push(void 0);
+            }
+          } else {
+            _results.push(maxScrollY = minScrollY = scrY);
+          }
+        }
+        return _results;
+      };
+      doCallback = function() {
+        var ratio;
+        ratio = Math.max(0, Math.min(y / (maxScrollY - minScrollY), 1));
+        if (ratio !== prevRatio) {
+          callback(ratio);
+        }
+        return prevRatio = ratio;
+      };
       recalcFormulas = function() {
-        var changed, containerRect, keyFrame, newScrY, rect, scrY;
+        var changed, containerRect, keyFrame, kf, newScrY, rect, scrY;
         if (sparkData) {
           changed = false;
           rect = triggerElement[0].getBoundingClientRect();
@@ -232,9 +281,15 @@
             }
           }
           if (changed) {
+            if (callback) {
+              recalcMinMax();
+            }
             actionFrames = [];
             for (scrY in sparkData) {
-              actionFrames.push(~~scrY);
+              kf = sparkData[scrY];
+              if (kf.actionCount) {
+                actionFrames.push(~~scrY);
+              }
             }
             actionFrames.sort(function(a, b) {
               return a > b;
@@ -323,6 +378,7 @@
           keyFrame.formula = formula;
           keyFrame.element = element;
           keyFrame.scope = scope;
+          keyFrame.actionCount = actionCount;
           sparkData[scrY] = keyFrame;
           if (actionCount) {
             actionFrames.push(~~scrY);
@@ -335,6 +391,9 @@
         actionFrames.sort(function(a, b) {
           return a > b;
         });
+        if (callback) {
+          recalcMinMax();
+        }
         y = prevy = scrollY = $window.scrollY;
         if (isAnimated) {
           update();
@@ -351,6 +410,12 @@
         }
         return parseData();
       }, true);
+      nonAnimatedUpdate = function() {
+        if (callback) {
+          doCallback();
+        }
+        return actionsUpdate();
+      };
       onScroll = function() {
         scrollY = $window.scrollY;
         if (!updating) {
@@ -359,7 +424,7 @@
             return animationFrame.request(update);
           } else {
             y = scrollY;
-            return animationFrame.request(actionsUpdate);
+            return animationFrame.request(nonAnimatedUpdate);
           }
         }
       };
