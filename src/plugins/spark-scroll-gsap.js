@@ -99,7 +99,7 @@
 
     GSAPAnimator.prototype.update = function(pos) {
       if (pos >= 0) {
-        this.tl.seek(pos);
+        this.tl.seek(pos, false);
       }
       return this;
     };

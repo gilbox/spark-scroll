@@ -74,7 +74,7 @@ class GSAPAnimator
     @actor = new Actor(@tl, @context)
 
   update: (pos) ->
-    @tl.seek(pos) if pos>=0 # It balks at negative pos values
+    @tl.seek(pos, false) if pos>=0 # It balks at negative pos values
     @
 
 
