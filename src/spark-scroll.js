@@ -28,12 +28,20 @@
   }).constant('sparkActionProps', {
     'onDown': {
       down: function(o) {
-        return o.val(this, 'onDown', o);
+        if (_.isString(o.val)) {
+          return this.scope.$eval(o.val)(this, 'onDown', o);
+        } else {
+          return o.val(this, 'onDown', o);
+        }
       }
     },
     'onUp': {
       up: function(o) {
-        return o.val(this, 'onUp', o);
+        if (_.isString(o.val)) {
+          return this.scope.$eval(o.val)(this, 'onUp', o);
+        } else {
+          return o.val(this, 'onUp', o);
+        }
       }
     },
     'downAddClass': {

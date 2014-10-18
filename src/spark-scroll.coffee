@@ -81,11 +81,11 @@ angular.module('gilbox.sparkScroll', [])
 
   # fn reference that is called when scrolled down past keyframe
   'onDown':
-    down: (o)-> o.val(@, 'onDown', o)
+    down: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onDown', o) else o.val(@, 'onDown', o)
 
   # fn reference that is called when scrolled up past keyframe
   'onUp':
-    up: (o)-> o.val(@, 'onUp', o)
+    up: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onUp', o) else o.val(@, 'onUp', o)
 
   # class(es) added when scrolled down past keyframe,
   'downAddClass':
