@@ -322,7 +322,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
           scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset)
           if sparkData[scrY]  # silent death for overlapping scrY's (assume that the element isn't ready)
-            console.log "warning: spark-scroll failed to parse data", (attr.sparkScroll || attr.sparkScrollAnimate) if sparkSetup.debug
+            console.log "warning: spark-scroll failed to calculate formulas", (attr.sparkScroll || attr.sparkScrollAnimate) if sparkSetup.debug
             sparkData = null
             return
 
