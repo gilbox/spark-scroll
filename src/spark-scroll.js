@@ -332,7 +332,7 @@
             scrY = formula.fn(triggerElement, container, rect, containerRect, formula.offset);
             if (sparkData[scrY]) {
               if (sparkSetup.debug) {
-                console.log("warning: spark-scroll failed to parse data", attr.sparkScroll || attr.sparkScrollAnimate);
+                console.log("warning: spark-scroll failed to calculate formulas", attr.sparkScroll || attr.sparkScrollAnimate);
               }
               sparkData = null;
               return;
