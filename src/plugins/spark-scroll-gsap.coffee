@@ -67,7 +67,7 @@ class Actor
 
 class GSAPAnimator
   constructor: ->
-    @tl = new TimelineLite({useFrames:false})
+    @tl = new TimelineLite({useFrames:true})
 
   addActor: (options) ->
     @context = options.context
