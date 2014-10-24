@@ -170,7 +170,6 @@ This may cause scrolling to feel laggy but animations will looks smoother.
  
 ## Built-in Actions
 
-    angular.module('gilbox.sparkScroll', [])
     .constant 'sparkActionProps', {
     
       # When the up, down fns are called, `this` is the current keyFrame object and `o` is the action object
@@ -256,20 +255,19 @@ Here's the same thing in Coffeescript:
 
 ## Built-in Formulas
 
-    angular.module('gilbox.sparkScroll', [])
     .constant 'sparkFormulas', {
     
       # formulas are always in the format: variable or variable<offset>
       #   (note that you cannot combine formula variables)
       # for example:
       #
-      #      top+40
-      #      top-120
-      #      top
-      #      center
-      #      center-111
+      #      topTop+40
+      #      topBottom-120
+      #      topCenter
+      #      centerTop
+      #      centerCenter-111
       #
-      # are valid formulas. (top40 is valid as well but less intuitive)
+      # are valid formulas. (topTop40 is valid as well but less intuitive)
       #
       # each property of the sparkFormulas object is a formula variable
     

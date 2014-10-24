@@ -36,13 +36,13 @@ angular.module('gilbox.sparkScroll', [])
   #   (note that you cannot combine formula variables)
   # for example:
   #
-  #      top+40
-  #      top-120
-  #      top
-  #      center
-  #      center-111
+  #      topTop+40
+  #      topBottom-120
+  #      topCenter
+  #      centerTop
+  #      centerCenter-111
   #
-  # are valid formulas. (top40 is valid as well but less intuitive)
+  # are valid formulas. (topTop40 is valid as well but less intuitive)
   #
   # each property of the sparkFormulas object is a formula variable
 
