@@ -402,7 +402,7 @@
         if (callback) {
           recalcMinMax();
         }
-        y = prevy = scrollY = $window.scrollY;
+        y = prevy = scrollY = $window.pageYOffset;
         if (isAnimated) {
           update();
         }
@@ -425,7 +425,7 @@
         return actionsUpdate();
       };
       onScroll = function() {
-        scrollY = $window.scrollY;
+        scrollY = $window.pageYOffset;
         if (!updating) {
           updating = true;
           if (isAnimated) {

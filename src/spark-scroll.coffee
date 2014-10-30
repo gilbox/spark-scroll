@@ -384,7 +384,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       actionFrames.sort (a,b) -> a > b
       recalcMinMax() if callback
 
-      y = prevy = scrollY = $window.scrollY
+      y = prevy = scrollY = $window.pageYOffset
       update() if isAnimated
       actionsUpdate()
 
@@ -406,7 +406,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     # respond to scroll event
     onScroll = ->
-      scrollY = $window.scrollY
+      scrollY = $window.pageYOffset
 
       unless updating # debounced update
         updating = true # in-case multiple scroll events can occur in one frame (possible?)
