@@ -1,14 +1,5 @@
 angular.module('gilbox.sparkScroll', [])
 
-# how do we optionally load require modules?
-# this is the best solution I've come up with so far.
-.config ->
-  if (typeof define == 'function' && define.amd)
-    require ['AnimationFrame', 'underscore', 'rekapi'], (af, us, r) ->
-      [AnimationFrame, _, Rekapi] = [af,us,r];
-  else
-    [Rekapi, _, AnimationFrame] = [window.Rekapi, window._, window.AnimationFrame]
-
 # sparkAnimator can be overridden to use any animation engine
 # so long as the sparkAnimator service supports the following Rekapi-like
 # interface:

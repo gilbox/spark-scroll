@@ -1,17 +1,7 @@
 (function() {
   var directiveFn;
 
-  angular.module('gilbox.sparkScroll', []).config(function() {
-    var AnimationFrame, Rekapi, _, _ref;
-    if (typeof define === 'function' && define.amd) {
-      return require(['AnimationFrame', 'underscore', 'rekapi'], function(af, us, r) {
-        var AnimationFrame, Rekapi, _, _ref;
-        return _ref = [af, us, r], AnimationFrame = _ref[0], _ = _ref[1], Rekapi = _ref[2], _ref;
-      });
-    } else {
-      return _ref = [window.Rekapi, window._, window.AnimationFrame], Rekapi = _ref[0], _ = _ref[1], AnimationFrame = _ref[2], _ref;
-    }
-  }).factory('sparkAnimator', function($document) {
+  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', function($document) {
     return {
       instance: function() {
         return Rekapi && new Rekapi($document[0].body);
