@@ -101,6 +101,8 @@
     this.disableInvalidationInterval = function() {
       return $interval.cancel(int);
     };
+    this.disableSparkScrollAnimate = false;
+    this.disableSparkScroll = false;
     this.debug = false;
     return this;
   }).service('sparkId', function() {
@@ -123,6 +125,12 @@
       var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, doCallback, hasAnimateAttr, isAnimated, maxScrollY, minScrollY, nonAnimatedUpdate, onInvalidate, onScroll, parseData, prevRatio, prevy, recalcFormulas, recalcMinMax, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
+      if (hasAnimateAttr && sparkSetup.disableSparkScrollAnimate) {
+        return;
+      }
+      if (!hasAnimateAttr && sparkSetup.disableSparkScroll) {
+        return;
+      }
       callback = false;
       prevRatio = 0;
       minScrollY = 0;

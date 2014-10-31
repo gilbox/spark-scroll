@@ -329,6 +329,17 @@ Inject `sparkSetup` and enable console logging messages with:
 
     sparkSetup.debug = true;
     
+    
+## Globally disabling
+
+Inject `sparkSetup` and disable all `spark-scroll` directives with:
+
+    sparkSetup.disableSparkScroll = true;
+    
+Inject `sparkSetup` and disable all `spark-scroll-animate` directives with:
+
+    sparkSetup.disableSparkScrollAnimate = true;
+    
 
 ## Custom Animation Engine
 

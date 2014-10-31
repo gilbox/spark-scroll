@@ -128,6 +128,12 @@ angular.module('gilbox.sparkScroll', [])
 
   @disableInvalidationInterval = -> $interval.cancel(int)
 
+  # enable/disable spark-scroll-animate
+  @disableSparkScrollAnimate = false
+
+  # enable/disable spark-scroll
+  @disableSparkScroll = false
+
   # enable/disable logging
   @debug = false
   @
@@ -148,6 +154,8 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
+    return if hasAnimateAttr and sparkSetup.disableSparkScrollAnimate
+    return if !hasAnimateAttr and sparkSetup.disableSparkScroll
 
     # all callback-related vars
     callback = false
