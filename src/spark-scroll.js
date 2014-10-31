@@ -1,15 +1,17 @@
 (function() {
-  var AnimationFrame, Rekapi, directiveFn, _, _ref;
+  var directiveFn;
 
-  if (typeof define === 'function' && define.amd) {
-    Rekapi = window.Rekapi || (require.defined('rekapi') && require('rekapi'));
-    _ = window._ || (require.defined('lodash') ? require('lodash') : require('underscore'));
-    AnimationFrame = window.AnimationFrame || (require.defined('animationFrame') ? require('animationFrame') : require('AnimationFrame'));
-  } else {
-    _ref = [window.Rekapi, window._, window.AnimationFrame], Rekapi = _ref[0], _ = _ref[1], AnimationFrame = _ref[2];
-  }
-
-  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', function($document) {
+  angular.module('gilbox.sparkScroll', []).config(function() {
+    var AnimationFrame, Rekapi, _, _ref;
+    if (typeof define === 'function' && define.amd) {
+      return require(['AnimationFrame', 'underscore', 'rekapi'], function(af, us, r) {
+        var AnimationFrame, Rekapi, _, _ref;
+        return _ref = [af, us, r], AnimationFrame = _ref[0], _ = _ref[1], Rekapi = _ref[2], _ref;
+      });
+    } else {
+      return _ref = [window.Rekapi, window._, window.AnimationFrame], Rekapi = _ref[0], _ = _ref[1], AnimationFrame = _ref[2], _ref;
+    }
+  }).factory('sparkAnimator', function($document) {
     return {
       instance: function() {
         return Rekapi && new Rekapi($document[0].body);
@@ -164,18 +166,18 @@
         setTriggerElement();
       }
       actionsUpdate = function() {
-        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4;
+        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         d = y - prevy;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && y < actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref1 = c.actions;
-            for (a in _ref1) {
-              o = _ref1[a];
-              _ref2 = o.props;
-              for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                prop = _ref2[_i];
+            _ref = c.actions;
+            for (a in _ref) {
+              o = _ref[a];
+              _ref1 = o.props;
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                prop = _ref1[_i];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.up) {
                   actionProp.up.call(c, o);
@@ -189,12 +191,12 @@
           idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
           while (idx < actionFrames.length && y > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref3 = c.actions;
-            for (a in _ref3) {
-              o = _ref3[a];
-              _ref4 = o.props;
-              for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-                prop = _ref4[_j];
+            _ref2 = c.actions;
+            for (a in _ref2) {
+              o = _ref2[a];
+              _ref3 = o.props;
+              for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+                prop = _ref3[_j];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.down) {
                   actionProp.down.call(c, o);

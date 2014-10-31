@@ -1,19 +1,13 @@
-if (typeof define == 'function' && define.amd)
-  # When using rekapi with requirejs, you must handle the dependencies yourself, because
-  # here we assume that if require is being used then rekapi has already been loaded in
-  Rekapi = window.Rekapi or (require.defined('rekapi') and require('rekapi'))
-
-  # If any other deps are being loaded in without being exposed in the global namespace,
-  # the same as above applies
-  _ = window._ or (if require.defined('lodash') then require('lodash') else require('underscore'))
-  AnimationFrame = window.AnimationFrame or (if require.defined('animationFrame') then require('animationFrame') else require('AnimationFrame'))
-else
-  [Rekapi, _, AnimationFrame] = [window.Rekapi, window._, window.AnimationFrame]
-
-
-
-
 angular.module('gilbox.sparkScroll', [])
+
+# how do we optionally load require modules?
+# this is the best solution I've come up with so far.
+.config ->
+  if (typeof define == 'function' && define.amd)
+    require ['AnimationFrame', 'underscore', 'rekapi'], (af, us, r) ->
+      [AnimationFrame, _, Rekapi] = [af,us,r];
+  else
+    [Rekapi, _, AnimationFrame] = [window.Rekapi, window._, window.AnimationFrame]
 
 # sparkAnimator can be overridden to use any animation engine
 # so long as the sparkAnimator service supports the following Rekapi-like
