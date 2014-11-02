@@ -12,8 +12,16 @@ Additionally, the `spark-scroll-animate` directive includes all of the features
 of `spark-scroll` plus the ability to animate CSS properties in sync 
 with the browser scroll position.
 
+For animating SVG elements with `spark-scroll-animate`, use [the GSAP plugin](custom-animation-engine-tweenmax-gsap)
+
 **[spark-scroll demo](http://gilbox.github.io/spark-scroll/demo/)** 
 
+
+Compatibility
+=============
+
+- IE9+ (IE8 untested), all modern browsers
+- Angular 1.x
 
 Inspiration
 ===========
