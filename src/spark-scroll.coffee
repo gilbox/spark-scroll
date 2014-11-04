@@ -11,9 +11,10 @@ angular.module('gilbox.sparkScroll', [])
 # sparkAnimator.update(...)       # works just like Rekapi.update(...)
 #
 # See the Rekapi docs for implementation details   http://rekapi.com/dist/doc/
-.factory 'sparkAnimator', ($document) ->
+.factory 'sparkAnimator', ['$document', ($document) ->
   instance: ->
     Rekapi && new Rekapi($document[0].body)
+]
 
 .constant 'sparkFormulas', {
 
@@ -105,7 +106,7 @@ angular.module('gilbox.sparkScroll', [])
     up: (o)-> @scope.$emit(o.val, @)
 }
 
-.service 'sparkSetup', ($interval, $rootScope) ->
+.service 'sparkSetup', [ '$interval', '$rootScope', ($interval, $rootScope) ->
   int = 0
   @enableInvalidationInterval = (delay = 1000) ->
     $interval.cancel(int) if int
@@ -122,6 +123,7 @@ angular.module('gilbox.sparkScroll', [])
   # enable/disable logging
   @debug = false
   @
+]
 
 .service 'sparkId', ->
   @elements = {}
@@ -129,10 +131,11 @@ angular.module('gilbox.sparkScroll', [])
     @elements[id] = element
   @
 
-.directive 'sparkId', (sparkId)->
+.directive 'sparkId', [ 'sparkId', (sparkId)->
   (scope, element, attr) ->
     sparkId.registerElement(attr.sparkId, element)
     scope.$on '$destroy', -> delete sparkId.elements[attr.sparkId]
+]
 
 directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) ->
   (scope, element, attr) ->

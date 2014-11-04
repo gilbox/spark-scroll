@@ -108,7 +108,7 @@
 
   })();
 
-  angular.module('gilbox.sparkScroll').factory('sparkAnimator', function($document) {
+  angular.module('gilbox.sparkScroll').factory('sparkAnimator', function() {
     return {
       instance: function() {
         return new GSAPAnimator();

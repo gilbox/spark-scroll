@@ -1,13 +1,15 @@
 (function() {
   var directiveFn;
 
-  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', function($document) {
-    return {
-      instance: function() {
-        return Rekapi && new Rekapi($document[0].body);
-      }
-    };
-  }).constant('sparkFormulas', {
+  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', [
+    '$document', function($document) {
+      return {
+        instance: function() {
+          return Rekapi && new Rekapi($document[0].body);
+        }
+      };
+    }
+  ]).constant('sparkFormulas', {
     topTop: function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) },
     topCenter: function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) },
     topBottom: function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) },
@@ -76,41 +78,45 @@
         return this.scope.$emit(o.val, this);
       }
     }
-  }).service('sparkSetup', function($interval, $rootScope) {
-    var int;
-    int = 0;
-    this.enableInvalidationInterval = function(delay) {
-      if (delay == null) {
-        delay = 1000;
-      }
-      if (int) {
-        $interval.cancel(int);
-      }
-      return int = $interval((function() {
-        return $rootScope.$broadcast('sparkInvalidate');
-      }), delay, 0, false);
-    };
-    this.disableInvalidationInterval = function() {
-      return $interval.cancel(int);
-    };
-    this.disableSparkScrollAnimate = false;
-    this.disableSparkScroll = false;
-    this.debug = false;
-    return this;
-  }).service('sparkId', function() {
+  }).service('sparkSetup', [
+    '$interval', '$rootScope', function($interval, $rootScope) {
+      var int;
+      int = 0;
+      this.enableInvalidationInterval = function(delay) {
+        if (delay == null) {
+          delay = 1000;
+        }
+        if (int) {
+          $interval.cancel(int);
+        }
+        return int = $interval((function() {
+          return $rootScope.$broadcast('sparkInvalidate');
+        }), delay, 0, false);
+      };
+      this.disableInvalidationInterval = function() {
+        return $interval.cancel(int);
+      };
+      this.disableSparkScrollAnimate = false;
+      this.disableSparkScroll = false;
+      this.debug = false;
+      return this;
+    }
+  ]).service('sparkId', function() {
     this.elements = {};
     this.registerElement = function(id, element) {
       return this.elements[id] = element;
     };
     return this;
-  }).directive('sparkId', function(sparkId) {
-    return function(scope, element, attr) {
-      sparkId.registerElement(attr.sparkId, element);
-      return scope.$on('$destroy', function() {
-        return delete sparkId.elements[attr.sparkId];
-      });
-    };
-  });
+  }).directive('sparkId', [
+    'sparkId', function(sparkId) {
+      return function(scope, element, attr) {
+        sparkId.registerElement(attr.sparkId, element);
+        return scope.$on('$destroy', function() {
+          return delete sparkId.elements[attr.sparkId];
+        });
+      };
+    }
+  ]);
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
