@@ -174,7 +174,7 @@ one-time binding whenever possible.
 ## spark-scroll-ease: Scroll Easing
 
 Add this attribute to ease the position of the scrollbar so jumps in scroll position will have smooth animation.
-This may cause scrolling to feel laggy but animations will looks smoother.
+This may cause scrolling to feel laggy but animations will look smoother.
  
 ## Built-in Actions
 
@@ -328,7 +328,7 @@ employ one or both of the following techniques:
 - Inject the `sparkSetup` service and call:
     - `sparkSetup.enableInvalidationInterval(delay)` to automatically broadcast `sparkInvalidate` on the 
     $rootScope every `delay` ms. `delay` is optional and by default is 1000 ms.
-    - `sparkSetup.disableInvalidationInterval()` to disable the automatic broadcast interval
+    - `sparkSetup.disableInvalidationInterval()` to disable the automatic broadcast interval. **Be sure to call this function in the scope's `$destroy` event handler.**
 
 
 ## Debugging
