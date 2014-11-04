@@ -12,8 +12,16 @@ Additionally, the `spark-scroll-animate` directive includes all of the features
 of `spark-scroll` plus the ability to animate CSS properties in sync 
 with the browser scroll position.
 
+For animating SVG elements with `spark-scroll-animate`, use [the GSAP plugin](#custom-animation-engine-tweenmax-gsap)
+
 **[spark-scroll demo](http://gilbox.github.io/spark-scroll/demo/)** 
 
+
+Compatibility
+=============
+
+- IE9+ (IE8 untested), all modern browsers
+- Angular 1.x
 
 Inspiration
 ===========
@@ -166,11 +174,10 @@ one-time binding whenever possible.
 ## spark-scroll-ease: Scroll Easing
 
 Add this attribute to ease the position of the scrollbar so jumps in scroll position will have smooth animation.
-This may cause scrolling to feel laggy but animations will looks smoother.
+This may cause scrolling to feel laggy but animations will look smoother.
  
 ## Built-in Actions
 
-    angular.module('gilbox.sparkScroll', [])
     .constant 'sparkActionProps', {
     
       # When the up, down fns are called, `this` is the current keyFrame object and `o` is the action object
@@ -256,20 +263,19 @@ Here's the same thing in Coffeescript:
 
 ## Built-in Formulas
 
-    angular.module('gilbox.sparkScroll', [])
     .constant 'sparkFormulas', {
     
       # formulas are always in the format: variable or variable<offset>
       #   (note that you cannot combine formula variables)
       # for example:
       #
-      #      top+40
-      #      top-120
-      #      top
-      #      center
-      #      center-111
+      #      topTop+40
+      #      topBottom-120
+      #      topCenter
+      #      centerTop
+      #      centerCenter-111
       #
-      # are valid formulas. (top40 is valid as well but less intuitive)
+      # are valid formulas. (topTop40 is valid as well but less intuitive)
       #
       # each property of the sparkFormulas object is a formula variable
     
@@ -322,7 +328,7 @@ employ one or both of the following techniques:
 - Inject the `sparkSetup` service and call:
     - `sparkSetup.enableInvalidationInterval(delay)` to automatically broadcast `sparkInvalidate` on the 
     $rootScope every `delay` ms. `delay` is optional and by default is 1000 ms.
-    - `sparkSetup.disableInvalidationInterval()` to disable the automatic broadcast interval
+    - `sparkSetup.disableInvalidationInterval()` to disable the automatic broadcast interval. **Be sure to call this function in the scope's `$destroy` event handler.**
 
 
 ## Debugging
@@ -330,6 +336,17 @@ employ one or both of the following techniques:
 Inject `sparkSetup` and enable console logging messages with:
 
     sparkSetup.debug = true;
+    
+    
+## Globally disabling
+
+Inject `sparkSetup` and disable all `spark-scroll` directives with:
+
+    sparkSetup.disableSparkScroll = true;
+    
+Inject `sparkSetup` and disable all `spark-scroll-animate` directives with:
+
+    sparkSetup.disableSparkScrollAnimate = true;
     
 
 ## Custom Animation Engine

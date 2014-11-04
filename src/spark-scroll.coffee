@@ -1,18 +1,3 @@
-if (typeof define == 'function' && define.amd)
-  # When using rekapi with requirejs, you must handle the dependencies yourself, because
-  # here we assume that if require is being used then rekapi has already been loaded in
-  Rekapi = window.Rekapi or (require.defined('rekapi') and require('rekapi'))
-
-  # If any other deps are being loaded in without being exposed in the global namespace,
-  # the same as above applies
-  _ = window._ or (if require.defined('lodash') then require('lodash') else require('underscore'))
-  AnimationFrame = window.AnimationFrame or (if require.defined('animationFrame') then require('animationFrame') else require('AnimationFrame'))
-else
-  [Rekapi, _, AnimationFrame] = [window.Rekapi, window._, window.AnimationFrame]
-
-
-
-
 angular.module('gilbox.sparkScroll', [])
 
 # sparkAnimator can be overridden to use any animation engine
@@ -26,9 +11,10 @@ angular.module('gilbox.sparkScroll', [])
 # sparkAnimator.update(...)       # works just like Rekapi.update(...)
 #
 # See the Rekapi docs for implementation details   http://rekapi.com/dist/doc/
-.factory 'sparkAnimator', ($document) ->
+.factory 'sparkAnimator', ['$document', ($document) ->
   instance: ->
     Rekapi && new Rekapi($document[0].body)
+]
 
 .constant 'sparkFormulas', {
 
@@ -36,13 +22,13 @@ angular.module('gilbox.sparkScroll', [])
   #   (note that you cannot combine formula variables)
   # for example:
   #
-  #      top+40
-  #      top-120
-  #      top
-  #      center
-  #      center-111
+  #      topTop+40
+  #      topBottom-120
+  #      topCenter
+  #      centerTop
+  #      centerCenter-111
   #
-  # are valid formulas. (top40 is valid as well but less intuitive)
+  # are valid formulas. (topTop40 is valid as well but less intuitive)
   #
   # each property of the sparkFormulas object is a formula variable
 
@@ -81,11 +67,11 @@ angular.module('gilbox.sparkScroll', [])
 
   # fn reference that is called when scrolled down past keyframe
   'onDown':
-    down: (o)-> o.val(@, 'onDown', o)
+    down: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onDown', o) else o.val(@, 'onDown', o)
 
   # fn reference that is called when scrolled up past keyframe
   'onUp':
-    up: (o)-> o.val(@, 'onUp', o)
+    up: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onUp', o) else o.val(@, 'onUp', o)
 
   # class(es) added when scrolled down past keyframe,
   'downAddClass':
@@ -120,7 +106,7 @@ angular.module('gilbox.sparkScroll', [])
     up: (o)-> @scope.$emit(o.val, @)
 }
 
-.service 'sparkSetup', ($interval, $rootScope) ->
+.service 'sparkSetup', [ '$interval', '$rootScope', ($interval, $rootScope) ->
   int = 0
   @enableInvalidationInterval = (delay = 1000) ->
     $interval.cancel(int) if int
@@ -128,9 +114,16 @@ angular.module('gilbox.sparkScroll', [])
 
   @disableInvalidationInterval = -> $interval.cancel(int)
 
+  # enable/disable spark-scroll-animate
+  @disableSparkScrollAnimate = false
+
+  # enable/disable spark-scroll
+  @disableSparkScroll = false
+
   # enable/disable logging
   @debug = false
   @
+]
 
 .service 'sparkId', ->
   @elements = {}
@@ -138,16 +131,19 @@ angular.module('gilbox.sparkScroll', [])
     @elements[id] = element
   @
 
-.directive 'sparkId', (sparkId)->
+.directive 'sparkId', [ 'sparkId', (sparkId)->
   (scope, element, attr) ->
     sparkId.registerElement(attr.sparkId, element)
     scope.$on '$destroy', -> delete sparkId.elements[attr.sparkId]
+]
 
 directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) ->
   (scope, element, attr) ->
 
     hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate')  # when using spark-scroll-animate directive animation is enabled
     isAnimated = hasAnimateAttr
+    return if hasAnimateAttr and sparkSetup.disableSparkScrollAnimate
+    return if !hasAnimateAttr and sparkSetup.disableSparkScroll
 
     # all callback-related vars
     callback = false
@@ -384,7 +380,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       actionFrames.sort (a,b) -> a > b
       recalcMinMax() if callback
 
-      y = prevy = scrollY = $window.scrollY
+      y = prevy = scrollY = $window.pageYOffset
       update() if isAnimated
       actionsUpdate()
 
@@ -406,7 +402,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     # respond to scroll event
     onScroll = ->
-      scrollY = $window.scrollY
+      scrollY = $window.pageYOffset
 
       unless updating # debounced update
         updating = true # in-case multiple scroll events can occur in one frame (possible?)

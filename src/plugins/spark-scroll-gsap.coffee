@@ -78,6 +78,6 @@ class GSAPAnimator
     @
 
 
-angular.module('gilbox.sparkScroll').factory 'sparkAnimator', ($document) ->
+angular.module('gilbox.sparkScroll').factory 'sparkAnimator', ->
   instance: ->
     new GSAPAnimator()

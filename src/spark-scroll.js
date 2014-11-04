@@ -1,21 +1,15 @@
 (function() {
-  var AnimationFrame, Rekapi, directiveFn, _, _ref;
+  var directiveFn;
 
-  if (typeof define === 'function' && define.amd) {
-    Rekapi = window.Rekapi || (require.defined('rekapi') && require('rekapi'));
-    _ = window._ || (require.defined('lodash') ? require('lodash') : require('underscore'));
-    AnimationFrame = window.AnimationFrame || (require.defined('animationFrame') ? require('animationFrame') : require('AnimationFrame'));
-  } else {
-    _ref = [window.Rekapi, window._, window.AnimationFrame], Rekapi = _ref[0], _ = _ref[1], AnimationFrame = _ref[2];
-  }
-
-  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', function($document) {
-    return {
-      instance: function() {
-        return Rekapi && new Rekapi($document[0].body);
-      }
-    };
-  }).constant('sparkFormulas', {
+  angular.module('gilbox.sparkScroll', []).factory('sparkAnimator', [
+    '$document', function($document) {
+      return {
+        instance: function() {
+          return Rekapi && new Rekapi($document[0].body);
+        }
+      };
+    }
+  ]).constant('sparkFormulas', {
     topTop: function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) },
     topCenter: function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) },
     topBottom: function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) },
@@ -28,12 +22,20 @@
   }).constant('sparkActionProps', {
     'onDown': {
       down: function(o) {
-        return o.val(this, 'onDown', o);
+        if (_.isString(o.val)) {
+          return this.scope.$eval(o.val)(this, 'onDown', o);
+        } else {
+          return o.val(this, 'onDown', o);
+        }
       }
     },
     'onUp': {
       up: function(o) {
-        return o.val(this, 'onUp', o);
+        if (_.isString(o.val)) {
+          return this.scope.$eval(o.val)(this, 'onUp', o);
+        } else {
+          return o.val(this, 'onUp', o);
+        }
       }
     },
     'downAddClass': {
@@ -76,45 +78,57 @@
         return this.scope.$emit(o.val, this);
       }
     }
-  }).service('sparkSetup', function($interval, $rootScope) {
-    var int;
-    int = 0;
-    this.enableInvalidationInterval = function(delay) {
-      if (delay == null) {
-        delay = 1000;
-      }
-      if (int) {
-        $interval.cancel(int);
-      }
-      return int = $interval((function() {
-        return $rootScope.$broadcast('sparkInvalidate');
-      }), delay, 0, false);
-    };
-    this.disableInvalidationInterval = function() {
-      return $interval.cancel(int);
-    };
-    this.debug = false;
-    return this;
-  }).service('sparkId', function() {
+  }).service('sparkSetup', [
+    '$interval', '$rootScope', function($interval, $rootScope) {
+      var int;
+      int = 0;
+      this.enableInvalidationInterval = function(delay) {
+        if (delay == null) {
+          delay = 1000;
+        }
+        if (int) {
+          $interval.cancel(int);
+        }
+        return int = $interval((function() {
+          return $rootScope.$broadcast('sparkInvalidate');
+        }), delay, 0, false);
+      };
+      this.disableInvalidationInterval = function() {
+        return $interval.cancel(int);
+      };
+      this.disableSparkScrollAnimate = false;
+      this.disableSparkScroll = false;
+      this.debug = false;
+      return this;
+    }
+  ]).service('sparkId', function() {
     this.elements = {};
     this.registerElement = function(id, element) {
       return this.elements[id] = element;
     };
     return this;
-  }).directive('sparkId', function(sparkId) {
-    return function(scope, element, attr) {
-      sparkId.registerElement(attr.sparkId, element);
-      return scope.$on('$destroy', function() {
-        return delete sparkId.elements[attr.sparkId];
-      });
-    };
-  });
+  }).directive('sparkId', [
+    'sparkId', function(sparkId) {
+      return function(scope, element, attr) {
+        sparkId.registerElement(attr.sparkId, element);
+        return scope.$on('$destroy', function() {
+          return delete sparkId.elements[attr.sparkId];
+        });
+      };
+    }
+  ]);
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
       var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, doCallback, hasAnimateAttr, isAnimated, maxScrollY, minScrollY, nonAnimatedUpdate, onInvalidate, onScroll, parseData, prevRatio, prevy, recalcFormulas, recalcMinMax, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
+      if (hasAnimateAttr && sparkSetup.disableSparkScrollAnimate) {
+        return;
+      }
+      if (!hasAnimateAttr && sparkSetup.disableSparkScroll) {
+        return;
+      }
       callback = false;
       prevRatio = 0;
       minScrollY = 0;
@@ -148,18 +162,18 @@
         setTriggerElement();
       }
       actionsUpdate = function() {
-        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4;
+        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
         d = y - prevy;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && y < actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref1 = c.actions;
-            for (a in _ref1) {
-              o = _ref1[a];
-              _ref2 = o.props;
-              for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                prop = _ref2[_i];
+            _ref = c.actions;
+            for (a in _ref) {
+              o = _ref[a];
+              _ref1 = o.props;
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                prop = _ref1[_i];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.up) {
                   actionProp.up.call(c, o);
@@ -173,12 +187,12 @@
           idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
           while (idx < actionFrames.length && y > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref3 = c.actions;
-            for (a in _ref3) {
-              o = _ref3[a];
-              _ref4 = o.props;
-              for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-                prop = _ref4[_j];
+            _ref2 = c.actions;
+            for (a in _ref2) {
+              o = _ref2[a];
+              _ref3 = o.props;
+              for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+                prop = _ref3[_j];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.down) {
                   actionProp.down.call(c, o);
@@ -394,7 +408,7 @@
         if (callback) {
           recalcMinMax();
         }
-        y = prevy = scrollY = $window.scrollY;
+        y = prevy = scrollY = $window.pageYOffset;
         if (isAnimated) {
           update();
         }
@@ -417,7 +431,7 @@
         return actionsUpdate();
       };
       onScroll = function() {
-        scrollY = $window.scrollY;
+        scrollY = $window.pageYOffset;
         if (!updating) {
           updating = true;
           if (isAnimated) {
