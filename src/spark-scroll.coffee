@@ -422,6 +422,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       animator.removeActor(actor) if isAnimated
       angular.element($window).off 'scroll', onScroll
       angular.element($window).off 'resize', onInvalidate
+      onInvalidate.cancel()
 
 
 angular.module('gilbox.sparkScroll')

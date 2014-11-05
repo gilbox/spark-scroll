@@ -453,7 +453,8 @@
           animator.removeActor(actor);
         }
         angular.element($window).off('scroll', onScroll);
-        return angular.element($window).off('resize', onInvalidate);
+        angular.element($window).off('resize', onInvalidate);
+        return onInvalidate.cancel();
       });
     };
   };
