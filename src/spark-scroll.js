@@ -120,7 +120,7 @@
 
   directiveFn = function($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator, sparkId, sparkSetup) {
     return function(scope, element, attr) {
-      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, doCallback, hasAnimateAttr, isAnimated, maxScrollY, minScrollY, nonAnimatedUpdate, onInvalidate, onScroll, parseData, prevRatio, prevy, recalcFormulas, recalcMinMax, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
+      var actionFrameIdx, actionFrames, actionsUpdate, actor, animationFrame, animator, callback, container, data, debounce, doCallback, hasAnimateAttr, isAnimated, maxScrollY, minScrollY, nonAnimatedUpdate, onInvalidate, onScroll, parseData, prevRatio, prevy, recalcFormulas, recalcMinMax, scrollY, setTriggerElement, sparkData, triggerElement, update, updating, watchCancel, y;
       hasAnimateAttr = attr.hasOwnProperty('sparkScrollAnimate');
       isAnimated = hasAnimateAttr;
       if (hasAnimateAttr && sparkSetup.disableSparkScrollAnimate) {
@@ -442,9 +442,26 @@
           }
         }
       };
-      onInvalidate = _.debounce(recalcFormulas, 100, {
-        leading: false
-      });
+      debounce = function(func, wait) {
+        var f, timeout;
+        timeout = 0;
+        f = function() {
+          var args, context, later;
+          context = this;
+          args = arguments;
+          later = function() {
+            timeout = null;
+            return func.apply(context, args);
+          };
+          clearTimeout(timeout);
+          return timeout = setTimeout(later, wait);
+        };
+        f.cancel = function() {
+          return clearTimeout(timeout);
+        };
+        return f;
+      };
+      onInvalidate = debounce(recalcFormulas, 100);
       angular.element($window).on('scroll', onScroll);
       angular.element($window).on('resize', onInvalidate);
       scope.$on('sparkInvalidate', onInvalidate);

@@ -412,7 +412,24 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
           y = scrollY
           animationFrame.request(nonAnimatedUpdate) # @todo: do these calls get queued between frames ?
 
-    onInvalidate = _.debounce(recalcFormulas, 100, {leading: false})
+    # a simple leading:false debounce based on underscore
+    debounce = (func, wait) ->
+      timeout = 0
+      f = ->
+        context = this
+        args = arguments
+        later = ->
+          timeout = null
+          func.apply(context, args)
+
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+
+      f.cancel = ->
+        clearTimeout(timeout)
+      f
+
+    onInvalidate = debounce(recalcFormulas, 100)
 
     angular.element($window).on 'scroll', onScroll
     angular.element($window).on 'resize', onInvalidate
