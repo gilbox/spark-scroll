@@ -45,6 +45,7 @@ Setup
     <script src="js/angular.js"></script>
     <script src="js/lodash.js"></script>
     <script src="js/spark-scroll.js"></script>
+    <script src="js/animation-frame.js"></script>
     
 **To use `spark-scroll-animate` requires additional JavaScript files, see the [Dependencies](#dependencies)**
     
@@ -61,6 +62,7 @@ that don't get utilized.
 
 - `spark-scroll`
     - lodash or underscore
+    - [animation-frame](https://github.com/kof/animation-frame)
 - `spark-scroll-animate`
     - lodash or underscore
     - [animation-frame](https://github.com/kof/animation-frame)
