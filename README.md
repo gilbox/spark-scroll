@@ -113,7 +113,7 @@ Usage
         121:{opacity:'0.8', top:'151px', color:'#fff'},
         140:{opacity:'1.0', top:'0px', color:'#444'}
         }">
-      This Title is Kapimated
+      This Title is Sparky
     </h1>
  
  
@@ -125,7 +125,7 @@ Usage
         121:{opacity:'0.8', top:'151px', color:'#fff'},
         140:{opacity:'1.0', top:'0px', color:'#444', ease: 'linear'}
         }">
-      This Title is Kapimated
+      This Title is Sparky
     </h1>
  
  
@@ -168,7 +168,7 @@ keyframe range for this element.
 ## spark-scroll-bind-once: One-Time Binding
  
 If you are using a version of angular (<=1.3) which doesn't support one-time lazy binding
-you can use the `spark-scroll-bind-once` attribute to achieve the same thing. Because `kapi-scroll`
+you can use the `spark-scroll-bind-once` attribute to achieve the same thing. Because `spark-scroll`
 will create a rather expensive deep watch for the `spark-scroll(-animate)` attribute, it's a good idea to use 
 one-time binding whenever possible.
 
