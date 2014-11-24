@@ -22,7 +22,7 @@
   }).constant('sparkActionProps', {
     'onDown': {
       down: function(o) {
-        if (_.isString(o.val)) {
+        if (angular.isString(o.val)) {
           return this.scope.$eval(o.val)(this, 'onDown', o);
         } else {
           return o.val(this, 'onDown', o);
@@ -31,7 +31,7 @@
     },
     'onUp': {
       up: function(o) {
-        if (_.isString(o.val)) {
+        if (angular.isString(o.val)) {
           return this.scope.$eval(o.val)(this, 'onUp', o);
         } else {
           return o.val(this, 'onUp', o);
@@ -237,7 +237,7 @@
       if (attr.hasOwnProperty('sparkScrollCallback')) {
         attr.$observe('sparkScrollCallback', function(v) {
           callback = scope.$eval(v);
-          if (!_.isFunction(callback)) {
+          if (!angular.isFunction(callback)) {
             callback = false;
           }
           if (!maxScrollY) {
@@ -334,7 +334,7 @@
         containerRect = container.getBoundingClientRect();
         for (scrY in data) {
           keyFrame = data[scrY];
-          keyFrame = _.clone(keyFrame);
+          keyFrame = angular.copy(keyFrame);
           actionCount = 0;
           c = scrY.charCodeAt(0);
           if (c < 48 || c > 57) {
@@ -418,7 +418,7 @@
         if (!d) {
           return;
         }
-        data = _.clone(d);
+        data = angular.copy(d);
         if (attr.sparkScrollBindOnce != null) {
           watchCancel();
         }

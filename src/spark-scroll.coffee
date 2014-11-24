@@ -67,11 +67,11 @@ angular.module('gilbox.sparkScroll', [])
 
   # fn reference that is called when scrolled down past keyframe
   'onDown':
-    down: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onDown', o) else o.val(@, 'onDown', o)
+    down: (o)-> if angular.isString(o.val) then @scope.$eval(o.val)(@, 'onDown', o) else o.val(@, 'onDown', o)
 
   # fn reference that is called when scrolled up past keyframe
   'onUp':
-    up: (o)-> if _.isString(o.val) then @scope.$eval(o.val)(@, 'onUp', o) else o.val(@, 'onUp', o)
+    up: (o)-> if angular.isString(o.val) then @scope.$eval(o.val)(@, 'onUp', o) else o.val(@, 'onUp', o)
 
   # class(es) added when scrolled down past keyframe,
   'downAddClass':
@@ -236,7 +236,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
     if attr.hasOwnProperty('sparkScrollCallback')
       attr.$observe 'sparkScrollCallback', (v) ->
         callback = scope.$eval(v)
-        callback = false unless _.isFunction(callback)
+        callback = false unless angular.isFunction(callback)
         recalcMinMax() unless maxScrollY
 
 
@@ -304,7 +304,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
       containerRect = container.getBoundingClientRect()
 
       for scrY, keyFrame of data
-        keyFrame = _.clone(keyFrame)  # clone for cases when parseData fails and needs to be called again
+        keyFrame = angular.copy(keyFrame)  # clone for cases when parseData fails and needs to be called again
         actionCount = 0
 
         # formula comprehension
@@ -386,7 +386,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     watchCancel = scope.$watch attr[if hasAnimateAttr then 'sparkScrollAnimate' else 'sparkScroll'], (d) ->
       return unless d
-      data = _.clone(d)   # clone for cases when parseData fails and needs to be called again
+      data = angular.copy(d)   # clone for cases when parseData fails and needs to be called again
 
       # useful in angular < v1.3 where one-time binding isn't available
       if attr.sparkScrollBindOnce? then watchCancel()
