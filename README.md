@@ -1,6 +1,8 @@
 spark-scroll
 ============
 
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/gilbox/spark-scroll?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 angular directive for scroll-based actions. An element with the `spark-scroll` 
 directive can be associated with any number of scroll positions. At each scroll 
 position you can trigger any number of actions. An action can call any function 
