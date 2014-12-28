@@ -18,6 +18,13 @@ For animating SVG elements with `spark-scroll-animate`, use [the GSAP plugin](#c
 
 **[spark-scroll demo](http://gilbox.github.io/spark-scroll/demo/)** 
 
+In the Wild
+===========
+
+spark-scroll is being used in the following websites. ([add your website to this list](https://github.com/gilbox/spark-scroll/edit/master/README.md))
+
+- [iSeatz](http://iseatz.com/)
+- [Hookah Club](http://hookah-club.com)
 
 Compatibility
 =============
