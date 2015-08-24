@@ -433,12 +433,14 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
     angular.element($window).on 'scroll', onScroll
     angular.element($window).on 'resize', onInvalidate
+    angular.element($window).on 'load', onInvalidate
     scope.$on 'sparkInvalidate', onInvalidate
 
     scope.$on '$destroy', ->
       animator.removeActor(actor) if isAnimated
       angular.element($window).off 'scroll', onScroll
       angular.element($window).off 'resize', onInvalidate
+      angular.element($window).off 'load', onInvalidate
       onInvalidate.cancel()
 
 
