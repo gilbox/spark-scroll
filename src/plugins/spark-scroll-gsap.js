@@ -36,13 +36,13 @@
       this.tl.clear();
       _.forEach(this.normalizedFrames, (function(_this) {
         return function(frame, index, arr) {
-          var a, duration, k, pa, prevFrame, v, _ref;
+          var a, duration, k, pa, prevFrame, ref, v;
           if (index) {
             prevFrame = arr[index - 1];
             duration = frame.scrollY - prevFrame.scrollY;
-            _ref = frame.anims;
-            for (k in _ref) {
-              v = _ref[k];
+            ref = frame.anims;
+            for (k in ref) {
+              v = ref[k];
               a = {};
               pa = {};
               a[k] = v;

@@ -162,18 +162,18 @@
         setTriggerElement();
       }
       actionsUpdate = function() {
-        var a, actionProp, c, d, idx, o, prop, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+        var a, actionProp, c, d, i, idx, j, len, len1, o, prop, ref, ref1, ref2, ref3;
         d = y - prevy;
         if (d < 0 && actionFrameIdx >= 0) {
           idx = actionFrameIdx >= actionFrames.length ? actionFrameIdx - 1 : actionFrameIdx;
           while (idx >= 0 && y < actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref = c.actions;
-            for (a in _ref) {
-              o = _ref[a];
-              _ref1 = o.props;
-              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                prop = _ref1[_i];
+            ref = c.actions;
+            for (a in ref) {
+              o = ref[a];
+              ref1 = o.props;
+              for (i = 0, len = ref1.length; i < len; i++) {
+                prop = ref1[i];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.up) {
                   actionProp.up.call(c, o);
@@ -187,12 +187,12 @@
           idx = actionFrameIdx < 0 ? 0 : actionFrameIdx;
           while (idx < actionFrames.length && y > actionFrames[idx]) {
             c = sparkData[actionFrames[idx]];
-            _ref2 = c.actions;
-            for (a in _ref2) {
-              o = _ref2[a];
-              _ref3 = o.props;
-              for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-                prop = _ref3[_j];
+            ref2 = c.actions;
+            for (a in ref2) {
+              o = ref2[a];
+              ref3 = o.props;
+              for (j = 0, len1 = ref3.length; j < len1; j++) {
+                prop = ref3[j];
                 actionProp = sparkActionProps[prop];
                 if (actionProp.down) {
                   actionProp.down.call(c, o);
@@ -246,24 +246,24 @@
         });
       }
       recalcMinMax = function() {
-        var idx, scrY, _results;
+        var idx, results, scrY;
         idx = 0;
-        _results = [];
+        results = [];
         for (scrY in sparkData) {
           scrY = ~~scrY;
           if (idx++) {
             if (scrY > maxScrollY) {
-              _results.push(maxScrollY = scrY);
+              results.push(maxScrollY = scrY);
             } else if (scrY < minScrollY) {
-              _results.push(minScrollY = scrY);
+              results.push(minScrollY = scrY);
             } else {
-              _results.push(void 0);
+              results.push(void 0);
             }
           } else {
-            _results.push(maxScrollY = minScrollY = scrY);
+            results.push(maxScrollY = minScrollY = scrY);
           }
         }
-        return _results;
+        return results;
       };
       doCallback = function() {
         var ratio;
@@ -464,6 +464,7 @@
       onInvalidate = debounce(recalcFormulas, 100);
       angular.element($window).on('scroll', onScroll);
       angular.element($window).on('resize', onInvalidate);
+      angular.element($window).on('load', onInvalidate);
       scope.$on('sparkInvalidate', onInvalidate);
       return scope.$on('$destroy', function() {
         if (isAnimated) {
@@ -471,6 +472,7 @@
         }
         angular.element($window).off('scroll', onScroll);
         angular.element($window).off('resize', onInvalidate);
+        angular.element($window).off('load', onInvalidate);
         return onInvalidate.cancel();
       });
     };
