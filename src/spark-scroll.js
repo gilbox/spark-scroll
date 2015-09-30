@@ -267,7 +267,7 @@
       };
       doCallback = function() {
         var ratio;
-        ratio = Math.max(0, Math.min(y / (maxScrollY - minScrollY), 1));
+        ratio = Math.max(0, Math.min((y - minScrollY) / (maxScrollY - minScrollY), 1));
         if (ratio !== prevRatio) {
           callback(ratio);
         }

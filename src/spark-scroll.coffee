@@ -254,7 +254,7 @@ directiveFn = ($window, $timeout, sparkFormulas, sparkActionProps, sparkAnimator
 
 
     doCallback = ->
-      ratio = Math.max(0, Math.min(y/(maxScrollY-minScrollY), 1))
+      ratio = Math.max(0, Math.min((y-minScrollY)/(maxScrollY-minScrollY), 1))
       callback ratio if ratio != prevRatio
       prevRatio = ratio
 
