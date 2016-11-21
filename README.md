@@ -24,7 +24,6 @@ In the Wild
 spark-scroll is being used in the following websites. ([add your website to this list](https://github.com/gilbox/spark-scroll/edit/master/README.md))
 
 - [iSeatz](http://iseatz.com/)
-- [Hookah Club](http://hookah-club.com)
 
 Compatibility
 =============
