@@ -49,18 +49,19 @@ Setup
 =====
 
 ### HTML
+``` html
+<script src="js/angular.js"></script>
+<script src="js/lodash.js"></script>
+<script src="js/spark-scroll.js"></script>
+<script src="js/animation-frame.js"></script>
+```
 
-    <script src="js/angular.js"></script>
-    <script src="js/lodash.js"></script>
-    <script src="js/spark-scroll.js"></script>
-    <script src="js/animation-frame.js"></script>
-    
 **To use `spark-scroll-animate` requires additional JavaScript files, see the [Dependencies](#dependencies)**
     
 ### JavaScript
-
-    angular.module('app', ['gilbox.sparkScroll']);
-
+``` javascript
+angular.module('app', ['gilbox.sparkScroll']);
+```
 
 Dependencies
 =====
@@ -82,60 +83,60 @@ Usage
 =====
 
 ## Basic Example (spark-scroll)
-
-    <h1 spark-scroll="{
-        120:{ onUp: myUpFn },
-        121:{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
-        140:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
-        }">
-      This Title is Spark
-    </h1>
-
+``` html
+<h1 spark-scroll="{
+    120:{ onUp: myUpFn },
+    121:{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+    140:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+    }">
+  This Title is Spark
+</h1>
+```
 
 ## Formula Example (spark-scroll)
-
-    <h1 spark-scroll="{
-                topTop:{ onUp: myUpFn },
-        'topCenter-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
-             topBottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
-        }">
-      This Title is Spark
-    </h1>
-    
+``` html
+<h1 spark-scroll="{
+            topTop:{ onUp: myUpFn },
+    'topCenter-20':{ 'onUp,onDown': myUpDownFn, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+         topBottom:{ 'upBroadcast': 'event-to-broadcast', 'upEmit,downEmit': 'event-to-emit' }
+    }">
+  This Title is Spark
+</h1>
+```
 
 ## Animated Example (spark-scroll-animate)
-
-    <h1 spark-scroll-animate="{
-                topTop:{ color: '#f00', marginLeft: '50px' },
-             topBottom:{ color: '#000', marginLeft: '0px' }
-        }">
-      This Title is Spark Animated
-    </h1>
-    
+``` html
+<h1 spark-scroll-animate="{
+            topTop:{ color: '#f00', marginLeft: '50px' },
+         topBottom:{ color: '#000', marginLeft: '0px' }
+    }">
+  This Title is Spark Animated
+</h1>
+```
 
 ## Animated Less-Basic Example with easing (spark-scroll-animate)
-
-    <h1 spark-scroll-animate="{
-        ease:'easeOutQuad',
-        120:{opacity:'0'},
-        121:{opacity:'0.8', top:'151px', color:'#fff'},
-        140:{opacity:'1.0', top:'0px', color:'#444'}
-        }">
-      This Title is Sparky
-    </h1>
- 
+``` html
+<h1 spark-scroll-animate="{
+    ease:'easeOutQuad',
+    120:{opacity:'0'},
+    121:{opacity:'0.8', top:'151px', color:'#fff'},
+    140:{opacity:'1.0', top:'0px', color:'#444'}
+    }">
+  This Title is Sparky
+</h1>
+```
  
 ## Animated Example with Override element-wide easing at a specific keyframe (spark-scroll-animate)
-
-    <h1 spark-scroll-animate="{
-        ease:'easeOutQuad',
-        120:{opacity:'0'},
-        121:{opacity:'0.8', top:'151px', color:'#fff'},
-        140:{opacity:'1.0', top:'0px', color:'#444', ease: 'linear'}
-        }">
-      This Title is Sparky
-    </h1>
- 
+``` html
+<h1 spark-scroll-animate="{
+    ease:'easeOutQuad',
+    120:{opacity:'0'},
+    121:{opacity:'0.8', top:'151px', color:'#fff'},
+    140:{opacity:'1.0', top:'0px', color:'#444', ease: 'linear'}
+    }">
+  This Title is Sparky
+</h1>
+```
  
 ## spark-scroll-callback: Callback on Scroll Event
 
@@ -148,26 +149,26 @@ Every time the function is called, it is provided one argument, `ratio` which is
 between 0 and 1 representing the progress of scroll within the limits of the maximum and minimum 
 scroll positions of the `spark-scroll` or `spark-scroll-animate` attributes. The simplest use of 
 `spark-scroll-callback` would look something like this:
-
-    <h1 spark-scroll-callback="myFunctionOnScope"
-        spark-scroll="{ topBottom:0, topTop:0 }">
-
+``` html
+<h1 spark-scroll-callback="myFunctionOnScope"
+    spark-scroll="{ topBottom:0, topTop:0 }">
+```
 When `spark-scroll` calls `myFunctionOnScope(ratio)`, the `ratio` is calculated based on the current scroll position,
 and the `topBottom` and `topTop` formulas.
 
 Note that in the preceding example instead of assigning an object to the keyframes, we simply
 assign `0`. However, if we wanted to use a callback while at the same time taking advantage of *action* and
 *animation* properties we could do something like this:
-
-    <h1 spark-scroll-callback="myOtherFunctionOnScope"
-        spark-scroll-animate="{
-                topTop:{ opacity: 0 },
-             topCenter:{ opacity: 1, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
-             topBottom:{ 'upBroadcast': 'event-to-broadcast' }
-        }">
-      This Title is Spark
-    </h1>
- 
+``` html
+<h1 spark-scroll-callback="myOtherFunctionOnScope"
+    spark-scroll-animate="{
+            topTop:{ opacity: 0 },
+         topCenter:{ opacity: 1, 'downAddClass,upRemoveClass': 'my-class my-other-class' },
+         topBottom:{ 'upBroadcast': 'event-to-broadcast' }
+    }">
+  This Title is Spark
+</h1>
+```
 Note that in the preceding example, when `spark-scroll-animate` calls `myOtherFunctionOnScope(ratio)`, the `ratio` argument
 is calculated using the `topTop` and `topBottom` formulas because they are at the extremes of the 
 keyframe range for this element.
@@ -189,46 +190,46 @@ This may cause scrolling to feel laggy but animations will look smoother.
 ## Built-in Actions
 
     .constant 'sparkActionProps', {
-    
+
       # When the up, down fns are called, `this` is the current keyFrame object and `o` is the action object
       # therefore @element and @scope refer to the current element and it's scope
-    
+
       # fn reference that is called when scrolled down past keyframe
       'onDown':
         down: (o)-> o.val(@, 'onDown', o)
-    
+
       # fn reference that is called when scrolled up past keyframe
       'onUp':
         up: (o)-> o.val(@, 'onUp', o)
-    
+
       # class(es) added when scrolled down past keyframe,
       'downAddClass':
         down: (o)-> @element.addClass(o.val)
-    
+
       # class(es) added when scrolled up past keyframe,
       'upAddClass':
         up: (o)-> @element.addClass(o.val)
-    
+
       # class(es) removed when scrolled down past keyframe
       'downRemoveClass':
         down: (o)-> @element.removeClass(o.val)
-    
+
       # class(es) removed when scrolled up past keyframe
       'upRemoveClass':
         up: (o)-> @element.removeClass(o.val)
-    
+
       # broadcasts an event when scrolled down past keyframe
       'downBroadcast':
         down: (o)-> @scope.$broadcast(o.val, @)
-    
+
       # broadcasts an event when scrolled up past keyframe
       'upBroadcast':
         up: (o)-> @scope.$broadcast(o.val, @)
-    
+
       # emits an event when scrolled down past keyframe
       'downEmit':
         down: (o)-> @scope.$emit(o.val, @)
-    
+
       # emits an event when scrolled up past keyframe
       'upEmit':
         up: (o)-> @scope.$emit(o.val, @)
@@ -236,94 +237,94 @@ This may cause scrolling to feel laggy but animations will look smoother.
 
 
 ## Register a custom action
+``` javascript
+app.config(function(sparkActionProps) {
 
-    app.config(function(sparkActionProps) {
-    
-        angular.extend(sparkActionProps, {
-        
-            // Change the element's text when scrolling down past it
-            downText: {
-                down: function(o) {
-                    this.element.text(o.val);
-                }
-            },
-            
-            // Change the element's text when scrolling up past it
-            upText: {
-                up: function(o) {
-                    this.element.text(o.val);
-                }
+    angular.extend(sparkActionProps, {
+
+        // Change the element's text when scrolling down past it
+        downText: {
+            down: function(o) {
+                this.element.text(o.val);
             }
-            
-        });
-        
+        },
+
+        // Change the element's text when scrolling up past it
+        upText: {
+            up: function(o) {
+                this.element.text(o.val);
+            }
+        }
+
     });
 
+});
+```
 
 Here's the same thing in Coffeescript:
+``` javascript
+app.config (sparkActionProps) ->
+    angular.extend sparkActionProps, 
+        downText:
+            down: (o)-> @element.text(o.val)
 
-    app.config (sparkActionProps) ->
-        angular.extend sparkActionProps, 
-            downText:
-                down: (o)-> @element.text(o.val)
-                
-            upText:
-                up: (o)-> @element.text(o.val)
-
+        upText:
+            up: (o)-> @element.text(o.val)
+```
 
 ## Built-in Formulas
+``` coffeescript
+.constant 'sparkFormulas', {
 
-    .constant 'sparkFormulas', {
-    
-      # formulas are always in the format: variable or variable<offset>
-      #   (note that you cannot combine formula variables)
-      # for example:
-      #
-      #      topTop+40
-      #      topBottom-120
-      #      topCenter
-      #      centerTop
-      #      centerCenter-111
-      #
-      # are valid formulas. (topTop40 is valid as well but less intuitive)
-      #
-      # each property of the sparkFormulas object is a formula variable
-    
-      # top of the element hits the top of the viewport
-      topTop: `function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) }`
-    
-      # top of the element hits the center of the viewport
-      topCenter: `function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) }`
-    
-      # top of the element hits the bottom of the viewport
-      topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
-    
-      # center of the element hits the top of the viewport
-      centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top + offset) }`
-    
-      # center of the element hits the center of the viewport
-      centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight/2 + offset) }`
-    
-      # center of the element hits the bottom of the viewport
-      centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight + offset) }`
-    
-      # bottom of the element hits the top of the viewport
-      bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
-    
-      # bottom of the element hits the bottom of the viewport
-      bottomBottom: `function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) }`
-    
-      # bottom of the element hits the center of the viewport
-      bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
-    }
+  # formulas are always in the format: variable or variable<offset>
+  #   (note that you cannot combine formula variables)
+  # for example:
+  #
+  #      topTop+40
+  #      topBottom-120
+  #      topCenter
+  #      centerTop
+  #      centerCenter-111
+  #
+  # are valid formulas. (topTop40 is valid as well but less intuitive)
+  #
+  # each property of the sparkFormulas object is a formula variable
 
+  # top of the element hits the top of the viewport
+  topTop: `function topTop(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top + offset) }`
+
+  # top of the element hits the center of the viewport
+  topCenter: `function topCenter(element, container, rect, containerRect, offset) { return ~~(rect.top - containerRect.top - container.clientHeight/2 + offset) }`
+
+  # top of the element hits the bottom of the viewport
+  topBottom: `function topBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top - containerRect.top - container.clientHeight + offset) }`
+
+  # center of the element hits the top of the viewport
+  centerTop: `function centerTop(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top + offset) }`
+
+  # center of the element hits the center of the viewport
+  centerCenter: `function centerCenter(element, container, rect, containerRect, offset) { return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight/2 + offset) }`
+
+  # center of the element hits the bottom of the viewport
+  centerBottom: `function centerBottom(element, container, rect, containerRect, offset) {  return ~~(rect.top + rect.height/2 - containerRect.top - container.clientHeight + offset) }`
+
+  # bottom of the element hits the top of the viewport
+  bottomTop: `function bottomTop(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top + offset) }`
+
+  # bottom of the element hits the bottom of the viewport
+  bottomBottom: `function bottomBottom(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight + offset) }`
+
+  # bottom of the element hits the center of the viewport
+  bottomCenter: `function bottomCenter(element, container, rect, containerRect, offset) { return ~~(rect.bottom - containerRect.top - container.clientHeight/2 + offset) }`
+}
+```
 ## Register a Custom Formula
-
-    app.config (sparkFormulas) ->
-        angular.extend sparkFormulas, 
-            # similar to the built-in topBottom formula, except that offset is calculated as a percentage of the viewport height
-            topBottomPct: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset*containerRect.clientHeight/100)
-
+``` javascript
+app.config (sparkFormulas) ->
+    angular.extend sparkFormulas, 
+        # similar to the built-in topBottom formula, except that offset is calculated as a percentage of the viewport height
+        topBottomPct: (element, container, rect, containerRect, offset) ->  ~~(rect.bottom - containerRect.top + offset*containerRect.clientHeight/100)
+```
 
 ## Keeping Formulas up-to-date
 
@@ -345,19 +346,23 @@ employ one or both of the following techniques:
 
 Inject `sparkSetup` and enable console logging messages with:
 
-    sparkSetup.debug = true;
-    
+``` javascript
+sparkSetup.debug = true;
+```
     
 ## Globally disabling
 
 Inject `sparkSetup` and disable all `spark-scroll` directives with:
 
-    sparkSetup.disableSparkScroll = true;
-    
+``` javascript
+sparkSetup.disableSparkScroll = true;
+```
+
 Inject `sparkSetup` and disable all `spark-scroll-animate` directives with:
 
-    sparkSetup.disableSparkScrollAnimate = true;
-    
+``` javascript
+sparkSetup.disableSparkScrollAnimate = true;
+```
 
 ## Custom Animation Engine
 
@@ -366,12 +371,14 @@ Inject `sparkSetup` and disable all `spark-scroll-animate` directives with:
 so long as the `sparkAnimator` service supports the following [Rekapi](http://rekapi.com)-like
 interface:
 
-    animator = sparkAnimator.instance()   # returns a new instance
-    actor = animator.addActor({ context: <dom element> })  # works just like rekapi.addActor(...)
-    actor.keyframe(...)
-    actor.moveKeyframe(...)
-    actor.removeAllKeyframes()
-    animator.update(...)       # works just like rekapi.update(...)
+``` javascript
+animator = sparkAnimator.instance()   # returns a new instance
+actor = animator.addActor({ context: <dom element> })  # works just like rekapi.addActor(...)
+actor.keyframe(...)
+actor.moveKeyframe(...)
+actor.removeAllKeyframes()
+animator.update(...)       # works just like rekapi.update(...)
+```
 
 See below and the [Rekapi docs](http://rekapi.com/dist/doc/) for implementation details. 
 
